@@ -153,3 +153,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def find_direct_apply_url(company, job_title, firecrawl_key):
+    """Search for the direct company careers page URL."""
+    search_query = f"{company} {job_title} careers site:{company.lower().replace(' ','')}.com"
+    print(f"  🔍 Finding direct URL for {company}...")
+    resp = requests.post(f"{FIRECRAWL_BASE}/search",
+        headers={"Authorization": f"Bearer {firecrawl_key}"},
+        json={"query": search_query, "limit": 3})
+    data = resp.json()
+    if data.get("success") and data.get("data"):
+        for result in data["data"]:
+            url = result.get("url", "")
+            # Prefer direct company URLs over job boards
+            if company.lower().replace(" ","") in url.lower() or "greenhouse" in url or "lever.co" in url or "workday" in url:
+                return url
+    return ""
