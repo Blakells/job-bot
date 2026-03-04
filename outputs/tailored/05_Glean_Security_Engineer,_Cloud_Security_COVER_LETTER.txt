@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Glean
+United States
+
+Dear Glean Hiring Team,
+
+I've been following Glean's mission to revolutionize workplace knowledge discovery, and I'm thrilled to apply for the Security Engineer, Cloud Security position. As someone who has spent the past four years protecting cloud infrastructure and sensitive data for Fortune 500 clients, I'm energized by the opportunity to help secure a platform that's fundamentally changing how teams access and leverage their collective intelligence. The challenge of protecting AI-powered search at scale while maintaining the seamless user experience Glean is known for is exactly the kind of complex security problem I'm eager to tackle.
+
+In my current role at SecureNet Solutions, I've built deep expertise in cloud security that directly aligns with Glean's needs. I've conducted over 40 penetration tests annually on cloud infrastructure, with a particular focus on AWS environments, uncovering an average of 12 critical vulnerabilities per engagement and achieving a 95% remediation success rate. Most notably, I led a red team exercise for a healthcare client where I simulated an advanced persistent threat, successfully demonstrating lateral movement across their cloud environment—this exercise resulted in a complete security architecture overhaul. Additionally, I implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. These experiences have given me the offensive mindset needed to anticipate threats while building robust defensive controls.
+
+What draws me to Glean beyond the technical challenge is your commitment to making knowledge accessible without compromising security. I've always believed that the best security is invisible to legitimate users, and Glean's approach to permissions-aware search exemplifies this philosophy. My experience delivering security awareness training and mentoring junior analysts has taught me that security is as much about enabling teams as it is about preventing threats. I'm excited to work with a company that shares this balanced perspective and is building something genuinely transformative.
+
+I'd welcome the opportunity to discuss how my cloud security expertise and offensive security background can help Glean continue to earn customer trust as you scale. I'm available for a conversation at your convenience.
+
+Sincerely,
+Alex J. Carter

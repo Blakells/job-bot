@@ -1,171 +1,169 @@
 #!/usr/bin/env python3
 """
-Phase 2: Job Discovery & Scoring
-Searches Indeed for jobs matching your profile
-Scores each job 0-100% and returns ranked results
+Phase 2: Job Discovery & Scoring (Google Search version)
+Searches Google for jobs, extracts direct company URLs
 """
 
-import json, os, sys, requests, argparse
+import json, os, sys, argparse, re
 from pathlib import Path
-from datetime import datetime
+import requests
 
-FIRECRAWL_API_KEY  = os.environ.get("FIRECRAWL_API_KEY", "")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-FIRECRAWL_BASE     = "https://api.firecrawl.dev/v1"
-OPENROUTER_BASE    = "https://openrouter.ai/api/v1/chat/completions"
-MODEL              = "anthropic/claude-sonnet-4-5"
+FIRECRAWL_KEY   = os.environ.get("FIRECRAWL_API_KEY", "")
+OPENROUTER_KEY  = os.environ.get("OPENROUTER_API_KEY", "")
+FIRECRAWL_BASE  = "https://api.firecrawl.dev/v1"
+OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions"
+MODEL           = "anthropic/claude-sonnet-4-5"
 
-def search_jobs(query, location="remote", num_results=10):
-    """Use Firecrawl to search Indeed for job listings."""
-    print(f"  🔍 Searching Indeed: '{query}' in '{location}'")
-    url = f"https://www.indeed.com/jobs?q={query.replace(' ', '+')}&l={location.replace(' ', '+')}&fromage=1&sort=date"
-    resp = requests.post(f"{FIRECRAWL_BASE}/scrape",
-        headers={"Authorization": f"Bearer {FIRECRAWL_API_KEY}"},
-        json={"url": url, "formats": ["markdown"]})
+def ask_claude(prompt):
+    resp = requests.post(OPENROUTER_BASE,
+        headers={"Authorization": f"Bearer {OPENROUTER_KEY}", "Content-Type": "application/json"},
+        json={"model": MODEL, "messages": [{"role": "user", "content": prompt}],
+              "max_tokens": 3000, "temperature": 0.1})
+    return resp.json()["choices"][0]["message"]["content"].strip()
+
+def google_search_jobs(query, limit=5):
+    """Use Firecrawl search to find jobs — returns direct URLs."""
+    print(f"    🔍 Searching: {query}")
+    resp = requests.post(f"{FIRECRAWL_BASE}/search",
+        headers={"Authorization": f"Bearer {FIRECRAWL_KEY}", "Content-Type": "application/json"},
+        json={"query": query, "limit": limit})
     data = resp.json()
-    if data.get("success"):
-        return data["data"].get("markdown", "")
-    print(f"  ⚠️  Search error: {data.get('error', 'Unknown')}")
-    return ""
+    results = []
+    for r in data.get("data", []):
+        url = r.get("url", "")
+        # Skip job boards — we want direct company pages
+        skip = ["indeed.com", "linkedin.com", "glassdoor.com",
+                "ziprecruiter.com", "monster.com", "careerbuilder.com",
+                "simplyhired.com", "dice.com"]
+        if any(s in url for s in skip):
+            continue
+        results.append({
+            "title":   r.get("title", ""),
+            "url":     url,
+            "snippet": r.get("description", r.get("markdown", ""))[:500]
+        })
+    return results
 
-def score_jobs(profile, raw_listings, search_query):
-    """Ask Claude to extract and score jobs from raw page content."""
+def scrape_job_page(url):
+    """Scrape the actual job page for details."""
+    try:
+        resp = requests.post(f"{FIRECRAWL_BASE}/scrape",
+            headers={"Authorization": f"Bearer {FIRECRAWL_KEY}", "Content-Type": "application/json"},
+            json={"url": url, "formats": ["markdown"], "onlyMainContent": True},
+            timeout=30)
+        data = resp.json()
+        return data.get("data", {}).get("markdown", "")[:3000]
+    except:
+        return ""
+
+def score_job(job_content, job_url, job_title_guess, profile):
+    """Ask Claude to score this job against the profile."""
     prompt = f"""
-You are a job matching expert. Given a candidate's job profile and raw job listing content scraped from Indeed, extract individual job listings and score each one.
+Score this job for the candidate. Return ONLY JSON.
 
 ## CANDIDATE PROFILE:
-{json.dumps(profile, indent=2)[:2000]}
+Target roles: {profile.get('target_roles', [])}
+Experience: {profile.get('years_of_experience')} years
+Skills: {profile.get('hard_skills', [])}
+Salary target: {profile.get('salary_range', {})}
+Remote preference: {profile.get('remote_preference', '')}
+Deal breakers: {profile.get('deal_breakers', [])}
 
-## RAW JOB LISTINGS FROM INDEED:
-{raw_listings[:4000]}
+## JOB PAGE CONTENT:
+URL: {job_url}
+{job_content[:2000]}
 
-## INSTRUCTIONS:
-1. Extract as many individual job listings as you can find in the raw content
-2. Score each job 0-100 based on how well it matches the candidate profile
-3. Consider: skills match, experience level match, role title match, industry fit
-
-Return ONLY a JSON array, no explanation, no backticks:
-
-[
-  {{
-    "title": "Job Title",
-    "company": "Company Name",
-    "location": "City, ST or Remote",
-    "salary": "Range or Not Listed",
-    "score": 85,
-    "score_reason": "Strong match: 8/10 required skills align, experience level matches, remote role",
-    "apply_url": "https://...",
-    "key_requirements": ["req1", "req2", "req3"],
-    "posted": "1 day ago"
-  }}
-]
-
-If you cannot find any job listings in the content, return an empty array: []
+Return ONLY JSON:
+{{
+  "title": "exact job title",
+  "company": "company name",
+  "location": "job location",
+  "salary": "salary if listed or Not Listed",
+  "score": 75,
+  "reasoning": "2-3 sentence explanation",
+  "is_relevant": true,
+  "apply_url": "{job_url}"
+}}
 """
-    resp = requests.post(OPENROUTER_BASE,
-        headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
-        json={"model": MODEL, "messages": [{"role": "user", "content": prompt}], "max_tokens": 4000, "temperature": 0.1})
-    data = resp.json()
+    raw = ask_claude(prompt).strip()
+    if "```" in raw:
+        raw = raw.split("```")[1].lstrip("json").strip().rstrip("```")
     try:
-        raw = data["choices"][0]["message"]["content"].strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        raw = raw.strip().rstrip("```").strip()
-        return json.loads(raw)
-    except Exception as e:
-        print(f"  ⚠️  Scoring error: {e}")
-        return []
+        result = json.loads(raw)
+        # Always preserve the real URL
+        result["apply_url"] = job_url
+        return result
+    except:
+        return None
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--profile",   default="profiles/job_profile.json")
-    parser.add_argument("--min-score", type=int, default=50)
-    parser.add_argument("--limit",     type=int, default=10)
-    parser.add_argument("--location",  default="remote")
     parser.add_argument("--output",    default="profiles/scored_jobs.json")
+    parser.add_argument("--min-score", type=int, default=50)
+    parser.add_argument("--location",  default="remote")
     args = parser.parse_args()
 
-    print("\n🚀 Job Bot — Phase 2: Job Discovery & Scoring")
+    print("\n🔍 Job Bot — Phase 2: Job Discovery & Scoring")
     print("=" * 50)
 
-    if not FIRECRAWL_API_KEY or not OPENROUTER_API_KEY:
-        print("❌ Missing API keys. Run the export commands first.")
-        sys.exit(1)
+    profile = json.loads(Path(args.profile).read_text())
+    print(f"  ✅ Profile: {profile['personal'].get('name')}")
 
-    # Load profile
-    profile_path = Path(args.profile)
-    if not profile_path.exists():
-        print(f"❌ Profile not found: {args.profile} — run Phase 1 first!")
-        sys.exit(1)
-    profile = json.loads(profile_path.read_text())
-    print(f"  ✅ Loaded profile for: {profile['personal'].get('name')}")
-
-    # Build search queries from target roles
-    target_roles = profile.get("target_roles", ["cybersecurity analyst"])
+    target_roles = profile.get("target_roles", [])[:3]
     all_jobs = []
+    seen_urls = set()
 
-    print(f"\n📥 Step 1: Searching for jobs (last 24 hours)...")
-    for role in target_roles[:3]:  # Limit to 3 searches to save credits
-        raw = search_jobs(role, args.location)
-        if raw:
-            print(f"  🧠 Scoring results for: {role}")
-            jobs = score_jobs(profile, raw, role)
-            all_jobs.extend(jobs)
-            print(f"  ✅ Found {len(jobs)} listings")
+    print(f"\n  📡 Searching Google for direct job postings...\n")
 
-    if not all_jobs:
-        print("\n⚠️  No jobs found. Indeed may be blocking. Trying backup search...")
-        # Fallback: try with just the top skill
-        top_skill = profile.get("hard_skills", ["cybersecurity"])[0]
-        raw = search_jobs(f"{top_skill} security", args.location)
-        all_jobs = score_jobs(profile, raw, top_skill) if raw else []
+    for role in target_roles:
+        # Search Google for direct company postings
+        queries = [
+            f"{role} job remote US site:greenhouse.io OR site:lever.co OR site:workday.com 2025 2026",
+            f"{role} remote US job opening apply -indeed -linkedin -glassdoor",
+        ]
+        for query in queries:
+            results = google_search_jobs(query, limit=5)
+            print(f"    Found {len(results)} direct URLs for: {role}")
 
-    # Deduplicate by title+company
-    seen = set()
-    unique_jobs = []
-    for job in all_jobs:
-        key = f"{job.get('title','')}-{job.get('company','')}"
-        if key not in seen:
-            seen.add(key)
-            unique_jobs.append(job)
+            for r in results:
+                url = r.get("url", "")
+                if url in seen_urls or not url:
+                    continue
+                seen_urls.add(url)
 
-    # Filter by minimum score and sort
-    qualified = [j for j in unique_jobs if j.get("score", 0) >= args.min_score]
-    qualified.sort(key=lambda x: x.get("score", 0), reverse=True)
-    top_jobs = qualified[:args.limit]
+                print(f"    📄 Scraping: {url[:60]}...")
+                content = scrape_job_page(url)
+                if not content or len(content) < 100:
+                    print(f"    ⚠️  Empty page, skipping")
+                    continue
 
-    # Save results
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(top_jobs, indent=2))
+                print(f"    🧠 Scoring...")
+                job = score_job(content, url, r.get("title",""), profile)
+                if job and job.get("is_relevant") and job.get("score", 0) >= args.min_score:
+                    all_jobs.append(job)
+                    print(f"    ✅ [{job.get('score')}%] {job.get('title')} @ {job.get('company')}")
+                elif job:
+                    print(f"    ⏭️  [{job.get('score',0)}%] Too low — skipping")
 
-    print(f"\n✅ Results saved to: {args.output}")
-    print(f"\n🎯 Top {len(top_jobs)} Jobs (score >= {args.min_score}%):")
-    print("-" * 60)
-    for i, job in enumerate(top_jobs, 1):
-        print(f"\n  #{i} [{job.get('score')}%] {job.get('title')}")
-        print(f"      {job.get('company')} — {job.get('location')}")
-        print(f"      Salary: {job.get('salary', 'Not listed')}")
-        print(f"      Why: {job.get('score_reason', '')}")
-    print(f"\n🎯 Next: Run Phase 3 to tailor your resume for each job!")
+    # Sort by score
+    all_jobs.sort(key=lambda x: x.get("score", 0), reverse=True)
+
+    # Save
+    Path(args.output).parent.mkdir(exist_ok=True)
+    Path(args.output).write_text(json.dumps(all_jobs, indent=2))
+
+    print(f"\n  ✅ Found {len(all_jobs)} qualifying jobs")
+    print(f"\n  🏆 Top Jobs (score >= {args.min_score}%):")
+    print(f"  {'─'*55}")
+    for i, job in enumerate(all_jobs[:5], 1):
+        print(f"\n  #{i} [{job.get('score')}%] {job.get('title')} @ {job.get('company')}")
+        print(f"      {job.get('location')} | {job.get('salary')}")
+        print(f"      URL: {job.get('apply_url','')[:60]}")
+        print(f"      Why: {job.get('reasoning','')[:120]}")
+
+    print(f"\n  📁 Saved to: {args.output}")
+    print(f"\n  ➡️  Next: Run Phase 3 to tailor your resume!")
 
 if __name__ == "__main__":
     main()
-
-def find_direct_apply_url(company, job_title, firecrawl_key):
-    """Search for the direct company careers page URL."""
-    search_query = f"{company} {job_title} careers site:{company.lower().replace(' ','')}.com"
-    print(f"  🔍 Finding direct URL for {company}...")
-    resp = requests.post(f"{FIRECRAWL_BASE}/search",
-        headers={"Authorization": f"Bearer {firecrawl_key}"},
-        json={"query": search_query, "limit": 3})
-    data = resp.json()
-    if data.get("success") and data.get("data"):
-        for result in data["data"]:
-            url = result.get("url", "")
-            # Prefer direct company URLs over job boards
-            if company.lower().replace(" ","") in url.lower() or "greenhouse" in url or "lever.co" in url or "workday" in url:
-                return url
-    return ""

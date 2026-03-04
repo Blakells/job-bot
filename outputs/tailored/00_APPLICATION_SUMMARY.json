@@ -1,24 +1,79 @@
 [
   {
     "rank": 1,
-    "score": 75,
-    "title": "Staff Engineer, Offensive Security",
-    "company": "Twilio",
+    "score": 95,
+    "title": "Penetration Tester - Remote US Only",
+    "company": "Arcas Risk Management Inc.",
     "location": "Remote",
-    "salary": "Not Listed",
-    "apply_url": "https://www.indeed.com/rc/clk?jk=89cee2de147f611b&bb=FTayDpSi05OupaTbe-xFwgboqFpryYJLHR58EnCOUAmQIvClmTOsSYK4Rmxf_qystWcm2LvvzRJPzAn9pVce9BvCw9k-2HCjtUPqvS-NIx-c9vft2XBJL7PflR5JiOmQlGxpa_2ks7xsMjUsfmGBynIC2Hgudj7z&xkcb=SoDr67M3mbaZH4xUE50JbzkdCdPP&fccid=2cd10564780b27e2&vjs=3",
-    "resume_file": "outputs/tailored/01_Twilio_Staff_Engineer,_Offensive_Security_RESUME.txt",
-    "cover_letter_file": "outputs/tailored/01_Twilio_Staff_Engineer,_Offensive_Security_COVER_LETTER.txt"
+    "salary": "$100,000-$120,000",
+    "apply_url": "https://jobs.masscybercenter.org/companies/arcas-risk-management-inc/jobs/63779287-penetration-tester-remote-us-only",
+    "resume_file": "outputs/tailored/01_Arcas_Risk_Management_Inc._Penetration_Tester_-_Remote_US_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/01_Arcas_Risk_Management_Inc._Penetration_Tester_-_Remote_US_COVER_LETTER.txt"
   },
   {
     "rank": 2,
-    "score": 55,
-    "title": "Solution Consultant",
-    "company": "Trellix",
-    "location": "Remote",
+    "score": 85,
+    "title": "Security Engineer II",
+    "company": "Human Interest",
+    "location": "United States, Remote",
     "salary": "Not Listed",
-    "apply_url": "https://www.indeed.com/rc/clk?jk=7d81e4bb38039113&bb=FTayDpSi05OupaTbe-xFwro-c1tYq01dazQb49MQjoa3x2BXIDGuiIAG_JhIQcT3pQkTSlq9r938lN45UEVGEyHTsZvrfaMMqI7gH9dXzpcXrr3lmTk0ThpoU5JY7oldIgc2M0LTcKtpHujhzr4c5_CuFU5oQx-0&xkcb=SoB267M3mbaZH4xUE50KbzkdCdPP&fccid=2b678feeb717b4f9&vjs=3",
-    "resume_file": "outputs/tailored/02_Trellix_Solution_Consultant_RESUME.txt",
-    "cover_letter_file": "outputs/tailored/02_Trellix_Solution_Consultant_COVER_LETTER.txt"
+    "apply_url": "https://job-boards.greenhouse.io/humaninterest/jobs/7565471",
+    "resume_file": "outputs/tailored/02_Human_Interest_Security_Engineer_II_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/02_Human_Interest_Security_Engineer_II_COVER_LETTER.txt"
+  },
+  {
+    "rank": 3,
+    "score": 82,
+    "title": "Senior Cybersecurity Analyst (SOC) US Region (Remote / Hybrid)",
+    "company": "S-RM",
+    "location": "USA (Remote / Hybrid)",
+    "salary": "Not Listed",
+    "apply_url": "https://www.s-rminform.com/open-position-senior-cybersecurity-analyst-soc-us-region-remote-/-hybrid",
+    "resume_file": "outputs/tailored/03_S-RM_Senior_Cybersecurity_Analyst_(SOC)_US_Region_(Remote_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/03_S-RM_Senior_Cybersecurity_Analyst_(SOC)_US_Region_(Remote_COVER_LETTER.txt"
+  },
+  {
+    "rank": 4,
+    "score": 82,
+    "title": "Security Engineer",
+    "company": "Runpod",
+    "location": "Remote, USA",
+    "salary": "Not Listed",
+    "apply_url": "http://job-boards.greenhouse.io/runpod/jobs/4118412008",
+    "resume_file": "outputs/tailored/04_Runpod_Security_Engineer_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/04_Runpod_Security_Engineer_COVER_LETTER.txt"
+  },
+  {
+    "rank": 5,
+    "score": 82,
+    "title": "Security Engineer, Cloud Security",
+    "company": "Glean",
+    "location": "United States",
+    "salary": "Not Listed",
+    "apply_url": "http://job-boards.greenhouse.io/gleanwork/jobs/4650994005",
+    "resume_file": "outputs/tailored/05_Glean_Security_Engineer,_Cloud_Security_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/05_Glean_Security_Engineer,_Cloud_Security_COVER_LETTER.txt"
+  },
+  {
+    "rank": 6,
+    "score": 72,
+    "title": "Penetration Tester",
+    "company": "Not Listed",
+    "location": "Hybrid Remote Work - London, Manchester, Cardiff, Southampton, United Kingdom",
+    "salary": "Not Listed",
+    "apply_url": "https://www.flexjobs.com/remote-jobs/penetration-tester",
+    "resume_file": "outputs/tailored/06_Not_Listed_Penetration_Tester_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/06_Not_Listed_Penetration_Tester_COVER_LETTER.txt"
+  },
+  {
+    "rank": 7,
+    "score": 72,
+    "title": "Penetration Tester w/ Secret Clearance - Remote",
+    "company": "Not Listed",
+    "location": "Remote/Telecommute",
+    "salary": "Not Listed",
+    "apply_url": "https://careerwave.lovestoblog.com/job/penetration-tester-w-secret-clearance-remote-telecommute-jobs",
+    "resume_file": "outputs/tailored/07_Not_Listed_Penetration_Tester_w-_Secret_Clearance_-_Remot_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/07_Not_Listed_Penetration_Tester_w-_Secret_Clearance_-_Remot_COVER_LETTER.txt"
   }
 ]

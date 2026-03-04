@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Runpod
+Remote, USA
+
+Dear Runpod Hiring Team,
+
+I'm excited to apply for the Security Engineer position at Runpod. As someone who has spent the past four years securing cloud infrastructure and conducting offensive security operations, I'm drawn to Runpod's mission to democratize GPU computing. The challenge of protecting a platform that developers worldwide rely on for AI/ML workloads—while maintaining the speed and accessibility that makes Runpod unique—is exactly the kind of complex security problem I want to solve.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually on cloud infrastructure and web applications, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. Most relevant to Runpod's environment, I led a red team exercise for a healthcare client where I simulated an APT attack, successfully demonstrating lateral movement across their cloud infrastructure—findings that resulted in a complete security architecture overhaul. I've also implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. My hands-on experience with AWS security, combined with custom SIEM development in Splunk that reduced mean time to detect by 38%, has given me the offensive and defensive skillset needed to protect a fast-moving cloud platform like Runpod.
+
+What excites me most about Runpod is the intersection of cutting-edge technology and practical accessibility. I've always believed that security shouldn't be a barrier to innovation—it should enable it. Your platform empowers developers and researchers who might not otherwise have access to GPU resources, and I want to ensure that democratization happens securely. I thrive in remote-first environments where clear communication and proactive problem-solving are essential, and I'm energized by the prospect of working with a team that's building infrastructure at the forefront of the AI revolution.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security experience, and passion for building secure-by-design systems can contribute to Runpod's continued growth and security posture. I'm available at your convenience and look forward to speaking with you.
+
+Sincerely,
+Alex J. Carter

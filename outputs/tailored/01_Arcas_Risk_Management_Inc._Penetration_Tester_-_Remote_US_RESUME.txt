@@ -1,0 +1,86 @@
+ALEX J. CARTER
+Penetration Tester | Offensive Security Specialist | Cybersecurity Analyst
+
+Location: Florence, SC (Remote Available)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Certified penetration tester with 4+ years of offensive security experience conducting comprehensive penetration tests across web applications, internal networks, and cloud environments. Proven expertise in identifying and exploiting critical vulnerabilities, simulating advanced persistent threats, and delivering actionable security assessments for enterprise clients. Holds CEH, CompTIA Security+, and AWS Security certifications. Skilled in red team operations, vulnerability assessment, and security reporting. Seeking to leverage offensive security expertise and remote collaboration experience to strengthen Arcas Risk Management's penetration testing capabilities.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ penetration testing engagements annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying an average of 12 critical vulnerabilities per assessment.
+- Perform red team operations simulating advanced persistent threat (APT) attacks, including lateral movement, privilege escalation, and data exfiltration scenarios; led successful engagement against healthcare client resulting in comprehensive security architecture redesign.
+- Deliver detailed penetration test reports with prioritized findings and remediation guidance; maintain 95% client re-test pass rate within 30 days through clear, actionable recommendations.
+- Conduct vulnerability assessments using industry-standard tools including Metasploit, Burp Suite, Nmap, Nikto, SQLmap, and BloodHound to identify security weaknesses before malicious actors can exploit them.
+- Implement zero-trust network access (ZTNA) policies for enterprise clients, reducing attack surface by 60% through comprehensive security hardening.
+- Develop custom SIEM detection rules using Splunk, improving mean time to detect (MTTD) security incidents by 38%.
+- Mentor junior security analysts on penetration testing methodologies, emerging CVEs, and threat intelligence analysis.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Conducted quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; tracked remediation efforts and validated security posture improvements.
+- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM, escalating confirmed incidents with detailed context and initial containment recommendations.
+- Designed and executed phishing simulation campaigns using GoPhish; reduced click-through rates by 34% through targeted security awareness training.
+- Developed and maintained 15+ incident response runbooks, reducing average triage time by 22 minutes per incident.
+- Participated in 24/7 SOC on-call rotation, responding to critical security incidents and ensuring SLA compliance.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, troubleshooting hardware, software, and network connectivity issues.
+- Supported network infrastructure projects including switch configurations, VLAN setup, and wireless access point deployments.
+- Identified and reported active malware infections through behavioral analysis, initiating incident response procedures to contain threats.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Penetration Testing & Offensive Security:
+Metasploit, Burp Suite, Nmap, Nikto, SQLmap, Cobalt Strike, BloodHound, Mimikatz, Wireshark
+
+Vulnerability Assessment:
+Nessus, OpenVAS, OWASP ZAP, Nmap NSE, manual code review
+
+Cloud Security Testing:
+AWS Security Hub, Azure Sentinel, IAM misconfigurations, Security Groups, CloudTrail, GuardDuty
+
+Security Frameworks & Methodologies:
+MITRE ATT&CK, OWASP Top 10, NIST CSF, CIS Controls, ISO 27001, PTES
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript (basic)
+
+Defensive Security & Monitoring:
+Splunk, IBM QRadar, CrowdStrike Falcon, Snort, OSSEC, Zeek
+
+Operating Systems & Platforms:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

@@ -1,0 +1,18 @@
+Alex J. Carter
+alex.carter@email.com
+(843) 555-0192
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Penetration Tester position. The opportunity to conduct offensive security operations in a hybrid environment across multiple UK locations is exactly the type of challenging, collaborative role I've been seeking. With four years of progressive experience conducting penetration tests for Fortune 500 clients and a proven track record of uncovering critical vulnerabilities before threat actors can exploit them, I'm confident I can make an immediate impact on your security team.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure. One of my most impactful engagements involved leading a red team exercise for a healthcare client where I successfully simulated an APT attack, demonstrating lateral movement and data exfiltration capabilities that ultimately led to a complete security architecture overhaul. My detailed vulnerability assessment reports have achieved a 95% client re-test pass rate within 30 days, demonstrating not just my ability to identify weaknesses, but to communicate remediation strategies that development and operations teams can actually implement. I've also developed custom SIEM dashboards using Splunk that reduced mean time to detect security incidents by 38%, showing my ability to bridge offensive and defensive security practices.
+
+Beyond technical skills, I'm passionate about building security cultures, not just finding vulnerabilities. I've mentored junior analysts and delivered security awareness training because I believe the strongest security posture comes from combining technical controls with educated teams. My remote work experience has taught me the importance of clear communication, thorough documentation, and building trust with clients and colleagues across distances—skills that will serve me well in a hybrid role spanning multiple UK locations.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, client-facing communication skills, and commitment to continuous improvement can contribute to your security objectives. I'm available for an interview at your convenience and can be reached at (843) 555-0192 or alex.carter@email.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

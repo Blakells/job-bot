@@ -1,0 +1,19 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Human Interest
+
+Dear Hiring Team,
+
+I'm excited to apply for the Security Engineer II position at Human Interest. Your mission to make retirement savings accessible to all Americans resonates deeply with me—financial security is foundational to people's lives, and protecting the systems that enable it is a responsibility I take seriously. As someone who has spent the past four years defending critical infrastructure in healthcare and enterprise environments, I'm drawn to Human Interest's commitment to serving small and medium-sized businesses that are often underserved in the retirement space.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. I led a red team exercise for a healthcare client that simulated an APT attack, successfully demonstrating lateral movement and data exfiltration—findings that prompted a complete security architecture overhaul. Additionally, I developed custom SIEM dashboards using Splunk that reduced mean time to detect security incidents by 38%, ensuring threats are identified and neutralized before they can impact users. My experience implementing zero-trust network access policies for enterprise clients has given me hands-on expertise in reducing attack surfaces while maintaining seamless user experiences—critical for a fintech platform handling sensitive retirement data.
+
+What excites me most about Human Interest is your focus on democratizing access to retirement benefits. I've seen firsthand how security breaches erode customer trust, and I'm passionate about building resilient systems that protect users while enabling growth. Your engineering culture of ownership and continuous improvement aligns perfectly with how I approach security—not as a checkbox exercise, but as an ongoing commitment to staying ahead of evolving threats. I thrive in collaborative environments where security is embedded into product development from day one, and I'm eager to contribute to a team that's making a tangible difference in people's financial futures.
+
+I'd welcome the opportunity to discuss how my offensive and defensive security expertise can help Human Interest continue to scale securely while maintaining the trust of the businesses and employees you serve. Thank you for considering my application.
+
+Sincerely,
+Alex J. Carter

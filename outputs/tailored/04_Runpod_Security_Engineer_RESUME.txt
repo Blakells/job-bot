@@ -1,0 +1,87 @@
+ALEX J. CARTER
+Security Engineer | Penetration Tester | Cloud Security Specialist
+
+Location: Florence, SC (Remote)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security Engineer with 4+ years of specialized experience in offensive security, cloud infrastructure protection, and security architecture. Proven expertise in conducting penetration testing, implementing zero-trust security models, and securing cloud environments across AWS and Azure. Combines hands-on red team experience with defensive security operations to build resilient systems. Holds CEH, AWS Security Specialty, and Security+ certifications. Seeking to leverage comprehensive security engineering skills to protect Runpod's infrastructure and enable secure, scalable cloud operations.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Security Engineering & Architecture:
+Zero-Trust Network Access (ZTNA), Security Architecture Design, IAM, Network Segmentation, Security Groups, Cloud Infrastructure Security
+
+Penetration Testing & Offensive Security:
+Metasploit, Burp Suite, Cobalt Strike, Nmap, SQLmap, BloodHound, Mimikatz, Red Team Operations, Lateral Movement Techniques
+
+Cloud Security Platforms:
+AWS Security Hub, AWS GuardDuty, CloudTrail, Azure Sentinel, IAM Policy Management, Cloud Security Posture Management
+
+Security Operations & Monitoring:
+Splunk, IBM QRadar, CrowdStrike Falcon, SIEM Dashboard Development, Incident Response, Threat Detection
+
+Automation & Scripting:
+Python, Bash, PowerShell, SQL, JavaScript
+
+Security Frameworks & Standards:
+NIST CSF, MITRE ATT&CK, OWASP Top 10, CIS Controls, ISO 27001
+
+Systems & Infrastructure:
+Kali Linux, Ubuntu, Windows Server, Active Directory, VMware ESXi, Network Security
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Engineer and execute 40+ penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying an average of 12 critical vulnerabilities per engagement.
+- Design and implement zero-trust network access (ZTNA) security architectures for 3 mid-size enterprise clients, reducing attack surface by 60% through micro-segmentation and identity-based access controls.
+- Lead red team operations simulating advanced persistent threat (APT) attacks, successfully demonstrating lateral movement, privilege escalation, and data exfiltration to drive security architecture improvements.
+- Build and maintain custom SIEM security monitoring dashboards using Splunk, reducing mean time to detect (MTTD) security incidents by 38% through automated correlation rules and threat intelligence integration.
+- Deliver 80+ comprehensive security assessment reports with prioritized remediation guidance and technical implementation details; achieve 95% successful remediation verification rate within 30 days.
+- Secure cloud infrastructure deployments by implementing AWS security best practices, IAM policies, and automated compliance monitoring.
+- Mentor junior security analysts through weekly technical training sessions on emerging CVEs, exploitation techniques, and threat intelligence analysis.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitor and analyze 200+ security alerts daily using IBM QRadar SIEM, performing threat triage and escalating confirmed incidents with detailed technical context and initial containment recommendations.
+- Execute quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; track remediation workflows and compliance metrics in Jira.
+- Develop and deploy phishing simulation campaigns using GoPhish; design targeted security awareness training that reduced click-through rates by 34%.
+- Author and maintain 15+ incident response runbooks and security procedures, reducing average triage time by 22 minutes per incident through standardized workflows.
+- Participate in 24/7 SOC on-call rotation, responding to critical security incidents and ensuring SLA compliance for P1 events.
+- Collaborate with engineering teams to implement security controls and harden system configurations.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 distributed locations, resolving hardware, software, and network connectivity issues.
+- Assisted with network infrastructure projects including switch configurations, VLAN setup, and wireless access point deployments.
+- Identified and reported active malware infections through behavioral analysis and system monitoring, initiating incident response procedures.
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

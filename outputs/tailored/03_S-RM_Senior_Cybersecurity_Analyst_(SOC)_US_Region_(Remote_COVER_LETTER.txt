@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+S-RM
+United States
+
+Dear Hiring Manager,
+
+I was immediately drawn to S-RM's Senior Cybersecurity Analyst position because of your firm's unique positioning at the intersection of cybersecurity and strategic risk intelligence. Having followed S-RM's work in providing security operations support to organizations navigating complex global threat landscapes, I'm excited about the opportunity to contribute to a SOC team that doesn't just monitor alerts, but provides the contextual intelligence that drives real business resilience.
+
+My four years of progressive cybersecurity experience have prepared me specifically for the challenges of a senior SOC analyst role. At SecureNet Solutions, I developed and maintained custom SIEM dashboards using Splunk that reduced our mean time to detect security incidents by 38%, directly improving our clients' security posture. I've also led red team exercises simulating advanced persistent threat scenarios for healthcare clients, which required not just technical execution but the ability to translate findings into strategic recommendations for C-suite stakeholders. This combination of hands-on technical work and client-facing communication aligns perfectly with S-RM's consultative approach. Additionally, I've conducted over 40 penetration tests annually across diverse environments, giving me the offensive security perspective that strengthens defensive operations—I know how attackers think because I've operated in that role.
+
+What particularly resonates with me about S-RM is your commitment to protecting organizations operating in high-risk environments. The opportunity to work with clients facing sophisticated, geopolitically-motivated threats is exactly the challenge I'm seeking at this stage of my career. My experience mentoring junior analysts and delivering security awareness training has shown me that the best security outcomes come from teams that combine technical excellence with clear communication—values I see reflected in S-RM's approach to client partnerships. I'm also fully equipped for remote collaboration, having worked remotely for the past three years while maintaining strong client relationships and team cohesion.
+
+I would welcome the opportunity to discuss how my technical skills in SIEM platforms, incident response, and threat hunting can contribute to S-RM's SOC operations. I'm confident that my blend of offensive and defensive security experience would add immediate value to your team.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

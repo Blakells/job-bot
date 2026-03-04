@@ -67,6 +67,7 @@ What page is this? Return ONLY JSON:
   "summary": "one sentence",
   "target_job_visible": true,
   "target_job_title_on_page": "exact job title text as it appears on page, or empty string",
+  "target_job_location": "location of the correct job listing to click (e.g. Remote - US)",
   "has_apply_button": false,
   "apply_button_text": "exact text of apply button or empty string"
 }}
@@ -93,7 +94,14 @@ Candidate:
 - Years experience: {profile.get('years_of_experience')}
 - Skills: {', '.join(profile.get('hard_skills', [])[:10])}
 - Education: {json.dumps(profile.get('education', []))}
+- Work authorization: {json.dumps(profile.get('work_authorization', {}))}
 - Saved answers: {json.dumps(profile.get('extra_answers', {}))}
+
+IMPORTANT RULES:
+- If a question asks about work authorization for the SPECIFIC COUNTRY the job is in, answer based on work_authorization above
+- Never reuse a saved answer for a different country than it was originally for
+- "Authorized to work in the US/United States?" = Yes (US citizen, no sponsorship needed)
+- "Require visa sponsorship?" = No
 
 Page content:
 {page_text[:4000]}
@@ -175,9 +183,32 @@ def run_application(connect_url, job, profile, memory, dry_run):
                 if job_title_on_page:
                     print(f"  🖱️  Clicking job title: '{job_title_on_page}'...")
                     try:
-                        # Try exact text match first
-                        link = page.get_by_text(job_title_on_page, exact=False).first
-                        link.click(timeout=10000)
+                        # Get all links matching the job title
+                        matches = page.get_by_role("link").filter(has_text=job_title_on_page)
+                        count = matches.count()
+                        print(f"  🔍 Found {count} matching links")
+
+                        # Prefer US/Remote-US over other locations
+                        best = None
+                        location_pref = profile.get("remote_preference", "")
+                        for idx in range(count):
+                            el = matches.nth(idx)
+                            # Look at surrounding text for location hints
+                            try:
+                                parent_text = el.locator("xpath=..").inner_text()
+                                if "United States" in parent_text or "Remote - US" in parent_text or "US" in parent_text:
+                                    best = el
+                                    print(f"  🎯 Found US location match!")
+                                    break
+                            except:
+                                pass
+                        
+                        # Fall back to first match if no US match found
+                        if best is None:
+                            best = matches.first
+                            print(f"  ⚠️  No US match found, using first result")
+                        
+                        best.click(timeout=10000)
                         time.sleep(3)
                         clicked = True
                         print(f"  ✅ Clicked job title!")
