@@ -1,0 +1,19 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Twilio
+Re: Staff Engineer, Offensive Security
+
+I've been following Twilio's journey in securing communications infrastructure for years, and I'm genuinely excited about the Staff Engineer, Offensive Security opportunity. As someone who has broken into systems professionally to make them stronger, I'm drawn to the challenge of protecting a platform that powers billions of customer interactions daily. Twilio's commitment to security-first development and your public bug bounty program demonstrate exactly the proactive security culture I want to contribute to at the next level of my career.
+
+Over the past four years, I've built a strong foundation in offensive security that directly aligns with this role's requirements. At SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, cloud infrastructure, and internal networks for Fortune 500 clients—uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. I led a sophisticated red team exercise simulating an APT attack on a healthcare organization, successfully demonstrating lateral movement and data exfiltration that resulted in a complete security architecture overhaul. My approach combines technical depth in vulnerability exploitation with the communication skills necessary to translate complex security findings into actionable business recommendations. I've also maintained active engagement with the security research community, staying current with emerging attack vectors and exploitation techniques that would be essential for protecting Twilio's API-driven platform.
+
+What resonates most about Twilio is your developer-first mindset and the "ask your developer" philosophy. I've seen firsthand how security programs succeed when they empower rather than obstruct, and I've built my career on collaborative security—mentoring junior analysts, delivering security training, and working alongside development teams rather than against them. Twilio's focus on democratizing communications aligns with my belief that security should enable innovation, not hinder it. I'm particularly excited about the opportunity to contribute to a platform that serves everyone from startups to enterprises, knowing that strengthening Twilio's security posture has exponential impact.
+
+I'd welcome the opportunity to discuss how my offensive security experience and collaborative approach can contribute to Twilio's security mission. I'm confident that while I may have four years of focused experience rather than seven, my track record of high-impact security work and rapid skill development positions me to excel in this role.
+
+Thank you for your consideration.
+
+Alex J. Carter

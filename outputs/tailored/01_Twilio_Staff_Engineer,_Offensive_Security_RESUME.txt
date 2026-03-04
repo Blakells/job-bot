@@ -1,0 +1,87 @@
+ALEX J. CARTER
+Staff Offensive Security Engineer | Penetration Tester | Red Team Operator
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Offensive security professional with 4+ years of specialized experience in penetration testing, vulnerability exploitation, and application security. Proven expertise conducting 40+ annual penetration tests across web applications, cloud infrastructure, and enterprise networks, identifying and exploiting critical vulnerabilities before threat actors. Skilled in red team operations, security research, and delivering actionable remediation guidance to development and security teams. Holds CEH and AWS Security certifications with deep knowledge of OWASP Top 10 and MITRE ATT&CK framework. Passionate about advancing offensive security capabilities at scale and contributing to bug bounty and AppSec programs.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Offensive Security & Penetration Testing:
+Metasploit, Burp Suite, Cobalt Strike, Nmap, SQLmap, Nikto, BloodHound, Mimikatz, vulnerability exploitation, lateral movement techniques
+
+Application Security:
+OWASP Top 10, web application penetration testing, API security testing, secure code review, bug bounty methodologies
+
+Cloud & Infrastructure Security:
+AWS Security Hub, Azure Sentinel, IAM exploitation, Security Groups, CloudTrail, GuardDuty, cloud penetration testing
+
+Security Frameworks:
+MITRE ATT&CK, NIST CSF, OWASP, CIS Controls, ISO 27001
+
+Programming & Scripting:
+Python, Bash, PowerShell, SQL, JavaScript
+
+Defensive Security:
+Splunk, IBM QRadar, CrowdStrike Falcon, Wireshark, Snort, OSSEC, Zeek
+
+Operating Systems:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ offensive security engagements annually including penetration testing of web applications, APIs, internal networks, and cloud infrastructure for Fortune 500 clients, identifying and exploiting an average of 12 critical vulnerabilities per engagement.
+- Lead red team operations simulating advanced persistent threat (APT) attacks; successfully demonstrated exploitation, privilege escalation, lateral movement, and data exfiltration in healthcare environment, resulting in comprehensive security architecture redesign.
+- Perform vulnerability research and exploitation across diverse technology stacks, leveraging MITRE ATT&CK framework to map attack paths and demonstrate real-world risk to executive stakeholders.
+- Author 80+ detailed penetration test reports with proof-of-concept exploits and prioritized remediation guidance; achieved 95% client re-test pass rate within 30 days through clear, actionable recommendations.
+- Conduct application security assessments using OWASP Top 10 methodology, identifying injection flaws, broken authentication, XSS, and business logic vulnerabilities in production applications.
+- Develop custom exploitation scripts and tools in Python and Bash to automate reconnaissance, vulnerability validation, and post-exploitation activities.
+- Implement offensive security testing for zero-trust network access (ZTNA) deployments across 3 enterprise clients, validating security controls and reducing attack surface by 60%.
+- Mentor 2 junior security analysts on offensive security techniques, emerging CVEs, and threat intelligence tradecraft through weekly technical sessions.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint environment, identifying exploitable weaknesses and tracking remediation compliance.
+- Conducted security monitoring and incident triage of 200+ daily alerts using IBM QRadar SIEM, escalating confirmed threats with detailed attack analysis and containment recommendations.
+- Designed and executed phishing simulation campaigns using GoPhish to identify application security awareness gaps; reduced click-through rate by 34% through targeted training.
+- Developed 15+ incident response runbooks documenting attack scenarios, exploitation techniques, and remediation procedures, reducing average triage time by 22 minutes.
+- Participated in security operations center (SOC) on-call rotation, responding to after-hours security incidents and ensuring SLA compliance.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, resolving security-related incidents including malware infections and unauthorized access attempts.
+- Collaborated with network administrator on network security configurations including VLAN segmentation and wireless access point hardening.
+- Identified and reported 3 active malware infections through behavioral analysis and system forensics, initiating incident response procedures.
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

@@ -1,0 +1,24 @@
+[
+  {
+    "rank": 1,
+    "score": 75,
+    "title": "Staff Engineer, Offensive Security",
+    "company": "Twilio",
+    "location": "Remote",
+    "salary": "Not Listed",
+    "apply_url": "https://www.indeed.com/rc/clk?jk=89cee2de147f611b&bb=FTayDpSi05OupaTbe-xFwgboqFpryYJLHR58EnCOUAmQIvClmTOsSYK4Rmxf_qystWcm2LvvzRJPzAn9pVce9BvCw9k-2HCjtUPqvS-NIx-c9vft2XBJL7PflR5JiOmQlGxpa_2ks7xsMjUsfmGBynIC2Hgudj7z&xkcb=SoDr67M3mbaZH4xUE50JbzkdCdPP&fccid=2cd10564780b27e2&vjs=3",
+    "resume_file": "outputs/tailored/01_Twilio_Staff_Engineer,_Offensive_Security_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/01_Twilio_Staff_Engineer,_Offensive_Security_COVER_LETTER.txt"
+  },
+  {
+    "rank": 2,
+    "score": 55,
+    "title": "Solution Consultant",
+    "company": "Trellix",
+    "location": "Remote",
+    "salary": "Not Listed",
+    "apply_url": "https://www.indeed.com/rc/clk?jk=7d81e4bb38039113&bb=FTayDpSi05OupaTbe-xFwro-c1tYq01dazQb49MQjoa3x2BXIDGuiIAG_JhIQcT3pQkTSlq9r938lN45UEVGEyHTsZvrfaMMqI7gH9dXzpcXrr3lmTk0ThpoU5JY7oldIgc2M0LTcKtpHujhzr4c5_CuFU5oQx-0&xkcb=SoB267M3mbaZH4xUE50KbzkdCdPP&fccid=2b678feeb717b4f9&vjs=3",
+    "resume_file": "outputs/tailored/02_Trellix_Solution_Consultant_RESUME.txt",
+    "cover_letter_file": "outputs/tailored/02_Trellix_Solution_Consultant_COVER_LETTER.txt"
+  }
+]

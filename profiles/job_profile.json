@@ -1,0 +1,102 @@
+{
+  "personal": {
+    "name": "Alex J. Carter",
+    "email": "alex.carter@email.com",
+    "phone": "(843) 555-0192",
+    "location": "Florence, SC",
+    "linkedin_url": "linkedin.com/in/alexjcarter",
+    "portfolio_url": "",
+    "github_url": "github.com/alexjcarter"
+  },
+  "target_roles": [
+    "Cybersecurity Analyst",
+    "Penetration Tester",
+    "Security Engineer",
+    "Red Team Operator",
+    "Security Consultant",
+    "SOC Analyst",
+    "Vulnerability Assessment Analyst"
+  ],
+  "experience_level": "Mid-Level",
+  "years_of_experience": 4,
+  "hard_skills": [
+    "Penetration Testing",
+    "Vulnerability Assessment",
+    "Security Incident Response",
+    "SIEM (Splunk, IBM QRadar)",
+    "Red Team Operations",
+    "Web Application Security",
+    "Cloud Security (AWS)",
+    "Network Security",
+    "Vulnerability Scanning (Nessus, OpenVAS)",
+    "Zero-Trust Architecture (ZTNA)",
+    "Threat Intelligence",
+    "Security Reporting",
+    "Phishing Simulation (GoPhish)",
+    "Incident Response Runbooks",
+    "CVE Analysis",
+    "Lateral Movement Techniques",
+    "Data Exfiltration Testing",
+    "Security Architecture Review"
+  ],
+  "soft_skills": [
+    "Detail-oriented",
+    "Mentoring",
+    "Technical Writing",
+    "Communication",
+    "Team Leadership",
+    "Knowledge Sharing",
+    "Client Relations",
+    "Problem Solving",
+    "Security Awareness Training"
+  ],
+  "industries": [
+    "Cybersecurity",
+    "Information Technology",
+    "Healthcare",
+    "Financial Services",
+    "Consulting",
+    "Education",
+    "Enterprise Technology"
+  ],
+  "education": [],
+  "certifications": [
+    "CompTIA Security+",
+    "Certified Ethical Hacker (CEH)",
+    "AWS Security Certification"
+  ],
+  "preferred_locations": [
+    "Florence, SC",
+    "Columbia, SC",
+    "Remote"
+  ],
+  "remote_preference": "Open to Remote",
+  "salary_range": {
+    "min": 85000,
+    "max": 115000,
+    "currency": "USD"
+  },
+  "keywords": [
+    "penetration testing",
+    "vulnerability assessment",
+    "SIEM",
+    "incident response",
+    "red team",
+    "security analyst",
+    "threat intelligence",
+    "zero-trust",
+    "cloud security",
+    "AWS",
+    "Splunk",
+    "QRadar",
+    "Nessus",
+    "CVE",
+    "APT",
+    "SOC",
+    "security engineering",
+    "offensive security",
+    "defensive security"
+  ],
+  "deal_breakers": [],
+  "summary": "Mid-level cybersecurity professional with 4+ years of progressive experience in offensive and defensive security operations. Demonstrated expertise in conducting penetration tests, vulnerability assessments, and red team exercises for Fortune 500 clients across healthcare and enterprise sectors. Strong technical foundation in SIEM platforms (Splunk, QRadar), cloud security (AWS), and zero-trust architecture implementation. Proven ability to identify and document critical vulnerabilities with 95% remediation success rate. Experienced in mentoring junior analysts and delivering security awareness training. Holds industry-recognized certifications including CEH, Security+, and AWS Security. Currently seeking challenging roles that leverage both offensive security skills and defensive capabilities to protect organizational assets. Remote work experienced with strong client-facing communication skills."
+}
