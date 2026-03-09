@@ -1,0 +1,81 @@
+ALEX J. CARTER
+Risk Management Analyst | Cybersecurity Professional | Security Risk Assessor
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven risk management professional with 4+ years of experience identifying, assessing, and mitigating security risks across enterprise environments. Proven expertise in vulnerability assessment, risk analysis, and developing actionable remediation strategies that reduce organizational exposure. Skilled in translating complex technical risks into business impact assessments for stakeholders. Holds CompTIA Security+, CEH, and AWS Security certifications. Seeking to leverage analytical skills and security expertise in a remote Risk Management Analyst role to protect organizational assets and drive informed risk-based decision making.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Conducted 40+ comprehensive risk assessments annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying and prioritizing critical vulnerabilities based on business impact and likelihood of exploitation.
+- Authored 80+ detailed risk assessment reports with quantified risk ratings and actionable remediation guidance; achieved 95% client remediation completion rate within 30 days.
+- Developed risk monitoring dashboards using Splunk, reducing mean time to detect (MTTD) emerging threats by 38% and enabling proactive risk mitigation.
+- Led threat modeling exercises simulating advanced persistent threat scenarios for healthcare client, identifying gaps in security controls and driving comprehensive risk treatment plan resulting in full security architecture overhaul.
+- Implemented risk-based zero-trust network access (ZTNA) policies for 3 mid-size enterprise clients, reducing attack surface and overall risk exposure by an estimated 60%.
+- Analyzed and communicated risk findings to technical and non-technical stakeholders, facilitating informed decision-making on risk acceptance, mitigation, and transfer strategies.
+- Mentored 2 junior analysts on risk assessment methodologies, threat intelligence analysis, and emerging vulnerability trends.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and assessed 200+ security events daily using IBM QRadar SIEM, performing risk triage and escalating confirmed threats with detailed impact analysis and containment recommendations.
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint environment; tracked and reported on remediation compliance and residual risk in Jira.
+- Developed and executed phishing risk simulation campaigns using GoPhish; measured risk reduction achieving 34% improvement in user security awareness and behavior.
+- Documented and maintained 15+ incident response procedures and risk mitigation runbooks, reducing average incident triage time by 22 minutes and improving operational efficiency.
+- Participated in 24/7 SOC on-call rotation, responding to high-priority security incidents and ensuring compliance with service level agreements and risk management protocols.
+- Collaborated with IT teams to assess risks associated with system changes, patches, and new technology deployments.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 school locations, identifying and documenting security risks related to hardware, software, and network configurations.
+- Assisted network administrator with risk-aware switch configurations, VLAN setup, and secure wireless access point deployments.
+- Identified and escalated 3 active malware infections through behavioral analysis and anomaly detection, initiating proper incident response and risk mitigation procedures.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Risk Assessment & Analysis:
+Vulnerability Assessment, Threat Modeling, Risk Quantification, Business Impact Analysis, NIST Risk Management Framework, ISO 27001 Risk Assessment, MITRE ATT&CK Framework, OWASP Risk Rating Methodology
+
+Security Tools & Platforms:
+Nessus, OpenVAS, Splunk, IBM QRadar, AWS Security Hub, Azure Sentinel, CrowdStrike Falcon, Metasploit, Burp Suite, Nmap
+
+Cloud Risk Management:
+AWS Security Hub, GuardDuty, CloudTrail, IAM Policy Analysis, Security Groups, Azure Sentinel
+
+Frameworks & Standards:
+NIST Cybersecurity Framework, NIST RMF, MITRE ATT&CK, OWASP Top 10, CIS Controls, ISO 27001, SOC 2
+
+Technical Proficiency:
+Python, Bash, PowerShell, SQL, JavaScript (basic), Wireshark, Active Directory, Windows Server, Linux (Kali, Ubuntu)
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+CompTIA Security+ | CompTIA | 2021
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

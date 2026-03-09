@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Geographic Solutions, Inc.
+Palm Harbor, FL
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Information Security Analyst I position at Geographic Solutions, Inc. As a company that provides mission-critical workforce solutions to government agencies and organizations nationwide, Geographic Solutions handles sensitive citizen data that demands the highest security standards. The opportunity to protect systems that directly impact employment services and economic development is exactly the kind of meaningful work I'm seeking in my cybersecurity career.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the comprehensive security skillset your team needs. I've conducted over 40 penetration tests annually across web applications, networks, and cloud infrastructure—experience that would translate directly to securing Geographic Solutions' SaaS platforms and client-facing applications. My work has consistently uncovered critical vulnerabilities before malicious actors could exploit them, with a 95% remediation success rate. Additionally, I built and maintained custom SIEM dashboards using Splunk that reduced our mean time to detect security incidents by 38%, demonstrating my ability to not just identify threats but create sustainable monitoring solutions. My AWS Security certification and hands-on cloud security experience would be particularly valuable as Geographic Solutions continues scaling its cloud-based service delivery.
+
+What draws me to Geographic Solutions beyond the technical challenge is your commitment to public service. Having worked extensively with healthcare clients handling protected health information, I understand the weight of responsibility that comes with safeguarding sensitive data. I'm energized by the idea of applying my security expertise to systems that help people find employment and support workforce development initiatives. Your company's 30+ year track record of reliability tells me you value the same meticulous attention to detail and proactive security posture that I bring to my work every day.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, SIEM platform proficiency, and passion for defensive security can contribute to Geographic Solutions' continued success in protecting client data and maintaining system integrity. I'm available at your convenience for an interview and can be reached at (843) 555-0192.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

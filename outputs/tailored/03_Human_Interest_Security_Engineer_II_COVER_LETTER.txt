@@ -1,0 +1,19 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Human Interest
+
+Dear Hiring Team,
+
+I'm excited to apply for the Security Engineer II position at Human Interest. Your mission to make retirement savings accessible to all Americans resonates deeply with me—financial security shouldn't be a privilege reserved for employees of large corporations. As someone who has spent the past four years protecting sensitive financial and healthcare data, I'm energized by the opportunity to apply my security expertise to a platform that's democratizing retirement benefits for small and medium-sized businesses.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact blend of offensive and defensive security skills needed to protect a fintech platform. I conduct 40+ penetration tests annually across web applications, cloud infrastructure, and internal networks, uncovering an average of 12 critical vulnerabilities per engagement before threat actors can exploit them. Most relevant to Human Interest's AWS-based infrastructure, I hold the AWS Certified Security – Specialty certification and have implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. I also built a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%—critical for maintaining the trust of the thousands of employers and employees who depend on your platform daily.
+
+What draws me to Human Interest beyond the technical challenge is your commitment to building technology that creates real social impact. I've seen firsthand how security breaches can devastate organizations and the people they serve. During a red team exercise for a healthcare client, I demonstrated how attackers could exfiltrate patient data, which led to a complete security architecture overhaul that now protects over 200,000 patient records. I bring that same proactive, mission-driven mindset to security work—it's not just about finding vulnerabilities, it's about protecting real people's financial futures. Your focus on transparency, continuous improvement, and making complex systems accessible aligns perfectly with how I approach security: rigorous technical standards delivered with clear communication that empowers stakeholders at all levels.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security experience, and passion for mission-driven work can help Human Interest continue scaling securely. Thank you for your consideration.
+
+Sincerely,
+Alex Carter

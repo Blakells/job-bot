@@ -1,0 +1,88 @@
+ALEX J. CARTER
+Senior Cyber Threat Auditor | Penetration Testing Specialist | Active Security Professional
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven cybersecurity professional with 4+ years of specialized experience in penetration testing, threat assessment, and offensive security operations. Demonstrated expertise conducting comprehensive security audits across web applications, network infrastructure, and cloud environments for enterprise clients. Certified Ethical Hacker (CEH) and AWS Security Specialist with proven ability to identify, exploit, and document critical vulnerabilities while providing actionable remediation strategies. Adept at red team operations, threat modeling using MITRE ATT&CK framework, and delivering executive-level audit reports. Seeking to leverage offensive security expertise and audit experience in a Senior Cyber Threat Auditor role with Peraton.
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ annual penetration testing engagements across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying average of 12 critical vulnerabilities per audit cycle.
+- Lead red team operations simulating advanced persistent threat (APT) scenarios; successfully demonstrated lateral movement, privilege escalation, and data exfiltration techniques during healthcare sector engagement, resulting in comprehensive security architecture remediation.
+- Author detailed threat audit reports documenting vulnerability findings, exploitation methodologies, and prioritized remediation roadmaps; maintain 95% client remediation compliance rate within 30-day retest window.
+- Conduct offensive security assessments utilizing industry-standard tools including Metasploit, Burp Suite, Cobalt Strike, BloodHound, and Mimikatz to simulate real-world threat actor tactics.
+- Apply MITRE ATT&CK framework and OWASP Top 10 methodologies to threat modeling and vulnerability assessment activities.
+- Implement zero-trust network access (ZTNA) security controls for 3 enterprise clients, reducing exploitable attack surface by 60%.
+- Develop custom SIEM detection rules and threat hunting queries in Splunk, improving mean time to detect (MTTD) by 38%.
+- Mentor junior security analysts on penetration testing techniques, vulnerability assessment methodologies, and emerging threat intelligence.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; tracked remediation efforts and validated security control effectiveness.
+- Monitored and analyzed 200+ daily security alerts via IBM QRadar SIEM; escalated confirmed threats with detailed technical context and initial containment recommendations.
+- Supported incident response operations including threat triage, forensic analysis, and post-incident remediation validation.
+- Designed and executed phishing simulation campaigns using GoPhish; delivered targeted security awareness training resulting in 34% reduction in user susceptibility.
+- Maintained incident response documentation and security audit procedures; reduced average incident triage time by 22 minutes through process optimization.
+- Participated in 24/7 SOC on-call rotation, ensuring rapid response to critical security incidents and SLA compliance.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered technical support for 2,400+ end-users across 14 locations, troubleshooting security-related incidents including malware infections and unauthorized access attempts.
+- Collaborated with network administration team on infrastructure security projects including VLAN segmentation, switch configuration, and wireless access point deployment.
+- Identified and escalated 3 active malware infections through behavioral analysis and system monitoring, initiating proper incident response protocols.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Penetration Testing & Offensive Security:
+Metasploit Framework, Burp Suite Professional, Cobalt Strike, Nmap, Nikto, SQLmap, BloodHound, Mimikatz, PowerShell Empire, exploitation frameworks
+
+Threat Detection & Security Operations:
+Splunk Enterprise Security, IBM QRadar, CrowdStrike Falcon, Wireshark, Snort IDS/IPS, OSSEC, Zeek (Bro)
+
+Vulnerability Assessment:
+Nessus Professional, OpenVAS, Qualys, vulnerability management, remediation tracking, compliance validation
+
+Cloud Security Auditing:
+AWS Security Hub, Azure Sentinel, IAM policy review, Security Groups, CloudTrail analysis, GuardDuty
+
+Security Frameworks & Standards:
+MITRE ATT&CK, NIST Cybersecurity Framework, OWASP Top 10, CIS Controls, ISO 27001
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript (basic)
+
+Operating Systems & Infrastructure:
+Kali Linux, Parrot OS, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

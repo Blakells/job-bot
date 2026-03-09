@@ -1,7 +1,7 @@
 ALEX J. CARTER
-Penetration Tester | Offensive Security Specialist | Cybersecurity Analyst
+Penetration Tester | Offensive Security Specialist | Red Team Operator
 
-Location: Florence, SC (Remote Available)
+Location: Florence, SC (Remote)
 Email: alex.carter@email.com
 Phone: (843) 555-0192
 LinkedIn: linkedin.com/in/alexjcarter
@@ -10,7 +10,7 @@ GitHub: github.com/alexjcarter
 ------------------------------------------------------------
 PROFESSIONAL SUMMARY
 ------------------------------------------------------------
-Certified penetration tester with 4+ years of offensive security experience conducting comprehensive penetration tests across web applications, internal networks, and cloud environments. Proven expertise in identifying and exploiting critical vulnerabilities, simulating advanced persistent threats, and delivering actionable security assessments for enterprise clients. Holds CEH, CompTIA Security+, and AWS Security certifications. Skilled in red team operations, vulnerability assessment, and security reporting. Seeking to leverage offensive security expertise and remote collaboration experience to strengthen Arcas Risk Management's penetration testing capabilities.
+Certified penetration tester with 4+ years of offensive security experience conducting comprehensive security assessments across web applications, internal networks, and cloud environments. Executed 40+ penetration tests annually, identifying critical vulnerabilities and delivering actionable remediation guidance to Fortune 500 clients. Holds CEH, CompTIA Security+, and AWS Security certifications. Proven expertise in red team operations, exploit development, and vulnerability research using industry-standard tools including Metasploit, Burp Suite, and Cobalt Strike. Seeking to leverage offensive security expertise at Arcas Risk Management Inc. to help clients identify and remediate security weaknesses before adversaries can exploit them.
 
 ------------------------------------------------------------
 WORK EXPERIENCE
@@ -20,53 +20,50 @@ Cybersecurity Analyst II | SecureNet Solutions
 March 2022 - Present | Remote
 
 - Execute 40+ penetration testing engagements annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying an average of 12 critical vulnerabilities per assessment.
-- Perform red team operations simulating advanced persistent threat (APT) attacks, including lateral movement, privilege escalation, and data exfiltration scenarios; led successful engagement against healthcare client resulting in comprehensive security architecture redesign.
-- Deliver detailed penetration test reports with prioritized findings and remediation guidance; maintain 95% client re-test pass rate within 30 days through clear, actionable recommendations.
-- Conduct vulnerability assessments using industry-standard tools including Metasploit, Burp Suite, Nmap, Nikto, SQLmap, and BloodHound to identify security weaknesses before malicious actors can exploit them.
-- Implement zero-trust network access (ZTNA) policies for enterprise clients, reducing attack surface by 60% through comprehensive security hardening.
-- Develop custom SIEM detection rules using Splunk, improving mean time to detect (MTTD) security incidents by 38%.
-- Mentor junior security analysts on penetration testing methodologies, emerging CVEs, and threat intelligence analysis.
+- Perform red team operations simulating advanced persistent threat (APT) attacks, including lateral movement, privilege escalation, and data exfiltration; led healthcare client engagement resulting in complete security architecture redesign.
+- Utilize offensive security tools including Metasploit, Burp Suite, Cobalt Strike, BloodHound, and Mimikatz to identify exploitable vulnerabilities and demonstrate real-world attack scenarios.
+- Author 80+ detailed penetration test reports with prioritized findings, technical analysis, and remediation recommendations; maintain 95% client re-test pass rate within 30 days.
+- Conduct vulnerability assessments on cloud infrastructure (AWS, Azure) using native security tools and custom scripts to identify misconfigurations and security gaps.
+- Implement zero-trust network access (ZTNA) policies for 3 enterprise clients, reducing attack surface by 60%.
+- Mentor 2 junior security analysts on penetration testing methodologies, emerging CVEs, and threat intelligence analysis.
 
 Junior Security Analyst | Palmetto IT Group
 June 2020 - February 2022 | Columbia, SC
 
-- Conducted quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; tracked remediation efforts and validated security posture improvements.
-- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM, escalating confirmed incidents with detailed context and initial containment recommendations.
-- Designed and executed phishing simulation campaigns using GoPhish; reduced click-through rates by 34% through targeted security awareness training.
-- Developed and maintained 15+ incident response runbooks, reducing average triage time by 22 minutes per incident.
-- Participated in 24/7 SOC on-call rotation, responding to critical security incidents and ensuring SLA compliance.
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint environment, identifying critical security weaknesses and tracking remediation efforts.
+- Monitored and analyzed 200+ security alerts daily using IBM QRadar SIEM, escalating confirmed threats with detailed context and initial containment recommendations.
+- Developed and executed phishing simulation campaigns using GoPhish to test security awareness; achieved 34% reduction in click rates through targeted training initiatives.
+- Participated in incident response activities, documenting attack vectors and updating 15+ IR runbooks to improve response efficiency by 22 minutes per incident.
+- Maintained SOC on-call rotation for P1 security incidents, ensuring rapid response and SLA compliance.
 
 IT Help Desk Technician | Florence County School District
 August 2018 - May 2020 | Florence, SC
 
 - Provided technical support for 2,400+ end-users across 14 locations, troubleshooting hardware, software, and network connectivity issues.
-- Supported network infrastructure projects including switch configurations, VLAN setup, and wireless access point deployments.
-- Identified and reported active malware infections through behavioral analysis, initiating incident response procedures to contain threats.
+- Assisted with network infrastructure projects including switch configurations, VLAN setup, and wireless access point deployments.
+- Identified and reported 3 active malware infections through behavioral analysis, initiating incident response procedures to contain threats.
 
 ------------------------------------------------------------
 TECHNICAL SKILLS
 ------------------------------------------------------------
 
 Penetration Testing & Offensive Security:
-Metasploit, Burp Suite, Nmap, Nikto, SQLmap, Cobalt Strike, BloodHound, Mimikatz, Wireshark
+Metasploit, Burp Suite, Nmap, Nikto, SQLmap, Cobalt Strike, BloodHound, Mimikatz, Nessus, OpenVAS
 
-Vulnerability Assessment:
-Nessus, OpenVAS, OWASP ZAP, Nmap NSE, manual code review
+Security Operations & Defense:
+Splunk, IBM QRadar, CrowdStrike Falcon, Wireshark, Snort, OSSEC, Zeek
 
-Cloud Security Testing:
-AWS Security Hub, Azure Sentinel, IAM misconfigurations, Security Groups, CloudTrail, GuardDuty
+Cloud Security & Infrastructure:
+AWS Security Hub, Azure Sentinel, IAM, Security Groups, CloudTrail, GuardDuty, VMware ESXi
 
-Security Frameworks & Methodologies:
-MITRE ATT&CK, OWASP Top 10, NIST CSF, CIS Controls, ISO 27001, PTES
+Security Frameworks & Standards:
+MITRE ATT&CK, OWASP Top 10, NIST CSF, CIS Controls, ISO 27001
 
-Scripting & Automation:
-Python, Bash, PowerShell, SQL, JavaScript (basic)
-
-Defensive Security & Monitoring:
-Splunk, IBM QRadar, CrowdStrike Falcon, Snort, OSSEC, Zeek
+Scripting & Programming:
+Python, Bash, PowerShell, SQL, JavaScript
 
 Operating Systems & Platforms:
-Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory
 
 ------------------------------------------------------------
 CERTIFICATIONS

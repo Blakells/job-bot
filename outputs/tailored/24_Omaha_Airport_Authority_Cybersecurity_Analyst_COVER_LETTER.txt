@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Omaha Airport Authority
+Omaha, NE
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Cybersecurity Analyst position with Omaha Airport Authority. As someone who has spent the past four years protecting critical infrastructure for Fortune 500 clients, I am excited about the opportunity to apply my offensive and defensive security expertise to safeguard one of Nebraska's most vital transportation hubs. The unique security challenges facing airport operations—from protecting passenger data and operational technology to defending against nation-state threats—align perfectly with my experience in high-stakes environments where security failures have real-world consequences.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I have conducted over 40 penetration tests annually on complex networks and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. Most relevant to airport operations, I led a red team exercise for a healthcare client that simulated an advanced persistent threat attack, successfully demonstrating how attackers could move laterally through interconnected systems—experience directly applicable to the complex, multi-vendor technology ecosystem airports manage daily. Additionally, I developed custom SIEM dashboards using Splunk that reduced mean time to detect security incidents by 38%, ensuring threats are identified and neutralized before they can disrupt operations.
+
+What draws me to Omaha Airport Authority beyond the technical challenges is the mission-critical nature of your work. Airports serve as economic engines and community lifelines, and I am deeply motivated by roles where cybersecurity directly protects public safety and regional prosperity. My experience delivering security awareness training and mentoring junior analysts has taught me that effective security requires both technical excellence and the ability to communicate risks clearly to diverse stakeholders—from IT teams to executive leadership. I am eager to bring this collaborative approach to your team while contributing to the security posture that keeps travelers, employees, and operations safe.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, SIEM proficiency, and passion for protecting critical infrastructure can support Omaha Airport Authority's security objectives. Thank you for your consideration, and I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

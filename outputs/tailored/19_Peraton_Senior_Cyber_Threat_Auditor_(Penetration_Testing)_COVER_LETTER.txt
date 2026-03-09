@@ -1,0 +1,18 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Peraton
+Re: Senior Cyber Threat Auditor (Penetration Testing) / Active TS
+
+I am writing to express my strong interest in the Senior Cyber Threat Auditor position at Peraton. As someone who has closely followed Peraton's critical work supporting national security missions and government agencies, I am excited by the opportunity to contribute my offensive security expertise to an organization operating at the intersection of cybersecurity and national defense. The prospect of conducting penetration testing in support of mission-critical systems that protect our nation's interests represents exactly the type of high-impact work I've been preparing for throughout my career.
+
+My four years of progressive penetration testing experience align directly with Peraton's need for rigorous security validation. At SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, consistently identifying critical vulnerabilities before adversaries could exploit them. One of my most impactful engagements involved leading a red team exercise simulating an APT attack against a healthcare client's network—I successfully demonstrated lateral movement and data exfiltration capabilities that prompted a complete security architecture overhaul. Additionally, I've authored over 80 detailed vulnerability assessment reports with actionable remediation guidance, achieving a 95% client re-test pass rate. This combination of technical proficiency and clear communication ensures that my findings translate into measurable security improvements.
+
+What draws me to Peraton beyond the technical challenge is your mission-driven culture and commitment to protecting critical infrastructure. Having worked remotely for the past three years while maintaining strong client relationships and mentoring junior analysts, I understand the discipline and communication excellence required in distributed teams supporting sensitive operations. The opportunity to leverage my CEH and Security+ certifications—along with my cloud security expertise—in service of government and defense missions represents a natural evolution in my career toward work with deeper purpose and national impact.
+
+I would welcome the opportunity to discuss how my penetration testing expertise and commitment to mission success can contribute to Peraton's cybersecurity objectives. I am available at your convenience for an interview and can be reached at (843) 555-0192 or alex.carter@email.com.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+CyberSheath
+
+Dear Hiring Team,
+
+I'm writing to express my strong interest in the Cyber Security Analyst II position at CyberSheath. As someone who has built their career on proactive threat hunting and vulnerability management, I'm drawn to CyberSheath's reputation for delivering cutting-edge security solutions that stay ahead of evolving threats. The opportunity to join a team that prioritizes both offensive and defensive security strategies aligns perfectly with my experience and professional philosophy.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact skill set this position demands. I conduct 40+ penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before adversaries can exploit them—averaging 12 critical findings per engagement. One of my proudest achievements was leading a red team exercise for a healthcare client where I simulated an APT attack, demonstrating lateral movement and data exfiltration that prompted a complete security architecture overhaul. Additionally, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%, directly improving our clients' security posture through faster response times.
+
+What excites me most about CyberSheath is the opportunity to work with a team that values both technical excellence and clear communication. Throughout my career, I've authored over 80 detailed vulnerability assessment reports with actionable remediation guidance, achieving a 95% client re-test pass rate within 30 days. I understand that effective cybersecurity isn't just about finding vulnerabilities—it's about translating technical findings into business impact and empowering organizations to make informed security decisions. My certifications in CEH, Security+, and AWS Security Specialty, combined with my hands-on experience implementing zero-trust architectures and mentoring junior analysts, position me to contribute immediately to CyberSheath's mission.
+
+I'd welcome the opportunity to discuss how my background in penetration testing, incident response, and security operations can support CyberSheath's continued growth and client success. I'm available at your convenience for a conversation about this role.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

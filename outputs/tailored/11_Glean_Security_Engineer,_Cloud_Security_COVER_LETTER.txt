@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Glean
+United States
+
+Dear Glean Hiring Team,
+
+I'm excited to apply for the Security Engineer, Cloud Security position at Glean. As someone who's watched Glean transform how organizations unlock knowledge from their data, I'm impressed by your commitment to making workplace information universally accessible while maintaining enterprise-grade security. The challenge of securing AI-powered search across diverse data sources—where security can't compromise the seamless experience users expect—is exactly the type of complex problem I'm eager to solve.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've built deep expertise in cloud security that directly aligns with Glean's needs. I've conducted 40+ annual penetration tests on cloud infrastructure, consistently identifying critical vulnerabilities before they could be exploited—averaging 12 critical findings per engagement with a 95% remediation success rate. Most relevant to Glean's multi-cloud environment, I earned my AWS Certified Security – Specialty certification in 2023 and have implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. I also developed custom SIEM dashboards using Splunk that reduced mean time to detect security incidents by 38%, demonstrating my ability to build proactive security monitoring systems that scale with rapid growth.
+
+What draws me to Glean beyond the technical challenge is your mission to democratize knowledge while respecting data boundaries. Having led a red team exercise that simulated APT attacks on a healthcare client—where data sensitivity is paramount—I understand the delicate balance between accessibility and security. I'm energized by the prospect of working with a team that views security not as a barrier but as an enabler of trust. My experience translating complex security findings into actionable guidance for diverse stakeholders would allow me to collaborate effectively across Glean's engineering, product, and customer success teams.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security certifications, and passion for building secure-by-design systems can help Glean continue scaling securely. I'm confident I can contribute immediately to protecting the knowledge infrastructure that thousands of organizations depend on.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

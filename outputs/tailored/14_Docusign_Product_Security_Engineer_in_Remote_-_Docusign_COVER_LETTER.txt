@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Docusign
+Remote
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Product Security Engineer position at Docusign. As someone who has digitally signed countless documents through your platform while simultaneously conducting penetration tests on similar SaaS applications, I've developed a deep appreciation for the security challenges inherent in protecting millions of legally binding transactions. The opportunity to help secure the infrastructure that powers the Agreement Cloud—where trust and security aren't just features but fundamental requirements—is exactly the kind of high-impact work that drives my passion for cybersecurity.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed expertise that directly aligns with product security engineering. I've conducted over 40 annual penetration tests on web applications and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement—the kind of proactive security work essential for protecting a platform handling sensitive legal documents. My experience leading a red team exercise that simulated an APT attack on a healthcare client, where I successfully demonstrated lateral movement and data exfiltration, has given me the attacker mindset necessary to anticipate threats before they materialize. Additionally, my AWS Security Specialty certification and hands-on experience implementing zero-trust network access policies for enterprise clients have prepared me to contribute immediately to securing Docusign's cloud-native architecture.
+
+What excites me most about Docusign is your mission to modernize systems of agreement while maintaining the highest security standards. Having authored over 80 detailed vulnerability reports with actionable remediation guidance, I understand that product security isn't about saying "no"—it's about enabling innovation securely. I'm particularly drawn to Docusign's commitment to transparency, evidenced by your public Trust Center and security documentation. This aligns with my belief that security teams should be enablers and educators, not gatekeepers. My experience mentoring junior analysts and translating complex technical findings for diverse stakeholders has taught me that the best security engineers build bridges between security requirements and product goals.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security knowledge, and collaborative approach can help Docusign continue to earn the trust of millions of users worldwide. Thank you for your consideration.
+
+Sincerely,
+Alex Carter

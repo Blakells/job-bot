@@ -1,0 +1,88 @@
+ALEX J. CARTER
+Senior Cybersecurity Analyst | SOC Operations | Threat Detection & Incident Response
+
+Location: Florence, SC (Open to Remote / Hybrid)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven Senior Cybersecurity Analyst with 4+ years of progressive SOC and security operations experience protecting enterprise environments across multiple industries. Expert in threat detection, incident response, SIEM platform optimization, and security monitoring using Splunk, IBM QRadar, and CrowdStrike. Proven ability to reduce MTTD by 38% through custom detection engineering and lead complex incident investigations including APT simulations. Combines offensive security expertise with defensive SOC operations to proactively identify and neutralize threats. Holds Security+, CEH, and AWS Security certifications. Seeking to bring advanced threat hunting and incident response capabilities to S-RM's US SOC team.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Operate as senior SOC analyst monitoring security events across Fortune 500 client environments, triaging and investigating high-priority security incidents with 95% accuracy rate.
+- Engineered and maintain custom SIEM detection rules and dashboards in Splunk, reducing mean time to detect (MTTD) security incidents by 38% and improving analyst efficiency.
+- Lead incident response efforts for complex security events including APT simulation exercises; successfully identified and documented complete attack chain from initial access through data exfiltration for healthcare sector client.
+- Conduct threat hunting operations across cloud and on-premise infrastructure, identifying critical vulnerabilities and IOCs before exploitation; average 12 critical findings per engagement across 40+ annual assessments.
+- Perform advanced threat analysis using MITRE ATT&CK framework to map adversary tactics, techniques, and procedures (TTPs) and develop targeted detection strategies.
+- Author comprehensive incident reports and security assessments with actionable remediation guidance; achieved 95% successful remediation rate within 30-day SLA.
+- Implement zero-trust security controls and network segmentation strategies for enterprise clients, reducing attack surface by 60%.
+- Mentor junior SOC analysts through weekly threat intelligence briefings and hands-on training on emerging CVEs and attack vectors.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM in 24/7 SOC environment, performing tier 2/3 triage and escalation with detailed incident context.
+- Responded to P1 security incidents during on-call rotation, ensuring SLA compliance and coordinating cross-functional incident response activities.
+- Conducted continuous vulnerability management across 500+ endpoint enterprise environment using Nessus and OpenVAS; tracked remediation workflows and compliance in Jira.
+- Developed and maintained 15+ incident response playbooks and SOC procedures, reducing average incident triage time by 22 minutes and improving team response consistency.
+- Executed security awareness initiatives including phishing simulation campaigns using GoPhish; reduced user susceptibility by 34% through targeted training programs.
+- Performed log analysis, network traffic inspection, and endpoint forensics to identify security anomalies and potential compromise indicators.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered technical support for 2,400+ end-users across 14 locations, resolving security-related incidents and escalating potential threats to appropriate teams.
+- Identified and reported 3 active malware infections through behavioral analysis and system monitoring, initiating proper incident response procedures and containment.
+- Supported network security operations including VLAN configuration, access control implementation, and wireless infrastructure deployment.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+SOC & Threat Detection:
+Splunk, IBM QRadar, CrowdStrike Falcon, Azure Sentinel, AWS Security Hub, GuardDuty, OSSEC, Zeek, Snort
+
+Incident Response & Analysis:
+Wireshark, MITRE ATT&CK, threat hunting, forensic analysis, malware analysis, log correlation, IOC identification
+
+Offensive Security & Threat Emulation:
+Metasploit, Burp Suite, Cobalt Strike, BloodHound, Mimikatz, Nmap, penetration testing, red team operations
+
+Cloud Security:
+AWS Security Hub, Azure Sentinel, CloudTrail, GuardDuty, IAM, Security Groups, cloud monitoring
+
+Security Frameworks:
+MITRE ATT&CK, NIST Cybersecurity Framework, OWASP Top 10, CIS Controls, ISO 27001
+
+Scripting & Automation:
+Python, PowerShell, Bash, SQL, JavaScript (basic)
+
+Operating Systems & Infrastructure:
+Windows Server 2019, Active Directory, Kali Linux, Ubuntu, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

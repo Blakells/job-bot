@@ -1,0 +1,88 @@
+ALEX J. CARTER
+Senior Security Engineer - Identity & Access Management (IAM)
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven security engineer with 4+ years of progressive experience in identity and access management, cloud security, and enterprise security architecture. Demonstrated expertise in implementing zero-trust frameworks, IAM policy development, and securing cloud infrastructure across AWS and Azure environments. Proven ability to design and enforce access controls that reduce organizational attack surface while enabling secure business operations. AWS Certified Security Specialist with hands-on experience in IAM, Active Directory, and privileged access management. Seeking to leverage deep technical security knowledge and IAM expertise to strengthen Cotiviti's identity security posture.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Implemented zero-trust network access (ZTNA) and identity-based access policies for 3 mid-size enterprise clients, reducing attack surface by an estimated 60% through least-privilege enforcement and continuous verification.
+- Architected and deployed AWS IAM policies, security groups, and role-based access controls (RBAC) for cloud infrastructure supporting Fortune 500 clients, ensuring compliance with security frameworks and regulatory requirements.
+- Conducted 40+ security assessments annually on authentication mechanisms, access controls, and identity management systems, identifying privilege escalation vulnerabilities and access control misconfigurations.
+- Leveraged BloodHound and Mimikatz during red team engagements to identify Active Directory privilege escalation paths and Kerberos authentication weaknesses, providing detailed remediation roadmaps.
+- Developed custom SIEM correlation rules in Splunk to detect anomalous authentication patterns, unauthorized privilege escalation, and lateral movement, reducing mean time to detect (MTTD) by 38%.
+- Led red team exercise simulating APT attack demonstrating lateral movement through compromised credentials and privilege abuse, resulting in client security architecture overhaul including enhanced IAM controls.
+- Authored 80+ detailed security assessment reports with prioritized remediation guidance for access management vulnerabilities; achieved 95% client re-test pass rate within 30 days.
+- Mentored 2 junior analysts on identity security topics including OAuth, SAML, MFA implementation, and privileged access management best practices.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and investigated 200+ daily security alerts using IBM QRadar SIEM, with focus on authentication failures, privilege escalation attempts, and unauthorized access events across 500+ endpoint environment.
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS, identifying IAM-related weaknesses including weak password policies, excessive permissions, and stale user accounts; tracked remediation in Jira.
+- Collaborated with IT teams to enforce least-privilege access principles and role-based access controls, reducing over-privileged accounts by 40% across enterprise systems.
+- Developed and executed phishing simulation campaigns using GoPhish to test multi-factor authentication (MFA) adoption and credential security awareness; achieved 34% click rate reduction through targeted training.
+- Documented 15+ incident response runbooks for identity-related security events including compromised credentials, account takeovers, and insider threats, reducing average triage time by 22 minutes.
+- Participated in 24/7 SOC on-call rotation, responding to authentication and access-related P1 incidents with rapid containment and forensic analysis.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, managing user account provisioning, password resets, and access permission requests in Active Directory environment.
+- Assisted network administrator with Active Directory user and group management, VLAN configurations, and network access control implementations.
+- Identified and escalated 3 active malware infections and potential account compromises through behavioral analysis, initiating incident response procedures and credential resets.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Identity & Access Management:
+Active Directory, AWS IAM, Azure AD, RBAC, SAML, OAuth, MFA/2FA, Privileged Access Management (PAM), BloodHound, Mimikatz, Kerberos
+
+Cloud Security & IAM:
+AWS Security Hub, AWS IAM, Azure Sentinel, Security Groups, CloudTrail, GuardDuty, Azure AD, Cloud Identity Management
+
+Security Operations:
+Splunk, IBM QRadar, CrowdStrike Falcon, SIEM Correlation Rules, Incident Response, Threat Detection, Log Analysis
+
+Security Assessment:
+Penetration Testing, Vulnerability Assessment, Nessus, OpenVAS, Metasploit, Burp Suite, Nmap, Authentication Testing
+
+Frameworks & Standards:
+NIST CSF, MITRE ATT&CK, Zero Trust Architecture, CIS Controls, ISO 27001, OWASP Top 10
+
+Scripting & Automation:
+Python, PowerShell, Bash, SQL, JavaScript (basic)
+
+Operating Systems:
+Windows Server 2019, Active Directory, Kali Linux, Ubuntu, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

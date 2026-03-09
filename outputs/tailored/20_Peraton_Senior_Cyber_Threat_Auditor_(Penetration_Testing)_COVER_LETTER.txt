@@ -1,0 +1,18 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Peraton
+Re: Senior Cyber Threat Auditor (Penetration Testing) / Active TS
+
+I am writing to express my strong interest in the Senior Cyber Threat Auditor position at Peraton. As someone who has closely followed Peraton's critical work supporting national security missions and government agencies, I am excited by the opportunity to contribute my penetration testing expertise to an organization operating at the intersection of cybersecurity and national defense. The chance to leverage my active TS clearance while conducting offensive security assessments for high-stakes environments is exactly the challenge I've been preparing for throughout my career.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I have built a strong foundation in the offensive security skills essential for this position. I conduct 40+ penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before adversaries can exploit them—averaging 12 critical findings per engagement. My red team experience includes leading an APT simulation for a healthcare client where I successfully demonstrated lateral movement and data exfiltration techniques, ultimately driving a complete security architecture redesign. Additionally, I've authored over 80 detailed vulnerability assessment reports that translate complex technical findings into actionable remediation guidance, achieving a 95% client re-test pass rate within 30 days. This combination of technical depth and clear communication directly aligns with Peraton's need for auditors who can both identify threats and effectively convey risk to stakeholders.
+
+What draws me most to Peraton is your mission-driven culture and commitment to protecting our nation's most critical systems. Having worked extensively with MITRE ATT&CK frameworks and threat modeling, I understand the gravity of securing government infrastructure against sophisticated adversaries. I am energized by the prospect of working alongside Peraton's talented security professionals who share my dedication to staying ahead of evolving threats. The opportunity to contribute to projects with real national security implications represents the meaningful work I've been seeking.
+
+I would welcome the opportunity to discuss how my penetration testing experience, active clearance, and passion for offensive security can support Peraton's mission. Thank you for your consideration, and I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

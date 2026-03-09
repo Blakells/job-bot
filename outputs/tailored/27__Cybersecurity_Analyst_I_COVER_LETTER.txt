@@ -1,0 +1,18 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Cybersecurity Analyst I position at your organization. While I currently serve as a Cybersecurity Analyst II, I am drawn to this opportunity because it represents a chance to bring my specialized expertise in penetration testing, vulnerability assessment, and incident response to a new environment where I can make an immediate impact while continuing to grow my technical skills.
+
+Over the past four years, I have built a comprehensive foundation in both offensive and defensive security operations. At SecureNet Solutions, I conduct over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before threat actors can exploit them. I developed a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, demonstrating my ability to not only identify threats but also build scalable solutions for continuous monitoring. Additionally, I led a red team exercise for a healthcare client that simulated an advanced persistent threat, successfully demonstrating lateral movement and data exfiltration—findings that drove a complete security architecture overhaul and significantly strengthened their defensive posture.
+
+Beyond technical capabilities, I am committed to making cybersecurity accessible and actionable for all stakeholders. I have authored over 80 detailed vulnerability assessment reports with clear remediation guidance, achieving a 95% client re-test pass rate within 30 days. I have also mentored junior analysts and regularly translate complex security findings into business terms for executive audiences. I hold active certifications including CEH, CompTIA Security+, and AWS Security Specialty, and I am currently pursuing my CySA+ to further deepen my analytical capabilities.
+
+I would welcome the opportunity to discuss how my hands-on experience in penetration testing, SIEM development, and security incident response can contribute to your security team's mission. I am confident that my proactive approach to threat detection and my passion for continuous improvement would make me a valuable addition to your organization.
+
+Thank you for considering my application. I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

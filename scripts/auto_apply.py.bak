@@ -1,0 +1,691 @@
+Restored session: Wed Mar  4 01:56:12 EST 2026
+#!/usr/bin/env python3
+"""
+Phase 4: Auto-Apply Engine (Multi-step navigation)
+"""
+
+import json, os, sys, time, argparse, re
+from pathlib import Path
+import requests
+
+BROWSERBASE_API_KEY = os.environ.get("BROWSERBASE_API_KEY", "")
+BROWSERBASE_PROJECT = os.environ.get("BROWSERBASE_PROJECT_ID", "")
+OPENROUTER_API_KEY  = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE     = "https://openrouter.ai/api/v1/chat/completions"
+MODEL               = "anthropic/claude-sonnet-4-5"
+
+def ask_claude(prompt):
+    resp = requests.post(OPENROUTER_BASE,
+        headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+        json={"model": MODEL, "messages": [{"role": "user", "content": prompt}],
+              "max_tokens": 3000, "temperature": 0.1})
+    data = resp.json()
+    try:
+        return data["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        print(f"  ❌ Claude error: {e}")
+        sys.exit(1)
+
+def create_session():
+    print("  🌐 Starting cloud browser session...")
+    resp = requests.post(
+        "https://www.browserbase.com/v1/sessions",
+        headers={"x-bb-api-key": BROWSERBASE_API_KEY, "Content-Type": "application/json"},
+        json={"projectId": BROWSERBASE_PROJECT, "browserSettings": {"stealth": True}})
+    data = resp.json()
+    session_id = data.get("id")
+    if not session_id:
+        print(f"  ❌ Session error: {data}")
+        return None, None
+    connect_url = data.get("connectUrl") or \
+                  f"wss://connect.browserbase.com?apiKey={BROWSERBASE_API_KEY}&sessionId={session_id}"
+    print(f"  ✅ Session: {session_id}")
+    return session_id, connect_url
+
+def end_session(session_id):
+    requests.delete(f"https://www.browserbase.com/v1/sessions/{session_id}",
+        headers={"x-bb-api-key": BROWSERBASE_API_KEY})
+    print("  🔒 Session closed")
+
+def screenshot(page, name):
+    Path("outputs/screenshots").mkdir(parents=True, exist_ok=True)
+    path = f"outputs/screenshots/{name}.png"
+    page.screenshot(path=path)
+    print(f"  📸 {path}")
+    return path
+
+def find_tailored_files(company, title):
+    """Find the tailored resume and cover letter for this job."""
+    tailored_dir = Path("outputs/tailored")
+    if not tailored_dir.exists():
+        print("  ⚠️  No tailored directory found")
+        return None, None
+    
+    # Normalize company and title for matching
+    company_norm = re.sub(r'[^a-zA-Z0-9]+', '_', company).strip('_')
+    
+    resume = None
+    cover_letter = None
+    
+    # Search for matching files - look for files containing company name
+    # Try PDF first, fall back to TXT
+    for extension in ['.pdf', '.txt']:
+        for file in tailored_dir.glob(f"*_RESUME{extension}"):
+            filename = file.stem.lower()
+            
+            # Check if company appears in filename
+            if company_norm.lower() in filename:
+                # Also check if key words from title appear
+                title_words = [w.lower() for w in title.split() if len(w) > 3]
+                if any(word in filename for word in title_words[:3]):
+                    resume = str(file.absolute())
+                    # Look for corresponding cover letter
+                    cover_file = file.parent / file.name.replace(f"_RESUME{extension}", f"_COVER_LETTER{extension}")
+                    if cover_file.exists():
+                        cover_letter = str(cover_file.absolute())
+                    print(f"  📄 Found resume: {file.name}")
+                    if cover_letter:
+                        print(f"  📄 Found cover letter: {cover_file.name}")
+                    break
+        if resume:  # Found a match, stop searching
+            break
+    
+    if not resume:
+        print(f"  ⚠️  No tailored resume found for {company} - {title}")
+    
+    return resume, cover_letter
+
+def classify_page(page_text, job_title, company):
+    """Ask Claude what kind of page we're on and what to do."""
+    prompt = f"""
+We're trying to apply for: "{job_title}" at {company}
+
+Page content (first 3000 chars):
+{page_text[:3000]}
+
+What page is this? Return ONLY JSON:
+{{
+  "page_type": "job_search_results | individual_job_page | application_form | login_required | error | confirmation",
+  "summary": "one sentence",
+  "target_job_visible": true,
+  "target_job_title_on_page": "exact job title text as it appears on page, or empty string",
+  "target_job_location": "location of the correct job listing to click (e.g. Remote - US)",
+  "has_apply_button": false,
+  "apply_button_text": "exact text of apply button or empty string"
+}}
+"""
+    raw = ask_claude(prompt).strip()
+    if "```" in raw:
+        raw = raw.split("```")[1].lstrip("json").strip().rstrip("```")
+    try:
+        return json.loads(raw)
+    except:
+        return {"page_type": "unknown", "summary": "parse error",
+                "target_job_visible": False, "has_apply_button": False}
+
+def get_form_fields(page_text, profile, job, resume_path, cover_letter_path):
+    """Ask Claude to identify all form fields and best answers."""
+    prompt = f"""
+Fill out this job application form for: {job.get('title')} @ {job.get('company')}
+
+Candidate:
+- Name: {profile['personal'].get('name')}
+- Email: {profile['personal'].get('email')}
+- Phone: {profile['personal'].get('phone')}
+- Location: {profile['personal'].get('location')}
+- Years experience: {profile.get('years_of_experience')}
+- Skills: {', '.join(profile.get('hard_skills', [])[:10])}
+- Education: {json.dumps(profile.get('education', []))}
+- Work authorization: {json.dumps(profile.get('work_authorization', {}))}
+- Saved answers: {json.dumps(profile.get('extra_answers', {}))}
+
+FILE UPLOADS AVAILABLE:
+- Resume file: {"YES" if resume_path else "NO"}
+- Cover letter file: {"YES" if cover_letter_path else "NO"}
+
+IMPORTANT RULES:
+- If a question asks about work authorization for the SPECIFIC COUNTRY the job is in, answer based on work_authorization above
+- Never reuse a saved answer for a different country than it was originally for
+- "Authorized to work in the US/United States?" = Yes (US citizen, no sponsorship needed)
+- "Require visa sponsorship?" = No
+- For file upload fields (Resume/CV), set type="file" and answer="RESUME_FILE"
+- For cover letter uploads, set type="file" and answer="COVER_LETTER_FILE"
+
+If this page has a "Continue" or "Next" button (not a final Submit), set:
+- "continue_button": "exact button text"
+- "is_final_page": false
+
+If this is the FINAL page with Submit, set:
+- "continue_button": ""
+- "is_final_page": true
+
+Page content:
+{page_text[:4000]}
+
+Return ONLY JSON:
+{{
+  "form_fields": [
+    {{
+      "label": "First Name",
+      "type": "text",
+      "answer": "Alex",
+      "confident": true,
+      "selector": "input[name='firstName']"
+    }},
+    {{
+      "label": "Resume/CV",
+      "type": "file",
+      "answer": "RESUME_FILE",
+      "confident": true,
+      "selector": "input[type='file'][name='resume']"
+    }},
+    {{
+      "label": "Are you authorized to work in the United States?",
+      "type": "select",
+      "answer": "Yes",
+      "confident": true,
+      "selector": "select[name='job_application[answers][0][boolean_value]']"
+    }},
+    {{
+      "label": "Require visa sponsorship?",
+      "type": "select",
+      "answer": "UNCERTAIN",
+      "confident": false,
+      "question": "Do you need visa sponsorship to work in the US?",
+      "selector": ""
+    }}
+  ],
+  "submit_button": "Submit Application",
+  "continue_button": "",
+  "is_final_page": true
+}}
+"""
+    raw = ask_claude(prompt).strip()
+    if "```" in raw:
+        raw = raw.split("```")[1].lstrip("json").strip().rstrip("```")
+    try:
+        return json.loads(raw)
+    except:
+        return {"form_fields": [], "submit_button": "Submit", "continue_button": "", "is_final_page": True}
+
+def ask_user(uncertain_fields, memory):
+    new = {}
+    todo = [f for f in uncertain_fields
+            if not f.get("confident") and f.get("label") not in memory]
+    if not todo:
+        return new
+    print("\n  ❓ Quick questions:\n")
+    for f in todo:
+        q = f.get("question", f"What to enter for '{f.get('label')}'?")
+        print(f"  Q: {q}")
+        new[f.get("label")] = input("  A: ").strip()
+    return new
+
+def run_application(connect_url, job, profile, memory, dry_run, resume_path, cover_letter_path):
+    title   = job.get("title", "")
+    company = job.get("company", "")
+    url     = job.get("apply_url", "")
+    slug    = company.replace(" ", "_")
+    all_answers = dict(memory)
+    new_answers = {}
+
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            print(f"  🔌 Connecting...")
+            browser = p.chromium.connect_over_cdp(connect_url)
+            ctx  = browser.contexts[0] if browser.contexts else browser.new_context()
+            page = ctx.pages[0] if ctx.pages else ctx.new_page()
+
+            # ── STEP 1: Load starting URL ────────────────────────────────
+            print(f"  🔗 Loading {url[:60]}...")
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            time.sleep(3)
+            screenshot(page, f"{slug}_01_start")
+
+            page_text = page.inner_text("body")
+            info      = classify_page(page_text, title, company)
+            print(f"  📄 Page type: {info['page_type']} — {info['summary']}")
+
+            # ── STEP 2: If search results, click on the job title ────────
+            if info["page_type"] == "job_search_results":
+                job_title_on_page = info.get("target_job_title_on_page", "")
+                clicked = False
+
+                if job_title_on_page:
+                    print(f"  🖱️  Clicking job title: '{job_title_on_page}'...")
+                    try:
+                        # Get all links matching the job title
+                        matches = page.get_by_role("link").filter(has_text=job_title_on_page)
+                        count = matches.count()
+                        print(f"  🔍 Found {count} matching links")
+
+                        # Prefer US/Remote-US over other locations
+                        best = None
+                        location_pref = profile.get("remote_preference", "")
+                        for idx in range(count):
+                            el = matches.nth(idx)
+                            # Look at surrounding text for location hints
+                            try:
+                                parent_text = el.locator("xpath=..").inner_text()
+                                if "United States" in parent_text or "Remote - US" in parent_text or "US" in parent_text:
+                                    best = el
+                                    print(f"  🎯 Found US location match!")
+                                    break
+                            except:
+                                pass
+                        
+                        # Fall back to first match if no US match found
+                        if best is None:
+                            best = matches.first
+                            print(f"  ⚠️  No US match found, using first result")
+                        
+                        best.click(timeout=10000)
+                        time.sleep(3)
+                        clicked = True
+                        print(f"  ✅ Clicked job title!")
+                    except Exception as e:
+                        print(f"  ⚠️  Could not click by text: {e}")
+
+                if not clicked:
+                    # Try searching on the page for key words from job title
+                    words = title.split()[:3]
+                    for word in words:
+                        try:
+                            matches = page.get_by_role("link").filter(has_text=word)
+                            if matches.count() > 0:
+                                matches.first.click(timeout=10000)
+                                time.sleep(3)
+                                clicked = True
+                                print(f"  ✅ Clicked link containing '{word}'")
+                                break
+                        except:
+                            continue
+
+                if not clicked:
+                    print(f"  ⚠️  Could not find job listing to click")
+                    screenshot(page, f"{slug}_no_job_found")
+                    browser.close()
+                    return "no_job_found", new_answers
+
+                screenshot(page, f"{slug}_02_job_page")
+                page_text = page.inner_text("body")
+                info      = classify_page(page_text, title, company)
+                print(f"  📄 Now on: {info['page_type']} — {info['summary']}")
+
+            # ── STEP 3: On individual job page — click Apply ─────────────
+            if info["page_type"] == "individual_job_page" and info.get("has_apply_button"):
+                btn_text = info.get("apply_button_text", "Apply Now")
+                print(f"  🖱️  Clicking Apply: '{btn_text}'...")
+                clicked = False
+                for pattern in [btn_text, "Apply Now", "Apply for this job",
+                                 "Quick Apply", "Apply", "Apply on company site"]:
+                    try:
+                        btn = page.get_by_role("button", name=pattern)
+                        if btn.count() == 0:
+                            btn = page.get_by_role("link", name=pattern)
+                        if btn.count() > 0:
+                            btn.first.click(timeout=10000)
+                            time.sleep(3)
+                            clicked = True
+                            print(f"  ✅ Clicked: '{pattern}'")
+                            break
+                    except:
+                        continue
+
+                if clicked:
+                    screenshot(page, f"{slug}_03_after_apply_click")
+                    page_text = page.inner_text("body")
+                    info      = classify_page(page_text, title, company)
+                    print(f"  📄 Now on: {info['page_type']} — {info['summary']}")
+
+            # ── STEP 4: Login wall ───────────────────────────────────────
+            if info["page_type"] == "login_required":
+                print(f"  🔐 Login required — skipping (Phase 5 will handle auth)")
+                screenshot(page, f"{slug}_login_wall")
+                browser.close()
+                return "login_required", new_answers
+
+            # ── STEP 5: Application form (MULTI-PAGE) ────────────────────
+            if info["page_type"] in ["application_form", "individual_job_page"]:
+                page_number = 1
+                max_pages = 10  # Safety limit
+                
+                while page_number <= max_pages:
+                    print(f"\n  📄 Page {page_number}")
+                    print(f"  {'─'*50}")
+                    
+                    page_text = page.inner_text("body")
+                    form = get_form_fields(page_text, profile, job, resume_path, cover_letter_path)
+                    fields = form.get("form_fields", [])
+                    is_final = form.get("is_final_page", True)
+                    continue_btn = form.get("continue_button", "")
+                    
+                    print(f"  ✅ Found {len(fields)} fields")
+                    print(f"  📍 {'Final page' if is_final else f'Intermediate page (Continue: {continue_btn})'}")
+                    
+                    # Ask user for uncertain answers (only once per session)
+                    uncertain = [f for f in fields if not f.get("confident") and f.get("type") != "file"]
+                    extra = ask_user(uncertain, all_answers)
+                    new_answers.update(extra)
+                    all_answers.update(extra)
+                    
+                    # Show fill plan
+                    print(f"\n  📋 Fill plan:")
+                    print(f"  {'─'*50}")
+                    for f in fields:
+                        ans = f.get("answer", "")
+                        if ans == "UNCERTAIN":
+                            ans = all_answers.get(f.get("label",""), "⚠️ NO ANSWER")
+                        elif ans == "RESUME_FILE":
+                            ans = f"📄 {Path(resume_path).name if resume_path else 'NO FILE'}"
+                        elif ans == "COVER_LETTER_FILE":
+                            ans = f"📄 {Path(cover_letter_path).name if cover_letter_path else 'NO FILE'}"
+                        icon = "✅" if f.get("confident") else "📝"
+                        print(f"  {icon} {f.get('label','')}: {str(ans)[:60]}")
+                    print(f"  {'─'*50}")
+                    
+                    if dry_run:
+                        screenshot(page, f"{slug}_page{page_number}_preview")
+                        print(f"\n  [DRY RUN] Page {page_number} analyzed")
+                        # In dry-run mode, after analyzing page 1, STOP
+                        print(f"\n  [DRY RUN] Stopping after first page analysis — not submitting")
+                        browser.close()
+                        return "dry_run_ok", new_answers
+                    
+                    # Fill fields
+                    print(f"\n  ✏️  Filling fields...")
+                    for f in fields:
+                        label = f.get("label", "")
+                        answer = f.get("answer", "")
+                        selector = f.get("selector", "")
+                        ftype = f.get("type", "text")
+                        
+                        if answer == "UNCERTAIN":
+                            answer = all_answers.get(label, "")
+                        
+                        if not answer:
+                            continue
+                        
+                        # Handle file uploads
+                        if ftype == "file":
+                            file_path = None
+                            if answer == "RESUME_FILE" and resume_path:
+                                file_path = resume_path
+                            elif answer == "COVER_LETTER_FILE" and cover_letter_path:
+                                file_path = cover_letter_path
+                            
+                            if file_path:
+                                try:
+                                    # Try multiple selectors for file inputs
+                                    el = None
+                                    selectors_to_try = [
+                                        selector,
+                                        "input[type='file']",
+                                        "input[type='file'][name*='resume']",
+                                        "input[type='file'][name*='cv']",
+                                        "input[type='file'][id*='resume']",
+                                        "input[type='file'][id*='cv']"
+                                    ] if "resume" in label.lower() or "cv" in label.lower() else [
+                                        selector,
+                                        "input[type='file']",
+                                        "input[type='file'][name*='cover']",
+                                        "input[type='file'][id*='cover']"
+                                    ]
+                                    
+                                    for sel in selectors_to_try:
+                                        if sel:
+                                            try:
+                                                el = page.locator(sel).first
+                                                if el.count() > 0:
+                                                    break
+                                            except:
+                                                continue
+                                    
+                                    if el and el.count() > 0:
+                                        el.set_input_files(file_path)
+                                        print(f"    ✅ {label} (uploaded {Path(file_path).name})")
+                                    else:
+                                        print(f"    ⚠️  {label}: Could not find file input")
+                                except Exception as e:
+                                    print(f"    ⚠️  {label}: {e}")
+                                continue
+                        
+                        # Handle regular text/select fields
+                        if ftype == "select":
+                            # Enhanced dropdown filling with multiple strategies
+                            filled = False
+                            error_msg = None
+                            
+                            # Strategy 1: Try by label with select_option
+                            try:
+                                el = page.get_by_label(label)
+                                if el.count() > 0:
+                                    el.first.select_option(label=answer)
+                                    filled = True
+                                    print(f"    ✅ {label} (strategy 1: label)")
+                            except Exception as e:
+                                error_msg = str(e)
+                            
+                            # Strategy 2: Try select_option with value instead of label
+                            if not filled:
+                                try:
+                                    el = page.get_by_label(label)
+                                    if el.count() > 0:
+                                        el.first.select_option(value=answer)
+                                        filled = True
+                                        print(f"    ✅ {label} (strategy 2: value)")
+                                except Exception as e:
+                                    error_msg = str(e)
+                            
+                            # Strategy 3: Try by selector if provided
+                            if not filled and selector:
+                                try:
+                                    el = page.locator(selector)
+                                    if el.count() > 0:
+                                        el.first.select_option(label=answer)
+                                        filled = True
+                                        print(f"    ✅ {label} (strategy 3: selector)")
+                                except Exception as e:
+                                    error_msg = str(e)
+                            
+                            # Strategy 4: Custom dropdown (click to open, then select option)
+                            if not filled:
+                                try:
+                                    # Try to find and click the dropdown trigger
+                                    dropdown = page.get_by_label(label)
+                                    if dropdown.count() > 0:
+                                        dropdown.first.click()
+                                        time.sleep(0.5)
+                                        # Try to click the option by text
+                                        option = page.get_by_text(answer, exact=True).first
+                                        if option.is_visible():
+                                            option.click()
+                                            filled = True
+                                            print(f"    ✅ {label} (strategy 4: custom dropdown)")
+                                except Exception as e:
+                                    error_msg = str(e)
+                            
+                            # Strategy 5: Try combobox pattern (ARIA)
+                            if not filled:
+                                try:
+                                    # Look for combobox role
+                                    label_lower = label.lower()
+                                    combobox = page.locator(f"[role='combobox']").filter(has_text=label)
+                                    if combobox.count() == 0:
+                                        # Try finding by aria-label
+                                        combobox = page.locator(f"[role='combobox'][aria-label*='{label}']")
+                                    
+                                    if combobox.count() > 0:
+                                        combobox.first.click()
+                                        time.sleep(0.5)
+                                        page.get_by_role("option", name=answer).click()
+                                        filled = True
+                                        print(f"    ✅ {label} (strategy 5: combobox)")
+                                except Exception as e:
+                                    error_msg = str(e)
+                            
+                            if not filled:
+                                print(f"    ⚠️  {label}: Failed all strategies - {error_msg}")
+                        
+                        else:
+                            # Text/number/date fields
+                            try:
+                                el = None
+                                if selector:
+                                    el = page.locator(selector)
+                                if not el or el.count() == 0:
+                                    el = page.get_by_label(label)
+                                if el and el.count() > 0:
+                                    el.first.fill(str(answer))
+                                    print(f"    ✅ {label}")
+                            except Exception as e:
+                                print(f"    ⚠️  {label}: {e}")
+                    
+                    screenshot(page, f"{slug}_page{page_number}_filled")
+                    
+                    # If intermediate page, click Continue
+                    if not is_final and continue_btn:
+                        print(f"\n  ➡️  Clicking: {continue_btn}")
+                        clicked = False
+                        for pattern in [continue_btn, "Continue", "Next", "Next Page"]:
+                            try:
+                                btn = page.get_by_role("button", name=pattern)
+                                if btn.count() == 0:
+                                    btn = page.get_by_role("link", name=pattern)
+                                if btn.count() > 0:
+                                    btn.first.click()
+                                    time.sleep(3)
+                                    page_number += 1
+                                    clicked = True
+                                    print(f"  ✅ Clicked {pattern}")
+                                    break
+                            except:
+                                continue
+                        
+                        if not clicked:
+                            print(f"  ⚠️  Could not find Continue button")
+                            browser.close()
+                            return "continue_button_error", new_answers
+                        
+                        # Loop continues to next page
+                        continue
+                    
+                    # Final page - ask to submit
+                    print(f"\n  📸 Check filled form:")
+                    print(f"     open outputs/screenshots/{slug}_page{page_number}_filled.png")
+                    
+                    confirm = input("\n  Type YES to submit, SKIP to skip: ").strip().upper()
+                    if confirm == "YES":
+                        submit = form.get("submit_button", "Submit")
+                        for pattern in [submit, "Submit Application", "Submit", "Apply"]:
+                            try:
+                                btn = page.get_by_role("button", name=pattern)
+                                if btn.count() > 0:
+                                    btn.first.click()
+                                    time.sleep(3)
+                                    screenshot(page, f"{slug}_submitted")
+                                    print(f"  🎉 Submitted!")
+                                    browser.close()
+                                    return "submitted", new_answers
+                            except:
+                                continue
+                        browser.close()
+                        return "submit_error", new_answers
+                    else:
+                        browser.close()
+                        return "user_skipped", new_answers
+                
+                # Max pages exceeded
+                print(f"  ⚠️  Exceeded max pages ({max_pages})")
+                browser.close()
+                return "max_pages_exceeded", new_answers
+            else:
+                print(f"  ⚠️  Ended on unexpected page type: {info['page_type']}")
+                screenshot(page, f"{slug}_unexpected")
+                browser.close()
+                return f"unexpected_{info['page_type']}", new_answers
+
+    except Exception as e:
+        print(f"  ❌ Error: {e}")
+        import traceback; traceback.print_exc()
+        return "error", new_answers
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--jobs",      default="profiles/scored_jobs.json")
+    parser.add_argument("--profile",   default="profiles/job_profile.json")
+    parser.add_argument("--min-score", type=int, default=50)
+    parser.add_argument("--dry-run",   action="store_true")
+    args = parser.parse_args()
+
+    print("\n🚀 Job Bot — Phase 4: Auto-Apply Engine")
+    print("=" * 50)
+
+    if args.dry_run:
+        print("  ⚠️  DRY RUN — analyze only, no submission\n")
+
+    jobs      = json.loads(Path(args.jobs).read_text())
+    profile   = json.loads(Path(args.profile).read_text())
+    qualified = [j for j in jobs if j.get("score", 0) >= args.min_score]
+    memory    = profile.get("extra_answers", {})
+    results   = []
+
+    print(f"  ✅ {len(qualified)} jobs\n")
+
+    for i, job in enumerate(qualified, 1):
+        title   = job.get('title','')
+        company = job.get('company','')
+        score   = job.get('score', 0)
+        url     = job.get('apply_url','')
+
+        print(f"\n{'='*50}")
+        print(f"  🎯 [{i}/{len(qualified)}] {title} @ {company} ({score}%)")
+        print(f"{'='*50}")
+
+        if not url:
+            results.append({"job": title, "company": company, "status": "no_url"})
+            continue
+
+        # Find tailored files
+        resume_path, cover_letter_path = find_tailored_files(company, title)
+        
+        if not resume_path:
+            print(f"  ⚠️  No resume found - skipping")
+            results.append({"job": title, "company": company, "status": "no_resume"})
+            continue
+
+        session_id, connect_url = create_session()
+        if not session_id:
+            results.append({"job": title, "company": company, "status": "session_error"})
+            continue
+
+        try:
+            status, new_answers = run_application(
+                connect_url, job, profile, memory, args.dry_run, resume_path, cover_letter_path)
+            memory.update(new_answers)
+            results.append({"job": title, "company": company,
+                            "status": status, "score": score})
+            print(f"\n  ➡️  Result: {status}")
+        finally:
+            end_session(session_id)
+
+    if memory:
+        profile["extra_answers"] = memory
+        Path(args.profile).write_text(json.dumps(profile, indent=2))
+        print(f"\n  💾 Answers saved to profile")
+
+    print(f"\n{'='*50}")
+    print(f"✅ Done!\n")
+    icons = {"submitted":"🎉","dry_run_ok":"✅","user_skipped":"⏭️",
+             "login_required":"🔐","no_job_found":"🔍","error":"❌","no_resume":"⚠️",
+             "continue_button_error":"⚠️", "max_pages_exceeded":"⚠️"}
+    for r in results:
+        icon = icons.get(r.get("status",""), "•")
+        print(f"  {icon} {r['job']} @ {r['company']} → {r['status']}")
+
+    Path("outputs/application_log.json").write_text(json.dumps(results, indent=2))
+    print(f"\n  📸 open outputs/screenshots/")
+
+if __name__ == "__main__":
+    main()

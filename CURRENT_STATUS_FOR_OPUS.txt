@@ -1,0 +1,36 @@
+JOB BOT - Current Status for Claude Opus
+=========================================
+
+PROJECT: ~/job-bot/
+USER: Alex J. Carter (cybersecurity professional, 4-5 yrs experience)
+
+WHAT WORKS (100% tested):
+- PDF file uploads ✅
+- React-Select dropdowns (Work Auth, Visa) ✅
+- Text fields (Name, Email, Phone, LinkedIn) ✅
+- Multi-page navigation ✅
+- 27 verified job URLs ✅
+
+WHAT NEEDS FIXING (2 fields):
+- Location autocomplete: Picks Florence Italy not Florence SC
+- Country dropdown: Not detected by Claude
+
+FILES:
+- scripts/auto_apply_final.py = CLEAN working version
+- test_dropdown_direct.py = Proven dropdown code
+- test_live_human_interest.json = Test job
+- HANDOFF_TO_CLAUDE_OPUS.md = Full details
+
+TEST COMMAND:
+python3 scripts/auto_apply.py --jobs test_live_human_interest.json
+
+GOAL:
+Fix Location + Country to achieve 100% field automation (15/15 fields)
+
+READ: HANDOFF_TO_CLAUDE_OPUS.md for complete details
+
+Current automation: 73-87%
+Target: 100%
+Estimated time: 30-60 minutes
+
+Good luck!

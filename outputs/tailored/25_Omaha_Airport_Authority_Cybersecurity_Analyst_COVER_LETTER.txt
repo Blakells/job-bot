@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Omaha Airport Authority
+Omaha, NE
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Cybersecurity Analyst position with the Omaha Airport Authority. As someone who has dedicated my career to protecting critical infrastructure from evolving cyber threats, I am excited about the opportunity to safeguard one of Nebraska's most vital transportation hubs. The unique security challenges facing airport operations—from protecting passenger data and operational technology systems to ensuring compliance with TSA and federal regulations—align perfectly with my experience in both offensive and defensive security.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I have conducted over 40 penetration tests annually on diverse infrastructure including cloud environments, internal networks, and web applications. This experience has sharpened my ability to think like an attacker while building robust defensive strategies. I developed a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, a critical capability for an airport environment where every minute of downtime or security breach can have cascading operational impacts. Additionally, I led a red team exercise simulating an advanced persistent threat attack on a healthcare client, successfully demonstrating vulnerabilities in their critical systems and driving a comprehensive security overhaul—experience directly transferable to protecting the complex, interconnected systems that keep an airport running safely.
+
+What draws me most to the Omaha Airport Authority is the mission-critical nature of your work. Airports serve as economic engines and community lifelines, and I am energized by the prospect of protecting infrastructure that thousands of travelers and employees depend on daily. My AWS Security Specialty certification and experience implementing zero-trust network access policies would be immediately applicable as airports increasingly adopt cloud-based systems and IoT technologies. I am also passionate about security awareness training and would welcome the opportunity to help build a security-conscious culture across all airport departments.
+
+I would welcome the opportunity to discuss how my technical expertise and proactive security mindset can strengthen the Omaha Airport Authority's cybersecurity posture. Thank you for your consideration, and I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

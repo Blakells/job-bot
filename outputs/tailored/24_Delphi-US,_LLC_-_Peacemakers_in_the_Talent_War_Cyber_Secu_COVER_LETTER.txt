@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Delphi-US, LLC
+Augusta, ME
+
+Dear Hiring Manager,
+
+I was immediately drawn to the Cyber Security Analyst position at Delphi-US because your company's positioning as "Peacemakers in the Talent War" resonates deeply with my belief that cybersecurity is fundamentally about protecting people, not just systems. Your commitment to connecting exceptional talent with organizations that need them most suggests a company culture that values precision, trust, and strategic thinking—the same principles that guide my approach to cybersecurity. I'm excited about the opportunity to bring my offensive and defensive security expertise to a firm that understands the critical importance of safeguarding both client data and organizational reputation.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed a comprehensive skill set that directly aligns with the demands of enterprise security. I conduct over 40 penetration tests annually across web applications, networks, and cloud environments, consistently identifying critical vulnerabilities before threat actors can exploit them. One of my proudest achievements was leading a red team exercise for a healthcare client where I simulated an advanced persistent threat attack, demonstrating lateral movement and potential data exfiltration. This engagement resulted in a complete security architecture overhaul that significantly strengthened their defenses. Additionally, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%, proving my ability to create practical solutions that deliver measurable results.
+
+What excites me most about Delphi-US is the opportunity to protect an organization that serves as a trusted advisor to clients navigating critical hiring decisions. I understand that in the talent acquisition space, confidentiality and data integrity aren't just compliance requirements—they're fundamental to your business model. My experience implementing zero-trust network access policies and my proven track record of translating complex technical findings into actionable guidance for non-technical stakeholders would enable me to serve as both a security practitioner and a strategic partner to your team.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, incident response capabilities, and commitment to proactive security can help Delphi-US maintain the trust that makes you peacemakers in your industry. Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,86 @@
+ALEX J. CARTER
+Security Software Engineer | Detection Engineering | Threat Detection & Response
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security engineer with 4+ years of specialized experience in detection engineering, threat hunting, and building scalable security monitoring solutions. Proven expertise developing custom SIEM detections, automating security workflows with Python and Bash, and leveraging MITRE ATT&CK framework to identify adversary tactics. Strong background in both offensive security research and defensive detection logic, enabling comprehensive coverage across the attack lifecycle. Seeking to contribute detection engineering expertise to Netflix's security organization, building high-fidelity detection capabilities that protect streaming infrastructure at global scale.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Detection & Monitoring:
+Splunk, IBM QRadar, CrowdStrike Falcon, OSSEC, Zeek, Snort, Wireshark, Custom SIEM dashboards
+
+Security Engineering & Automation:
+Python, Bash, PowerShell, SQL, Detection-as-Code, SOAR workflows, API integration
+
+Threat Intelligence & Frameworks:
+MITRE ATT&CK, Threat modeling, Adversary emulation, Red team TTPs, NIST CSF, OWASP Top 10
+
+Cloud Security:
+AWS Security Hub, Azure Sentinel, CloudTrail, GuardDuty, IAM, Security Groups
+
+Offensive Security Research:
+Metasploit, Burp Suite, Cobalt Strike, BloodHound, Mimikatz, Nmap, SQLmap
+
+Platforms:
+Kali Linux, Ubuntu, Windows Server, Active Directory, VMware ESXi, JavaScript (basic)
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Engineered and deployed custom detection rules in Splunk SIEM covering 50+ MITRE ATT&CK techniques, reducing mean time to detect (MTTD) security incidents by 38% across Fortune 500 client environments.
+- Built automated threat detection workflows using Python and Splunk APIs, processing 10,000+ security events daily and surfacing high-fidelity alerts with 95% true positive rate.
+- Conducted offensive security research through 40+ annual penetration tests and red team exercises, translating attacker TTPs into actionable detection logic and monitoring coverage gaps.
+- Developed detection engineering playbooks mapping adversary behaviors (lateral movement, credential dumping, data exfiltration) to observable telemetry sources, enabling proactive threat hunting.
+- Authored 80+ technical security reports documenting attack patterns, detection opportunities, and remediation strategies; achieved 95% remediation compliance within 30 days.
+- Led red team APT simulation against healthcare client, identifying detection blind spots and implementing compensating monitoring controls across network, endpoint, and cloud layers.
+- Designed zero-trust architecture security controls for 3 enterprise clients, implementing continuous monitoring and behavioral analytics to detect policy violations.
+- Mentored 2 junior analysts on threat intelligence, detection engineering methodologies, and emerging CVE analysis through weekly technical sessions.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM, performing triage, enrichment, and escalation with detailed threat context and MITRE ATT&CK technique mapping.
+- Developed and tuned 25+ custom correlation rules in QRadar to detect suspicious authentication patterns, privilege escalation attempts, and anomalous network behavior.
+- Performed threat hunting across 500+ endpoint environment using vulnerability scan data (Nessus, OpenVAS), identifying indicators of compromise and tracking remediation in Jira.
+- Engineered phishing detection and response program using GoPhish, analyzing user behavior patterns and reducing click-through rates by 34% through data-driven training.
+- Created and maintained 15+ incident response runbooks with detection logic, investigation procedures, and containment workflows, reducing average triage time by 22 minutes.
+- Participated in 24/7 SOC on-call rotation, responding to security incidents with rapid detection, analysis, and containment to meet SLA requirements.
+- Collaborated with engineering teams to improve logging coverage and telemetry quality for enhanced detection capabilities.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ users across 14 locations, developing strong troubleshooting and problem-solving skills applicable to security incident investigation.
+- Assisted with network infrastructure deployment including switch configurations, VLAN segmentation, and wireless access point setup.
+- Identified and escalated 3 malware infections through behavioral analysis and anomaly detection, initiating incident response procedures and containment.
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

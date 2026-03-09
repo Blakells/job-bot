@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Delphi-US, LLC
+Augusta, ME
+
+Dear Hiring Manager,
+
+I was immediately drawn to the Cyber Security Analyst position at Delphi-US because your tagline "Peacemakers in the Talent War" speaks to something I deeply believe: that the right talent, placed strategically, can transform an organization's security posture. As someone who has spent four years on the front lines of cybersecurity—both attacking and defending systems—I'm excited about the opportunity to bring my offensive and defensive expertise to support Delphi-US's mission of connecting exceptional talent with organizations that need them most.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've conducted over 40 penetration tests annually across Fortune 500 clients in healthcare and enterprise sectors, consistently uncovering critical vulnerabilities before malicious actors could exploit them. One of my proudest achievements was leading a red team exercise for a healthcare client where I simulated an advanced persistent threat attack, demonstrating lateral movement and data exfiltration capabilities that prompted a complete security architecture overhaul. Additionally, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%, directly protecting organizational assets through faster threat identification. My vulnerability assessment reports have achieved a 95% remediation success rate, proving that technical expertise paired with clear communication drives real security improvements.
+
+What resonates with me about Delphi-US is your understanding that cybersecurity isn't just about technology—it's about people. Throughout my career, I've prioritized mentoring junior analysts and delivering security awareness training because I know that human expertise is our strongest defense. Your role as talent connectors in the cybersecurity space aligns perfectly with my belief that investing in people creates lasting security outcomes. I'm remote-work experienced with strong client-facing skills, and I thrive in environments where collaboration and knowledge-sharing are valued.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, SIEM proficiency, and passion for building secure systems can contribute to Delphi-US's continued success. I'm available at your convenience for a conversation about this role.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

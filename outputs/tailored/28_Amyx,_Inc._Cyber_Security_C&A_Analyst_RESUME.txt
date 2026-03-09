@@ -1,0 +1,85 @@
+ALEX J. CARTER
+Cyber Security C&A Analyst | Security Compliance Specialist | Risk Assessment Professional
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven cybersecurity professional with 4+ years of specialized experience in security assessment, vulnerability management, and compliance frameworks including NIST CSF, ISO 27001, and CIS Controls. Demonstrated expertise in conducting comprehensive security assessments, documenting findings in detailed reports, and providing actionable remediation guidance to ensure organizational compliance and risk mitigation. Holds CompTIA Security+, CEH, and AWS Security certifications. Proven ability to work independently in remote environments while collaborating with cross-functional teams to strengthen security postures and achieve certification and accreditation objectives.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Conducted 40+ comprehensive security assessments annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying and documenting critical security weaknesses and compliance gaps.
+- Authored 80+ detailed security assessment reports with risk ratings, evidence documentation, and actionable remediation guidance aligned with NIST CSF and ISO 27001 frameworks; achieved 95% client remediation compliance within 30 days.
+- Performed vulnerability assessments and security control validation for enterprise clients, tracking findings and remediation status to support certification and accreditation processes.
+- Developed and maintained security monitoring dashboards using Splunk, enabling continuous monitoring and assessment of security controls effectiveness.
+- Implemented zero-trust network access (ZTNA) policies and security controls for 3 mid-size enterprise clients, documenting security architecture changes and validating control implementation.
+- Led security assessment exercises evaluating organizational security posture, identifying control gaps, and providing comprehensive recommendations for security architecture improvements.
+- Collaborated with client stakeholders to ensure security requirements compliance and provided technical guidance on security control implementation and validation.
+- Mentored 2 junior analysts on security assessment methodologies, vulnerability analysis, and compliance framework application.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Performed quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint environment, documenting findings and tracking remediation compliance in Jira to support ongoing authorization requirements.
+- Monitored and analyzed 200+ security alerts daily using IBM QRadar SIEM, documenting incidents with detailed context, impact assessment, and remediation recommendations.
+- Developed and maintained 15+ incident response runbooks and security procedures, ensuring documentation accuracy and compliance with organizational security policies.
+- Supported security awareness and training initiatives using GoPhish phishing simulations; documented results and tracked 34% improvement in security awareness metrics.
+- Participated in security operations center (SOC) activities, ensuring compliance with service level agreements and documenting security events for audit and compliance purposes.
+- Assisted in security control assessments and validation activities, providing evidence collection and documentation to support compliance objectives.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, documenting issues and resolutions in accordance with IT service management procedures.
+- Supported network security initiatives including VLAN configurations and wireless access point deployments, ensuring compliance with security policies.
+- Identified and documented security incidents including 3 malware infections, following proper incident reporting and response procedures to ensure timely remediation.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Security Assessment & Compliance:
+NIST Cybersecurity Framework (CSF), ISO 27001, CIS Controls, MITRE ATT&CK, OWASP Top 10, Risk Management Framework (RMF), Security Control Assessment, Vulnerability Management
+
+Security Tools & Platforms:
+Nessus, OpenVAS, Nmap, Burp Suite, Splunk, IBM QRadar, CrowdStrike Falcon, Wireshark, Metasploit, SQLmap
+
+Cloud Security & Monitoring:
+AWS Security Hub, Azure Sentinel, CloudTrail, GuardDuty, IAM, Security Groups, Cloud Compliance Assessment
+
+Documentation & Reporting:
+Security Assessment Reports, Risk Assessment Documentation, Compliance Gap Analysis, Remediation Tracking, Security Control Documentation, Incident Response Procedures
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript (basic)
+
+Operating Systems & Infrastructure:
+Windows Server 2019, Active Directory, Kali Linux, Ubuntu, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+CompTIA Security+ | CompTIA | 2021
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

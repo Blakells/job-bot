@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Runpod
+
+Dear Runpod Team,
+
+I'm excited to apply for the Security Engineer position at Runpod. As someone who's watched the GPU cloud computing space evolve, I'm impressed by how Runpod is democratizing access to compute resources for AI developers and researchers. Securing infrastructure that powers cutting-edge AI workloads presents unique challenges—from container orchestration vulnerabilities to multi-tenant isolation—and I'm eager to bring my offensive and defensive security expertise to help protect your platform and users.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually on cloud infrastructure and web applications, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. Most relevant to Runpod's cloud-native environment, I've implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. I also led a red team exercise for a healthcare client where I simulated an APT attack, successfully demonstrating lateral movement across their cloud infrastructure—insights that led to a complete security architecture overhaul. My hands-on AWS security experience, combined with my CEH and AWS Security certifications, means I can immediately contribute to hardening Runpod's infrastructure while thinking like an attacker to stay ahead of emerging threats.
+
+What draws me to Runpod beyond the technical challenges is your mission to make powerful compute accessible. I've always believed security shouldn't be a barrier to innovation—it should be an enabler. Throughout my career, I've focused not just on finding vulnerabilities but on delivering actionable remediation guidance that development teams can actually implement. I've mentored junior analysts and delivered security awareness training because I believe the best security posture comes from empowering entire teams, not just building walls. Runpod's remote-first culture and focus on serving developers aligns perfectly with my collaborative approach and my four years of remote work experience.
+
+I'd welcome the opportunity to discuss how my penetration testing background and cloud security expertise can help Runpod maintain the robust security posture your users depend on. I'm available for a conversation at your convenience.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

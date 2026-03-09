@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Geographic Solutions, Inc.
+Palm Harbor, FL
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Information Security Analyst I position at Geographic Solutions, Inc. As a cybersecurity professional who is passionate about protecting critical systems that serve the public good, I am particularly drawn to Geographic Solutions' mission of delivering workforce development and unemployment insurance solutions to government agencies nationwide. The opportunity to safeguard platforms that directly impact millions of Americans seeking employment services is exactly the kind of meaningful work I want to contribute to at this stage of my career.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I have developed a comprehensive skill set that aligns perfectly with the demands of this position. I conduct over 40 penetration tests annually across web applications, networks, and cloud infrastructure, consistently identifying critical vulnerabilities before they can be exploited—a capability that would be invaluable in protecting Geographic Solutions' government-facing platforms. Additionally, I developed a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, demonstrating my ability to not only identify threats but also build proactive monitoring solutions. My experience leading red team exercises and implementing zero-trust network access policies for enterprise clients has given me both the offensive and defensive security perspective needed to comprehensively protect complex systems.
+
+What excites me most about Geographic Solutions is your commitment to serving the public sector with reliable, secure technology solutions. Having held CompTIA Security+, CEH, and AWS Security Specialty certifications, I understand the heightened security requirements and compliance standards that come with government contracts. I thrive in environments where security isn't just a checkbox but a fundamental responsibility, and I'm energized by the prospect of working with a team that shares this mindset. My track record of translating complex technical findings into actionable guidance for diverse stakeholders would serve me well in collaborating with your development teams and government clients.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, incident response experience, and commitment to mission-driven work can contribute to Geographic Solutions' continued success in securing critical public services. Thank you for your consideration, and I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

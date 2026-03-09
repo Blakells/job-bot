@@ -1,0 +1,90 @@
+ALEX J. CARTER
+Threat Hunting Analyst | Cybersecurity Analyst | Security Operations Specialist
+
+Location: Florence, SC (Remote Available)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Proactive cybersecurity professional with 4+ years of experience in threat detection, incident response, and adversary behavior analysis. Expertise in leveraging SIEM platforms, threat intelligence, and the MITRE ATT&CK framework to identify and neutralize advanced persistent threats before they impact organizational assets. Proven ability to conduct red team exercises simulating APT tactics, analyze security telemetry at scale, and translate technical findings into actionable intelligence. Holds CEH, Security+, and AWS Security certifications. Seeking to apply offensive and defensive security expertise as a Threat Hunting Analyst at Aretec, Inc.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Proactively hunt for threats across enterprise environments by analyzing SIEM telemetry, network traffic, and endpoint behavior using Splunk, reducing mean time to detect (MTTD) security incidents by 38%.
+- Led red team exercise simulating APT attack tactics including lateral movement, credential harvesting, and data exfiltration on healthcare client infrastructure, uncovering defensive gaps and driving security architecture improvements.
+- Developed custom detection rules and correlation searches aligned with MITRE ATT&CK framework, identifying previously undetected malicious activity across 40+ client environments annually.
+- Conducted threat intelligence-driven investigations using CrowdStrike Falcon, Wireshark, and network forensics tools to identify indicators of compromise (IOCs) and adversary tradecraft.
+- Performed 40+ offensive security assessments annually on web applications, internal networks, and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement and providing remediation guidance.
+- Authored 80+ detailed threat analysis and vulnerability assessment reports with actionable intelligence; achieved 95% remediation compliance within 30 days.
+- Mentored 2 junior analysts on emerging CVEs, threat actor TTPs, and proactive hunting methodologies through weekly knowledge-sharing sessions.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ security alerts daily using IBM QRadar SIEM, performing triage, threat correlation, and escalation of confirmed incidents with detailed context and containment recommendations.
+- Conducted hypothesis-driven threat hunts across 500+ endpoint environment using Nessus, OpenVAS, and behavioral analysis techniques to identify anomalous activity and potential compromises.
+- Analyzed network traffic patterns and system logs to detect lateral movement, privilege escalation, and persistence mechanisms consistent with advanced threat actor behavior.
+- Developed and maintained 15+ incident response runbooks mapped to MITRE ATT&CK tactics, reducing average triage and response time by 22 minutes per incident.
+- Participated in 24/7 SOC on-call rotation, responding to after-hours priority incidents and ensuring SLA compliance through rapid threat containment and forensic analysis.
+- Supported phishing simulation and threat awareness campaigns using GoPhish, achieving 34% reduction in user susceptibility through targeted training based on threat intelligence.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, resolving hardware, software, and network connectivity issues while maintaining security awareness.
+- Identified and reported 3 active malware infections through behavioral analysis and anomaly detection, initiating proper incident response procedures and containment.
+- Assisted network administrator with switch configurations, VLAN setup, and wireless access point deployments in support of secure network infrastructure.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Threat Hunting & Detection:
+MITRE ATT&CK Framework, Threat Intelligence Analysis, IOC Identification, Behavioral Analysis, Hypothesis-Driven Hunting, Adversary Emulation
+
+SIEM & Security Monitoring:
+Splunk, IBM QRadar, Azure Sentinel, CrowdStrike Falcon, AWS GuardDuty, Security Hub
+
+Network & Endpoint Analysis:
+Wireshark, Zeek, Snort, OSSEC, Nmap, BloodHound, Mimikatz, PowerShell forensics
+
+Offensive Security Tools:
+Metasploit, Burp Suite, Cobalt Strike, Nikto, SQLmap (for adversary TTP simulation)
+
+Cloud Security:
+AWS Security Hub, Azure Sentinel, CloudTrail, GuardDuty, IAM, Security Groups
+
+Frameworks & Standards:
+MITRE ATT&CK, NIST CSF, CIS Controls, OWASP Top 10, ISO 27001
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript (basic)
+
+Operating Systems:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

@@ -1,0 +1,90 @@
+ALEX J. CARTER
+Security Engineer | Cybersecurity Analyst | Penetration Tester
+
+Location: Florence, SC (Remote)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security engineer with 4+ years of progressive experience building and maintaining secure systems across cloud and on-premise environments. Proven expertise in vulnerability management, security architecture, penetration testing, and incident response. Strong background in implementing security controls, conducting risk assessments, and collaborating cross-functionally to embed security throughout the development lifecycle. Certified in AWS Security, CEH, and Security+. Passionate about protecting customer data and enabling secure, scalable infrastructure at high-growth companies like Human Interest.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Engineer and maintain security monitoring infrastructure using Splunk SIEM, reducing mean time to detect (MTTD) security incidents by 38% and enabling real-time threat detection across cloud and hybrid environments.
+- Conduct 40+ security assessments annually including penetration tests, vulnerability assessments, and architecture reviews for Fortune 500 clients across web applications, cloud infrastructure (AWS/Azure), and internal networks.
+- Design and implement zero-trust network access (ZTNA) security architectures for 3 enterprise clients, reducing attack surface by 60% and improving security posture through least-privilege access controls.
+- Identify and remediate critical security vulnerabilities in production systems; authored 80+ detailed security assessment reports with prioritized remediation guidance, achieving 95% re-test pass rate within 30 days.
+- Lead red team exercises simulating advanced persistent threat (APT) scenarios, demonstrating security gaps and driving comprehensive security architecture improvements for healthcare and financial services clients.
+- Collaborate with engineering teams to integrate security best practices into CI/CD pipelines and infrastructure-as-code deployments.
+- Mentor 2 junior security analysts through weekly knowledge-sharing sessions on emerging threats, CVE analysis, and security tooling.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and responded to 200+ daily security alerts using IBM QRadar SIEM, performing triage, investigation, and incident escalation with detailed context for senior security team.
+- Managed enterprise vulnerability management program using Nessus and OpenVAS across 500+ endpoints; tracked remediation workflows in Jira and reported risk metrics to leadership.
+- Developed and executed phishing simulation campaigns using GoPhish, reducing click-through rates by 34% through targeted security awareness training and user education initiatives.
+- Created and maintained 15+ incident response playbooks and runbooks, standardizing security operations and reducing average triage time by 22 minutes per incident.
+- Participated in 24/7 SOC on-call rotation, responding to critical security incidents and ensuring SLA compliance for P1 events.
+- Performed security configuration reviews and hardening for Windows Server, Active Directory, and network infrastructure.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered technical support for 2,400+ users across 14 locations, troubleshooting security-related issues including malware infections, account compromises, and policy violations.
+- Collaborated with network administrator on secure network configurations including VLAN segmentation, switch hardening, and wireless access point deployments.
+- Identified and escalated 3 active malware infections through behavioral analysis and log review, initiating incident response procedures and preventing data loss.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Security Engineering & Architecture:
+Zero-trust architecture, IAM, security controls design, risk assessment, threat modeling, security hardening, vulnerability management, incident response
+
+Cloud Security (AWS/Azure):
+AWS Security Hub, GuardDuty, CloudTrail, IAM, Security Groups, VPC security, Azure Sentinel, cloud security posture management
+
+Security Operations & Monitoring:
+Splunk, IBM QRadar, CrowdStrike Falcon, SIEM engineering, log analysis, threat detection, security automation, alerting and dashboards
+
+Penetration Testing & Vulnerability Assessment:
+Metasploit, Burp Suite, Nmap, Nessus, OpenVAS, SQLmap, Cobalt Strike, web application security, network security testing
+
+Security Frameworks & Standards:
+NIST Cybersecurity Framework, MITRE ATT&CK, OWASP Top 10, CIS Controls, ISO 27001, SOC 2
+
+Network Security & Analysis:
+Wireshark, Snort, Zeek, OSSEC, firewall management, IDS/IPS, network segmentation
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript (basic)
+
+Systems & Infrastructure:
+Linux (Kali, Ubuntu), Windows Server 2019, Active Directory, VMware ESXi, infrastructure security
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

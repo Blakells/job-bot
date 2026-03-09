@@ -1,0 +1,18 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Cotiviti
+Re: Senior Security Engineer - IAM
+
+I'm writing to express my strong interest in the Senior Security Engineer - IAM position at Cotiviti. As a cybersecurity professional who has spent significant time securing healthcare infrastructure, I'm particularly drawn to Cotiviti's mission of ensuring payment accuracy and care quality across the healthcare ecosystem. The opportunity to protect identity and access management systems that directly impact healthcare data integrity aligns perfectly with both my technical expertise and my commitment to securing sensitive patient information.
+
+In my current role at SecureNet Solutions, I've developed deep expertise in areas critical to IAM security. I led the implementation of zero-trust network access policies for three enterprise clients, reducing their attack surface by 60% through rigorous identity verification and least-privilege access controls. During a red team exercise for a major healthcare client, I successfully demonstrated how compromised credentials could enable lateral movement and data exfiltration—findings that drove a complete security architecture redesign including enhanced multi-factor authentication and privileged access management. Additionally, I've conducted over 40 penetration tests annually, with a particular focus on authentication bypass vulnerabilities and authorization flaws, achieving a 95% remediation success rate. My hands-on experience with SIEM platforms like Splunk and cloud security in AWS has given me the technical foundation to monitor, detect, and respond to identity-based threats effectively.
+
+What excites me most about Cotiviti is your data-driven approach to solving complex healthcare challenges. Having worked extensively with Fortune 500 healthcare clients, I understand the critical balance between enabling seamless access for legitimate users while maintaining ironclad security controls. I thrive in environments where precision matters—where a single misconfigured permission or overlooked vulnerability could have significant downstream impacts. My experience mentoring junior analysts and delivering security training has also taught me the importance of building security-conscious cultures, not just implementing technical controls.
+
+I'd welcome the opportunity to discuss how my offensive and defensive security background can strengthen Cotiviti's IAM posture. I'm confident I can contribute immediately to your security initiatives while continuing to grow as a senior engineer. Thank you for your consideration, and I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

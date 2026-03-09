@@ -1,0 +1,84 @@
+ALEX J. CARTER
+Security Engineer
+
+Location: Florence, SC (Open to relocation to New York, NY)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security engineer with 4+ years of experience protecting enterprise infrastructure through offensive and defensive security practices. Specialized in penetration testing, vulnerability assessment, cloud security architecture, and security incident response across web applications, networks, and cloud environments. Proven ability to identify and remediate critical security weaknesses at scale, implement zero-trust security models, and build detection capabilities using SIEM platforms. Holds CEH, AWS Security Specialty, and Security+ certifications. Eager to contribute to Meta's mission of building secure, scalable systems that protect billions of users.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ security assessments annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients, identifying an average of 12 critical vulnerabilities per engagement.
+- Build and maintain custom SIEM detection rules and dashboards using Splunk, reducing mean time to detect (MTTD) for security incidents by 38%.
+- Lead red team operations simulating advanced persistent threat (APT) attacks, including lateral movement and data exfiltration scenarios, driving comprehensive security architecture improvements for enterprise clients.
+- Design and implement zero-trust network access (ZTNA) policies for 3 enterprise clients, reducing attack surface by an estimated 60%.
+- Author detailed security assessment reports with prioritized remediation guidance; achieve 95% re-test pass rate within 30 days through clear, actionable recommendations.
+- Leverage MITRE ATT&CK framework to map adversary tactics and techniques, improving threat detection coverage and incident response playbooks.
+- Mentor 2 junior security analysts through weekly technical training sessions on emerging vulnerabilities and threat intelligence.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ security alerts daily using IBM QRadar SIEM, performing triage, investigation, and escalation with detailed context for confirmed incidents.
+- Conducted quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; tracked remediation workflows and compliance in Jira.
+- Developed and executed phishing simulation campaigns using GoPhish; reduced click-through rates by 34% through targeted security awareness training programs.
+- Created and maintained 15+ incident response runbooks aligned with NIST framework, reducing average triage time by 22 minutes per incident.
+- Participated in 24/7 SOC on-call rotation, responding to high-priority security incidents and ensuring SLA compliance.
+- Performed log analysis and forensic investigation using Wireshark and native SIEM capabilities to identify root cause and scope of security events.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered technical support for 2,400+ end-users across 14 locations, troubleshooting hardware, software, and network connectivity issues.
+- Supported network infrastructure projects including switch configurations, VLAN setup, and wireless access point deployments.
+- Identified and escalated 3 active malware infections through behavioral analysis, initiating incident response procedures and preventing further spread.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Security Engineering & Testing:
+Metasploit, Burp Suite, Nmap, Cobalt Strike, BloodHound, Mimikatz, Nikto, SQLmap, OWASP Top 10
+
+Security Operations & Detection:
+Splunk, IBM QRadar, CrowdStrike Falcon, Wireshark, Snort, OSSEC, Zeek, SIEM tuning and rule development
+
+Cloud Security:
+AWS Security Hub, Azure Sentinel, IAM policy design, Security Groups, CloudTrail, GuardDuty, cloud infrastructure hardening
+
+Security Frameworks:
+MITRE ATT&CK, NIST Cybersecurity Framework, OWASP, CIS Controls, ISO 27001
+
+Programming & Scripting:
+Python, Bash, PowerShell, SQL, JavaScript
+
+Infrastructure & Systems:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi, zero-trust architecture
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

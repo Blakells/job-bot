@@ -1,0 +1,19 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Amyx, Inc.
+
+Dear Hiring Team,
+
+I was immediately drawn to the Cybersecurity C&A Analyst (OT) position at Amyx because it represents the convergence of two areas I'm deeply passionate about: rigorous compliance frameworks and the unique security challenges of operational technology environments. Amyx's reputation for delivering mission-critical cybersecurity solutions to federal clients, particularly in protecting critical infrastructure, aligns perfectly with where I want to focus my career. The opportunity to contribute to certification and accreditation processes that directly safeguard OT systems is exactly the type of high-impact work I'm seeking.
+
+Throughout my four years in cybersecurity, I've developed a strong foundation that translates directly to C&A work in OT environments. At SecureNet Solutions, I conducted over 40 penetration tests annually across diverse infrastructures, including industrial control systems for healthcare clients where uptime and safety were paramount—experience that taught me the critical balance between security rigor and operational continuity. I've authored more than 80 detailed vulnerability assessment reports with actionable remediation guidance, achieving a 95% client re-test pass rate. This documentation discipline mirrors the meticulous requirements of RMF and NIST frameworks essential to C&A processes. Additionally, my implementation of zero-trust network access policies for enterprise clients reduced attack surfaces by 60%, demonstrating my ability to translate security controls into measurable risk reduction—a core competency for effective accreditation work.
+
+What excites me most about Amyx is your commitment to supporting federal missions through innovative cybersecurity solutions. Having worked remotely for the past three years, I've honed the self-discipline and communication skills essential for distributed teams supporting critical government operations. My certifications in Security+, CEH, and AWS Security demonstrate my commitment to maintaining the technical expertise and compliance knowledge that federal C&A work demands. I'm energized by the prospect of protecting operational technology that keeps essential services running and communities safe.
+
+I would welcome the opportunity to discuss how my technical background, documentation expertise, and passion for OT security can contribute to Amyx's mission. I'm available at your convenience for a conversation about how I can support your team's critical work.
+
+Sincerely,
+Alex J. Carter

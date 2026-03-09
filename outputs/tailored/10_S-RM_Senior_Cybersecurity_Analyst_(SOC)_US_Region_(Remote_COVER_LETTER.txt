@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+S-RM
+USA
+
+Dear Hiring Manager,
+
+I was immediately drawn to S-RM's Senior Cybersecurity Analyst position because of your firm's unique positioning at the intersection of cybersecurity and strategic risk intelligence. As someone who has spent the past four years translating complex security threats into actionable business insights for Fortune 500 clients, I'm excited by the opportunity to join a team that approaches security through such a comprehensive, intelligence-driven lens. The prospect of working within S-RM's SOC while contributing to your broader risk advisory mission aligns perfectly with my career trajectory.
+
+In my current role at SecureNet Solutions, I've developed the exact blend of offensive and defensive capabilities this position demands. I conduct 40+ penetration tests annually across web applications, networks, and cloud infrastructure, consistently identifying critical vulnerabilities before adversaries can exploit them—achieving a 95% remediation success rate. Beyond testing, I've built operational security capabilities from the ground up, including developing custom SIEM dashboards in Splunk that reduced our mean time to detect incidents by 38%. Most relevant to S-RM's client-focused approach, I led a red team exercise for a healthcare organization that simulated an APT attack, demonstrating lateral movement and data exfiltration scenarios that ultimately drove a complete security architecture overhaul. This experience taught me how to communicate technical findings in ways that resonate with C-suite stakeholders and drive organizational change.
+
+What excites me most about S-RM is your commitment to protecting clients operating in complex, high-stakes environments. Having worked extensively with healthcare and enterprise clients facing sophisticated threat actors, I understand that effective security requires more than technical controls—it demands contextual intelligence, business acumen, and the ability to anticipate adversary behavior. Your firm's holistic approach to risk, combining cyber defense with geopolitical and corporate intelligence, represents the future of how organizations must think about security. I'm eager to contribute my technical expertise while continuing to develop the strategic mindset that defines S-RM's advisory work.
+
+I would welcome the opportunity to discuss how my background in penetration testing, SIEM operations, and client-facing security consulting can contribute to S-RM's SOC capabilities. Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

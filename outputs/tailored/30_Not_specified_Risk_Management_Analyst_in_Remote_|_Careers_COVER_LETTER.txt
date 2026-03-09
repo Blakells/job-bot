@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Remote
+Risk Management Analyst Position
+
+Dear Hiring Team,
+
+I'm excited to apply for the Risk Management Analyst position at Remote. As someone who has worked remotely for the past three years while helping organizations identify and mitigate critical security risks, I'm drawn to Remote's mission of enabling distributed work globally. The opportunity to apply my cybersecurity expertise to protect a platform that empowers remote teams worldwide is exactly the kind of meaningful challenge I'm seeking.
+
+In my current role at SecureNet Solutions, I've developed a strong foundation in risk identification and mitigation that directly translates to this position. I've conducted over 40 penetration tests annually across Fortune 500 clients, uncovering an average of 12 critical vulnerabilities per engagement and achieving a 95% remediation success rate. When I led a red team exercise simulating an APT attack on a healthcare client, I identified systemic risks in their security architecture that resulted in a complete infrastructure overhaul—demonstrating my ability to not just find problems, but drive meaningful risk reduction. Additionally, I built custom SIEM dashboards in Splunk that reduced mean time to detect security incidents by 38%, showing my capability to implement proactive monitoring systems that prevent risks from materializing into incidents.
+
+What excites me most about Remote is the unique risk landscape you navigate—operating across multiple jurisdictions, managing sensitive employee data globally, and ensuring compliance with diverse regulatory frameworks. My experience implementing zero-trust architecture for enterprise clients and securing cloud infrastructure on AWS has taught me to think holistically about risk in distributed environments. I thrive in roles that require both technical depth and clear communication with stakeholders, having authored over 80 detailed vulnerability reports that translate complex security findings into actionable business guidance.
+
+I'd welcome the opportunity to discuss how my offensive and defensive security background can strengthen Remote's risk management program. I'm confident that my combination of technical expertise, remote work experience, and passion for enabling secure distributed teams makes me an excellent fit for this role.
+
+Thank you for your consideration. I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

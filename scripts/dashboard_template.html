@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Bot Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3d;--accent:#7c6af7;--accent2:#4ecdc4;--accent3:#ff6b6b;--accent4:#ffd93d;--text:#e8e8f0;--text-dim:#6b6b8a;--green:#51cf66;--yellow:#ffd43b;--red:#ff6b6b;--blue:#4dabf7}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,106,247,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,247,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.container{max-width:1400px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+header{border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);z-index:100}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Space Mono',monospace;font-size:18px;color:var(--accent);display:flex;align-items:center;gap:10px}
+.logo-dot{width:8px;height:8px;background:var(--accent2);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.header-actions{display:flex;gap:10px;align-items:center}
+.profile-select{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;outline:none}
+.profile-select:focus{border-color:var(--accent)}
+.btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:#6b5ae6;color:#fff}
+.profile-bar{display:flex;align-items:center;gap:16px;padding:16px 0;font-size:13px;color:var(--text-dim);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.profile-bar .name{font-size:16px;font-weight:600;color:var(--text)}
+.role-tag{padding:3px 10px;border-radius:12px;background:rgba(124,106,247,.12);color:var(--accent);font-size:11px;font-family:'Space Mono',monospace}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;padding:24px 0}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s}
+.stat-card:hover{border-color:var(--accent)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient)}
+.stat-card[data-color="purple"]{--gradient:linear-gradient(90deg,var(--accent),var(--accent2))}
+.stat-card[data-color="teal"]{--gradient:linear-gradient(90deg,var(--accent2),var(--blue))}
+.stat-card[data-color="yellow"]{--gradient:linear-gradient(90deg,var(--accent4),#ff9f43)}
+.stat-card[data-color="green"]{--gradient:linear-gradient(90deg,var(--green),var(--accent2))}
+.stat-card[data-color="red"]{--gradient:linear-gradient(90deg,var(--red),#ff9f43)}
+.stat-card[data-color="blue"]{--gradient:linear-gradient(90deg,var(--blue),var(--accent))}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);font-family:'Space Mono',monospace}
+.stat-value{font-size:32px;font-weight:600;margin-top:6px;line-height:1}
+.stat-sub{font-size:11px;color:var(--text-dim);margin-top:5px}
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(124,106,247,.1)}
+.search-input{margin-left:auto;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;width:240px;outline:none}
+.search-input:focus{border-color:var(--accent)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
+th{padding:12px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-family:'Space Mono',monospace;font-weight:400;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--accent)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(124,106,247,.05)}
+td{padding:14px 16px;font-size:14px;vertical-align:middle}
+.score-pill{display:inline-flex;align-items:center;justify-content:center;width:48px;height:28px;border-radius:6px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700}
+.score-high{background:rgba(81,207,102,.15);color:var(--green)}
+.score-mid{background:rgba(255,212,59,.15);color:var(--yellow)}
+.score-low{background:rgba(255,107,107,.15);color:var(--red)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap}
+.status-found{background:rgba(124,106,247,.15);color:var(--accent)}
+.status-manual_apply{background:rgba(255,212,59,.12);color:var(--yellow)}
+.status-tailored{background:rgba(78,205,196,.15);color:var(--accent2)}
+.status-applied{background:rgba(255,212,59,.15);color:var(--yellow)}
+.status-interview{background:rgba(81,207,102,.15);color:var(--green)}
+.status-rejected{background:rgba(255,107,107,.15);color:var(--red)}
+.status-offer{background:rgba(81,207,102,.3);color:var(--green);border:1px solid var(--green)}
+.source-tag{font-size:11px;color:var(--text-dim);font-family:'Space Mono',monospace}
+.action-btns{display:flex;gap:6px;opacity:0;transition:opacity .2s}
+tbody tr:hover .action-btns{opacity:1}
+.action-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.action-btn.apply{border-color:var(--accent2);color:var(--accent2)}
+.action-btn.apply:hover{background:rgba(78,205,196,.1)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:640px;max-width:95vw;max-height:85vh;overflow-y:auto;position:relative}
+.modal h2{font-size:20px;margin-bottom:4px;padding-right:40px}
+.modal-company{color:var(--accent2);font-size:14px;margin-bottom:20px;font-family:'Space Mono',monospace}
+.modal-section{margin-bottom:20px}
+.modal-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-bottom:8px}
+.modal-value{font-size:14px;line-height:1.6;color:var(--text)}
+.status-select,.notes-input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-top:4px}
+.notes-input{resize:vertical;min-height:80px}
+.status-select:focus,.notes-input:focus{border-color:var(--accent)}
+.modal-close{position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.modal-url{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);word-break:break-all;text-decoration:none}
+.modal-url:hover{text-decoration:underline}
+.modal-footer{display:flex;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.empty{text-align:center;padding:80px 20px;color:var(--text-dim)}
+.empty h3{font-size:18px;margin-bottom:8px;color:var(--text)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:12px 20px;font-size:14px;z-index:300;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.profile-bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="container"><div class="header-inner">
+  <div class="logo"><div class="logo-dot"></div>JOB_BOT / DASHBOARD</div>
+  <div class="header-actions">
+    <select class="profile-select" id="profile-select" onchange="switchProfile(this.value)"><option value="">Loading...</option></select>
+    <span id="last-updated" style="font-size:12px;color:var(--text-dim);font-family:'Space Mono',monospace"></span>
+    <button class="btn" onclick="refreshData()">↺ Refresh</button>
+  </div>
+</div></div></header>
+
+<div class="container">
+  <div class="profile-bar" id="profile-bar" style="display:none">
+    <span class="name" id="profile-name"></span>
+    <span style="color:var(--text-dim)">•</span>
+    <div id="profile-roles" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card" data-color="purple"><div class="stat-label">Total Found</div><div class="stat-value" id="stat-total">—</div><div class="stat-sub">all time</div></div>
+    <div class="stat-card" data-color="blue"><div class="stat-label">Strong Match</div><div class="stat-value" id="stat-strong">—</div><div class="stat-sub">score ≥ 70%</div></div>
+    <div class="stat-card" data-color="teal"><div class="stat-label">Applied</div><div class="stat-value" id="stat-applied">—</div><div class="stat-sub">sent</div></div>
+    <div class="stat-card" data-color="yellow"><div class="stat-label">Interviews</div><div class="stat-value" id="stat-interviews">—</div><div class="stat-sub">in progress</div></div>
+    <div class="stat-card" data-color="green"><div class="stat-label">Offers</div><div class="stat-value" id="stat-offers">—</div><div class="stat-sub">received</div></div>
+    <div class="stat-card" data-color="red"><div class="stat-label">Avg Score</div><div class="stat-value" id="stat-avg">—</div><div class="stat-sub">match quality</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('found',this)">Found</button>
+    <button class="filter-btn" onclick="setFilter('manual_apply',this)">Easy Apply</button>
+    <button class="filter-btn" onclick="setFilter('tailored',this)">Tailored</button>
+    <button class="filter-btn" onclick="setFilter('applied',this)">Applied</button>
+    <button class="filter-btn" onclick="setFilter('interview',this)">Interview</button>
+    <button class="filter-btn" onclick="setFilter('offer',this)">Offer</button>
+    <button class="filter-btn" onclick="setFilter('rejected',this)">Rejected</button>
+    <input type="text" class="search-input" placeholder="Search jobs..." oninput="setSearch(this.value)">
+  </div>
+
+  <div class="table-wrap"><table>
+    <thead><tr>
+      <th onclick="sortBy('score')">Score ▼</th><th onclick="sortBy('title')">Job Title</th>
+      <th onclick="sortBy('company')">Company</th><th onclick="sortBy('location')">Location</th>
+      <th>Salary</th><th onclick="sortBy('source')">Source</th>
+      <th onclick="sortBy('status')">Status</th><th onclick="sortBy('date_found')">Date</th><th></th>
+    </tr></thead>
+    <tbody id="jobs-tbody"><tr><td colspan="9"><div class="empty"><h3>Select a profile above</h3><p>Choose a person to view their job matches</p></div></td></tr></tbody>
+  </table></div>
+  <div style="height:40px"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)"><div class="modal">
+  <button class="modal-close" onclick="closeModalDirect()">×</button>
+  <h2 id="modal-title"></h2>
+  <div class="modal-company" id="modal-company"></div>
+  <div class="modal-section"><div class="modal-label">Match Score</div><div class="modal-value" id="modal-score"></div></div>
+  <div class="modal-section"><div class="modal-label">Reasoning</div><div class="modal-value" id="modal-reasoning"></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="modal-section"><div class="modal-label">Location</div><div class="modal-value" id="modal-location"></div></div>
+    <div class="modal-section"><div class="modal-label">Salary</div><div class="modal-value" id="modal-salary"></div></div>
+  </div>
+  <div class="modal-section"><div class="modal-label">Apply URL</div><a class="modal-url" id="modal-url" href="#" target="_blank"></a></div>
+  <div class="modal-section"><div class="modal-label">Status</div>
+    <select class="status-select" id="modal-status" onchange="updateField('status',this.value)">
+      <option value="found">🔍 Found</option><option value="manual_apply">🖱️ Easy Apply</option>
+      <option value="tailored">✂️ Tailored</option><option value="applied">📤 Applied</option>
+      <option value="interview">🤝 Interview</option><option value="offer">🎉 Offer</option>
+      <option value="rejected">❌ Rejected</option>
+    </select>
+  </div>
+  <div class="modal-section"><div class="modal-label">Notes</div>
+    <textarea class="notes-input" id="modal-notes" placeholder="Add notes..." oninput="updateField('notes',this.value)"></textarea>
+  </div>
+  <div class="modal-footer">
+    <a class="btn btn-primary" id="modal-apply-btn" href="#" target="_blank">Open Application →</a>
+    <button class="btn" onclick="closeModalDirect()">Close</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let allJobs=[],currentFilter='all',currentSearch='',currentSort='score',sortAsc=false,activeJobIdx=null,saveTimer=null,currentProfile='';
+
+async function loadProfiles(){
+  const profiles=await(await fetch('/api/profiles')).json();
+  const sel=document.getElementById('profile-select');
+  sel.innerHTML='';
+  if(!profiles.length){sel.innerHTML='<option value="">No profiles</option>';return}
+  profiles.forEach(p=>{const o=document.createElement('option');o.value=p.dir_name;o.textContent=p.display_name+' ('+p.job_count+' jobs)';sel.appendChild(o)});
+  try{const saved=localStorage.getItem('jobbot_profile');if(saved&&profiles.some(p=>p.dir_name===saved))sel.value=saved}catch(e){}
+  switchProfile(sel.value);
+}
+
+async function switchProfile(name){
+  if(!name)return;currentProfile=name;
+  try{localStorage.setItem('jobbot_profile',name)}catch(e){}
+  const profile=await(await fetch('/api/profile/'+name)).json();
+  const bar=document.getElementById('profile-bar');
+  if(profile.personal){
+    bar.style.display='flex';
+    document.getElementById('profile-name').textContent=profile.personal.name||name;
+    document.getElementById('profile-roles').innerHTML=(profile.target_roles||[]).slice(0,5).map(r=>'<span class="role-tag">'+r+'</span>').join('');
+  }else{bar.style.display='none'}
+  await fetchJobs();
+}
+
+async function fetchJobs(){
+  if(!currentProfile)return;
+  allJobs=await(await fetch('/api/jobs/'+currentProfile)).json();
+  renderStats();renderTable();
+  document.getElementById('last-updated').textContent='updated '+new Date().toLocaleTimeString();
+}
+
+function refreshData(){fetchJobs()}
+
+function renderStats(){
+  const t=allJobs.length;
+  document.getElementById('stat-total').textContent=t;
+  document.getElementById('stat-strong').textContent=allJobs.filter(j=>(j.score||0)>=70).length;
+  document.getElementById('stat-applied').textContent=allJobs.filter(j=>['applied','interview','offer','rejected'].includes(j.status)).length;
+  document.getElementById('stat-interviews').textContent=allJobs.filter(j=>j.status==='interview').length;
+  document.getElementById('stat-offers').textContent=allJobs.filter(j=>j.status==='offer').length;
+  document.getElementById('stat-avg').textContent=t?Math.round(allJobs.reduce((s,j)=>s+(j.score||0),0)/t)+'%':'—';
+}
+
+function renderTable(){
+  let f=allJobs.map((j,i)=>({...j,_idx:i})).filter(j=>{
+    const mf=currentFilter==='all'||j.status===currentFilter;
+    const q=currentSearch.toLowerCase();
+    const ms=!q||(j.title||'').toLowerCase().includes(q)||(j.company||'').toLowerCase().includes(q)||(j.location||'').toLowerCase().includes(q);
+    return mf&&ms;
+  });
+  f.sort((a,b)=>{let va=a[currentSort]||'',vb=b[currentSort]||'';if(currentSort==='score'){va=a.score||0;vb=b.score||0}if(typeof va==='number')return sortAsc?va-vb:vb-va;return sortAsc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va))});
+  const tbody=document.getElementById('jobs-tbody');
+  if(!f.length){tbody.innerHTML='<tr><td colspan="9"><div class="empty"><h3>No jobs found</h3><p>Try a different filter or run find_jobs.py</p></div></td></tr>';return}
+  const sm={found:['found','🔍'],manual_apply:['manual_apply','🖱️'],tailored:['tailored','✂️'],applied:['applied','📤'],interview:['interview','🤝'],offer:['offer','🎉'],rejected:['rejected','❌']};
+  tbody.innerHTML=f.map(j=>{
+    const s=j.score||0,sc=s>=70?'score-high':s>=50?'score-mid':'score-low';
+    const[st,em]=sm[j.status]||['found','🔍'];
+    const sl=j.status==='manual_apply'?'easy apply':st;
+    const src=(j.source||'').replace(/_/g,' ');
+    return '<tr onclick="openModal('+j._idx+')"><td><span class="score-pill '+sc+'">'+s+'%</span></td><td><div style="font-weight:500">'+(j.title||'')+'</div></td><td style="font-weight:500">'+(j.company||'')+'</td><td style="color:var(--text-dim);font-size:13px">'+(j.location||'')+'</td><td style="color:var(--text-dim);font-size:13px">'+(j.salary||'—')+'</td><td><span class="source-tag">'+src+'</span></td><td><span class="status-badge status-'+st+'">'+em+' '+sl+'</span></td><td style="color:var(--text-dim);font-size:12px;font-family:\'Space Mono\',monospace">'+(j.date_found||'')+'</td><td><div class="action-btns"><a class="action-btn apply" href="'+(j.apply_url||'#')+'" target="_blank" onclick="event.stopPropagation()">Apply →</a></div></td></tr>';
+  }).join('');
+}
+
+function sortBy(field){if(currentSort===field)sortAsc=!sortAsc;else{currentSort=field;sortAsc=field==='title'||field==='company'}renderTable()}
+function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTable()}
+function setSearch(q){currentSearch=q;renderTable()}
+
+function openModal(idx){
+  activeJobIdx=idx;const j=allJobs[idx];
+  document.getElementById('modal-title').textContent=j.title||'';
+  document.getElementById('modal-company').textContent=j.company||'';
+  document.getElementById('modal-reasoning').textContent=j.reasoning||'No reasoning available';
+  document.getElementById('modal-location').textContent=j.location||'—';
+  document.getElementById('modal-salary').textContent=j.salary||'Not Listed';
+  const s=j.score||0,c=s>=70?'var(--green)':s>=50?'var(--yellow)':'var(--red)';
+  document.getElementById('modal-score').innerHTML='<span style="font-size:28px;font-weight:700;font-family:\'Space Mono\',monospace;color:'+c+'">'+s+'%</span>';
+  const u=document.getElementById('modal-url');u.href=j.apply_url||'#';u.textContent=j.apply_url||'No URL';
+  document.getElementById('modal-apply-btn').href=j.apply_url||'#';
+  document.getElementById('modal-status').value=j.status||'found';
+  document.getElementById('modal-notes').value=j.notes||'';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect()}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');activeJobIdx=null}
+
+function updateField(field,value){
+  if(activeJobIdx===null)return;allJobs[activeJobIdx][field]=value;renderTable();renderStats();
+  clearTimeout(saveTimer);saveTimer=setTimeout(()=>{
+    fetch('/api/jobs/'+currentProfile,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(allJobs)}).then(()=>showToast('Saved ✓'));
+  },800);
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+loadProfiles();
+setInterval(fetchJobs,30000);
+</script>
+</body>
+</html>

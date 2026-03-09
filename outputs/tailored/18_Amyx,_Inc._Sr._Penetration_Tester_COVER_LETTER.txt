@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Amyx, Inc.
+
+Dear Hiring Team,
+
+I was immediately drawn to the Sr. Penetration Tester position at Amyx, Inc. because of your company's reputation for delivering mission-critical cybersecurity solutions to federal agencies and commercial clients alike. The opportunity to conduct sophisticated penetration testing in support of national security objectives while working with a team known for technical excellence aligns perfectly with where I want to take my career in offensive security.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've built a strong foundation in the exact skills this position demands. I conduct 40+ penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before adversaries can exploit them—averaging 12 critical findings per engagement. One of my proudest achievements was leading a red team exercise for a healthcare client where I simulated an APT attack, successfully demonstrating lateral movement and data exfiltration that prompted a complete security architecture overhaul. Additionally, I've authored over 80 detailed vulnerability assessment reports with actionable remediation guidance, achieving a 95% client re-test pass rate within 30 days. My certifications—CEH, Security+, and AWS Security Specialty—complement this hands-on experience and demonstrate my commitment to staying current with evolving attack methodologies.
+
+What excites me most about Amyx is your commitment to not just identifying vulnerabilities, but truly understanding adversary tactics and helping clients build resilient security programs. I share this philosophy deeply. Beyond technical testing, I've successfully mentored junior analysts and translated complex security findings for C-suite executives, understanding that effective penetration testing requires both technical precision and clear communication. Your focus on supporting critical infrastructure and government missions resonates with my desire to apply my skills toward protecting systems that truly matter.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, red teaming experience, and passion for offensive security can contribute to Amyx's continued success. I'm confident I can deliver immediate value to your team and your clients.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Samsara
+Remote, Canada
+
+Dear Hiring Manager,
+
+I'm excited to apply for the Senior Security Operations Engineer I position at Samsara. As someone who has followed Samsara's journey in transforming physical operations through connected data, I'm particularly drawn to the unique security challenges of protecting IoT infrastructure at scale. The opportunity to safeguard the systems that keep fleets moving, construction sites running, and supply chains flowing represents exactly the kind of high-impact security work I'm seeking in my next role.
+
+In my current position as Cybersecurity Analyst II at SecureNet Solutions, I've built expertise directly applicable to Samsara's security operations needs. I developed and maintain a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%—critical experience for monitoring and responding to threats across distributed systems. Through conducting 40+ annual penetration tests on web applications, internal networks, and cloud infrastructure, I've developed the proactive mindset essential for anticipating threats before they materialize. My leadership of a red team exercise that simulated an APT attack on a healthcare client, successfully demonstrating lateral movement techniques, directly translates to understanding how adversaries might target connected device ecosystems. Additionally, my AWS Security Specialty certification and hands-on experience implementing zero-trust network access policies for enterprise clients positions me well to secure cloud-native infrastructure.
+
+What draws me to Samsara beyond the technical challenges is your mission to increase the safety, efficiency, and sustainability of physical operations. Having worked extensively with clients in healthcare and enterprise environments, I've seen firsthand how security isn't just about preventing breaches—it's about enabling trust in the systems people depend on daily. Samsara's commitment to building products that make operations safer resonates deeply with my belief that security should empower, not hinder, innovation. I'm energized by the prospect of joining a team where security engineering directly contributes to real-world outcomes like preventing accidents and reducing environmental impact.
+
+I'd welcome the opportunity to discuss how my experience in security operations, threat detection, and offensive security can contribute to Samsara's mission. I'm confident I can hit the ground running and make immediate contributions to your security posture.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

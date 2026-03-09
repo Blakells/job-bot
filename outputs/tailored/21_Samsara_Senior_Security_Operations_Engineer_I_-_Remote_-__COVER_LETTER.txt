@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Samsara
+Remote, Canada
+
+Dear Hiring Manager,
+
+I'm excited to apply for the Senior Security Operations Engineer I position at Samsara. As someone who has followed Samsara's growth in the Connected Operations Cloud space, I'm impressed by how you're securing IoT infrastructure at massive scale—protecting everything from fleet telematics to industrial sensors. The opportunity to defend critical infrastructure that keeps physical operations running safely is exactly the challenge I've been seeking, and I'm eager to bring my offensive and defensive security expertise to your team.
+
+In my current role at SecureNet Solutions, I've developed the exact blend of skills needed to excel in security operations at scale. I've conducted 40+ penetration tests annually across web applications, networks, and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. Most relevant to Samsara's environment, I built and maintained custom SIEM dashboards in Splunk that reduced mean time to detect security incidents by 38%—critical when monitoring distributed IoT deployments. Additionally, I led a red team exercise simulating an APT attack on a healthcare client's infrastructure, successfully demonstrating lateral movement techniques that resulted in a complete security architecture overhaul. This offensive mindset helps me anticipate threats before they materialize.
+
+What draws me to Samsara beyond the technical challenge is your mission to increase the safety, efficiency, and sustainability of physical operations. Having worked extensively with healthcare and enterprise clients where downtime literally costs lives and livelihoods, I understand the weight of securing systems that people depend on. Your commitment to building security into products from the ground up, rather than bolting it on later, aligns perfectly with my philosophy. I'm also energized by Samsara's remote-first culture—I've thrived in remote environments, successfully collaborating across time zones while maintaining the communication clarity that security operations demand.
+
+I'd welcome the opportunity to discuss how my penetration testing background, SIEM expertise, and passion for protecting critical infrastructure can contribute to Samsara's security operations. I'm confident I can hit the ground running and make immediate impact on your team.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

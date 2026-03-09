@@ -1,0 +1,167 @@
+================================================================================
+COMPLETE HANDOFF PACKAGE FOR OPUS DESKTOP
+================================================================================
+
+PROJECT: Job Application Bot - Automated form filling
+LOCATION: ~/job-bot/
+USER: Alex J. Carter (Cybersecurity professional, Florence SC)
+COMPUTE SPENT: ~$30
+CURRENT SUCCESS: 75% (15/20 fields automated)
+
+================================================================================
+QUICK START FOR OPUS:
+================================================================================
+
+1. Read this file first
+2. Read: HANDOFF_TO_OPUS_DESKTOP.md (detailed context)
+3. Read: CODE_SNIPPETS_FOR_OPUS.py (key functions to debug)
+4. Test with: python3 scripts/auto_apply.py --jobs test_live_human_interest.json --dry-run
+
+================================================================================
+THE BREAKTHROUGH:
+================================================================================
+
+React-Select dropdowns REQUIRE typing into a search input!
+
+After clicking the dropdown, a search input appears with the SAME ID as the
+combobox. You MUST type into it to filter options, then click the option.
+
+This was the missing piece and is now implemented in fill_react_select().
+
+It's working for: Country, Visa, Gender, Veteran, Disability
+Still failing for: Work Authorization, Hispanic/Latino, Secret Clearance
+
+================================================================================
+WHAT'S WORKING (15 fields):
+================================================================================
+
+✅ All text fields (First Name, Last Name, Email, Phone, LinkedIn, Full name, etc)
+✅ File uploads (Resume PDF, Cover Letter PDF)
+✅ Country dropdown (United States)
+✅ Visa Sponsorship dropdown (No)
+✅ Gender dropdown (Male)
+✅ Veteran Status dropdown (I am not a protected veteran)
+✅ Disability Status dropdown (I don't have a disability)
+
+================================================================================
+WHAT'S BROKEN (5 fields):
+================================================================================
+
+❌ Location (City) - Autocomplete component won't accept any selection method
+❌ Work Authorization - React-Select dropdown (typing not working for this one)
+❌ Hispanic/Latino - React-Select dropdown (typing not working)
+❌ Secret Clearance - React-Select dropdown (typing not working)
+❌ "How did you hear" - Being misidentified as dropdown (actually text field)
+
+================================================================================
+KEY FILES:
+================================================================================
+
+MAIN SCRIPT:
+  ~/job-bot/scripts/auto_apply.py - Current version with all fixes
+  
+BACKUP:
+  ~/job-bot/scripts/auto_apply_final.py - Clean backup before all changes
+  
+TEST FILE:
+  ~/job-bot/test_live_human_interest.json - Single job for testing
+  
+PROFILE:
+  ~/job-bot/profiles/job_profile.json - User data
+  
+DOCUMENTATION:
+  ~/job-bot/HANDOFF_TO_OPUS_DESKTOP.md - Detailed handoff
+  ~/job-bot/CODE_SNIPPETS_FOR_OPUS.py - Key code to debug
+  ~/job-bot/BREAKTHROUGH_SUMMARY.md - React-Select discovery
+  
+OUTPUTS:
+  ~/job-bot/outputs/screenshots/ - Form screenshots
+  ~/job-bot/outputs/tailored/ - 38 resumes + 38 cover letters (PDFs)
+
+================================================================================
+DEBUGGING TASKS FOR OPUS:
+================================================================================
+
+TASK 1: Fix remaining React-Select dropdowns (Est: 30 min)
+  - Debug Work Authorization dropdown
+  - Debug Hispanic/Latino dropdown
+  - Debug Secret Clearance dropdown
+  - Check if search_input selector is correct
+  - Try alternative selectors if needed
+
+TASK 2: Fix Location autocomplete (Est: 45 min)
+  - Test if it also uses a search input like React-Select
+  - Try Opus's typing method on autocomplete
+  - If that fails, try full location text
+  - Last resort: Skip this field or fill manually
+
+TASK 3: Fix field type misidentification (Est: 15 min)
+  - "How did you hear" should be text, not dropdown
+  - Update Claude prompt to correctly identify field types
+
+TASK 4: Final test and verification (Est: 30 min)
+  - Run full test
+  - Verify all 20 fields fill correctly
+  - Take screenshots for review
+  - Confirm 95%+ success rate
+
+TOTAL ESTIMATE: 2 hours to completion
+
+================================================================================
+TEST URL:
+================================================================================
+
+https://job-boards.greenhouse.io/humaninterest/jobs/7565471
+
+After loading, click "Apply" button to see the form.
+
+================================================================================
+ENVIRONMENT SETUP:
+================================================================================
+
+Required:
+- BROWSERBASE_API_KEY (set in environment)
+- BROWSERBASE_PROJECT_ID (set in environment)
+- OPENROUTER_API_KEY (set in environment)
+
+Already installed:
+- Python 3.9
+- Playwright
+- Requests library
+
+================================================================================
+RECOMMENDATIONS:
+================================================================================
+
+1. Start by testing the typing method on failing dropdowns
+2. Add debug logging to see what search inputs are found
+3. Try longer wait times (3-5 seconds) for stubborn dropdowns
+4. For Location, try treating it like React-Select (type into search input)
+5. Consider: 75% automation may be "good enough" - manually fill 5 fields takes 30sec
+
+================================================================================
+USER EXPECTATIONS:
+================================================================================
+
+- Wants 95%+ automation (19/20 fields minimum)
+- Only willing to manually fill 1-2 fields max
+- Already spent $30 on compute
+- Looking for quick wins with desktop Opus (lower cost)
+
+================================================================================
+SUCCESS CRITERIA:
+================================================================================
+
+Minimum: 18/20 fields automated (90%)
+Target: 19/20 fields (95%)
+Stretch: 20/20 fields (100%)
+
+Acceptable to leave Location field manual if everything else works.
+
+================================================================================
+END OF HANDOFF PACKAGE
+================================================================================
+
+Questions? Check HANDOFF_TO_OPUS_DESKTOP.md for full details.
+
+Good luck finishing the last 25%! 🚀

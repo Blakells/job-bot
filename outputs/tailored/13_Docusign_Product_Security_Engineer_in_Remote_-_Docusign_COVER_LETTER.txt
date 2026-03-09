@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Docusign
+Remote
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Product Security Engineer position at Docusign. As someone who has witnessed firsthand how digital agreements have transformed business operations, I'm excited about the opportunity to protect the platform that millions of users trust with their most critical documents and transactions. Docusign's commitment to building security into every layer of the product—not bolting it on as an afterthought—aligns perfectly with my philosophy that security should be an enabler of innovation, not a barrier.
+
+In my current role at SecureNet Solutions, I've developed the exact blend of offensive and defensive security skills that product security demands. I've conducted over 40 penetration tests annually on web applications and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement with a 95% remediation success rate. Most relevant to Docusign's cloud-native architecture, I led the implementation of zero-trust network access policies for three enterprise clients, reducing their attack surface by 60%. I also spearheaded a red team exercise for a healthcare client that simulated an advanced persistent threat, successfully demonstrating vulnerabilities that led to a complete security architecture overhaul—the kind of proactive security thinking that's essential when protecting a platform handling sensitive agreements and signatures.
+
+What draws me to Docusign beyond the technical challenge is your mission to modernize systems of agreement while maintaining the highest security standards. Having worked extensively with healthcare and Fortune 500 clients who depend on secure, compliant digital workflows, I understand the weight of responsibility that comes with protecting user trust. My experience delivering security awareness training and mentoring junior analysts has taught me that great product security requires not just finding vulnerabilities, but partnering with engineering teams to build secure-by-design solutions. I'm energized by the prospect of embedding security throughout the product development lifecycle at a company that's defining the future of digital agreements.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security experience, and collaborative approach can strengthen Docusign's product security posture. Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Meta
+New York, NY
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Security Engineer position at Meta. The opportunity to protect the infrastructure that connects billions of people globally is exactly the kind of high-impact challenge that drives my work in cybersecurity. Meta's commitment to building secure, privacy-focused platforms at unprecedented scale—from WhatsApp's end-to-end encryption to your ongoing investments in AI safety—represents the cutting edge of security engineering, and I'm eager to contribute to these critical efforts.
+
+In my current role at SecureNet Solutions, I've developed the offensive and defensive security expertise that would translate directly to protecting Meta's complex infrastructure. I've conducted over 40 penetration tests annually across web applications, networks, and cloud environments, consistently identifying critical vulnerabilities before threat actors could exploit them—achieving a 95% remediation success rate. Most relevant to Meta's scale, I led a sophisticated red team exercise simulating an APT attack on a healthcare client's infrastructure, successfully demonstrating lateral movement and data exfiltration that prompted a complete security architecture redesign. Additionally, I've implemented zero-trust network access policies for enterprise clients, reducing their attack surface by 60%—experience that aligns perfectly with Meta's zero-trust security model.
+
+Beyond technical capabilities, I'm drawn to Meta's mission of building connection and community through technology. Having worked remotely for the past two years serving Fortune 500 clients, I understand the importance of clear communication and collaboration across distributed teams. I've mentored junior analysts and delivered security awareness training that translates complex threats into actionable guidance—skills essential for fostering security-conscious culture at scale. Meta's emphasis on moving fast while maintaining robust security posture resonates deeply with my approach: proactive threat hunting combined with pragmatic risk management.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security experience, and passion for offensive security operations can help strengthen Meta's security posture. I'm excited about the possibility of joining your New York team and contributing to the protection of platforms that billions rely on daily.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

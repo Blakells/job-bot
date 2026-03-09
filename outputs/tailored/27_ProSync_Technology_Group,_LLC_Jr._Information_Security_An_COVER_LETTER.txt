@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+ProSync Technology Group, LLC
+Washington, DC
+
+Dear Hiring Manager,
+
+I was immediately drawn to the Jr. Information Security Analyst position at ProSync Technology Group because of your company's reputation for delivering comprehensive IT solutions to government and commercial clients in the DC area. Having followed ProSync's growth in providing mission-critical security services, I'm excited about the opportunity to contribute my offensive and defensive security expertise to protect your clients' most valuable assets during this critical time of evolving cyber threats.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact skill set your team needs. I've conducted over 40 penetration tests annually across web applications, networks, and cloud environments, consistently identifying critical vulnerabilities before malicious actors could exploit them—achieving a 95% remediation success rate. My experience building custom SIEM dashboards in Splunk reduced our mean time to detect security incidents by 38%, directly improving our clients' security posture. Additionally, I led a red team exercise for a healthcare client that simulated an advanced persistent threat, demonstrating real-world attack vectors that resulted in a complete security architecture overhaul. These experiences have sharpened my ability to think like an attacker while building robust defensive strategies.
+
+What excites me most about ProSync is your commitment to being a trusted technology partner that prioritizes client relationships and innovative solutions. I share this client-first philosophy—I've consistently translated complex technical findings into actionable recommendations for stakeholders at all levels, and I've mentored junior analysts to build stronger, more collaborative security teams. Your focus on delivering tailored solutions rather than one-size-fits-all approaches aligns perfectly with my belief that effective security requires understanding each organization's unique risk landscape. I'm particularly eager to bring my AWS Security certification and cloud security experience to support ProSync's clients as they navigate hybrid and cloud environments.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, SIEM proficiency, and passion for proactive security can contribute to ProSync's continued success. I'm available at your convenience for an interview and can be reached at (843) 555-0192 or alex.carter@email.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

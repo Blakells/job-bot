@@ -1,0 +1,19 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Bolster AI
+Re: SOC Analyst, US East
+
+I'm excited to apply for the SOC Analyst position at Bolster AI. As someone who's spent the last four years defending organizations against increasingly sophisticated threats, I'm drawn to Bolster's mission of using AI to combat phishing and digital impersonation at scale. The opportunity to work at the intersection of cybersecurity and artificial intelligence—protecting brands and consumers from scams that traditional security tools miss—is exactly the kind of high-impact work I'm looking for in my next role.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact skill set your SOC needs. I built and maintain a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, demonstrating my ability to not just monitor alerts but engineer solutions that make detection faster and more accurate. I've also conducted 40+ penetration tests annually, giving me the attacker's perspective that's crucial for effective threat hunting. During a red team exercise simulating an APT attack on a healthcare client, I successfully demonstrated lateral movement techniques that led to a complete security overhaul—this offensive security background helps me anticipate threats before they materialize in the SOC environment.
+
+What excites me most about Bolster AI is your proactive approach to threat detection. Rather than waiting for attacks to happen, you're using machine learning to identify and neutralize threats in real-time. This aligns perfectly with my philosophy that the best defense is understanding the offense. I'm particularly interested in how your platform detects brand impersonation and phishing campaigns, and I'm eager to contribute my threat intelligence background and MITRE ATT&CK expertise to help refine detection rules and investigate emerging attack patterns. My AWS Security Specialty certification and cloud security experience would also be valuable as you continue scaling your infrastructure.
+
+I'd welcome the opportunity to discuss how my hands-on SOC experience, penetration testing background, and passion for innovative security solutions can contribute to Bolster AI's mission. I'm available for a conversation at your convenience.
+
+Thank you for your consideration.
+
+Alex J. Carter

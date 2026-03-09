@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+Florence, SC
+
+Hiring Manager
+Meta
+New York, NY
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Security Engineer position at Meta. As someone who has followed Meta's evolution in building secure, privacy-focused infrastructure at unprecedented scale—from end-to-end encryption in Messenger to your groundbreaking work in content integrity—I'm excited by the opportunity to contribute to security challenges that impact billions of users globally. The chance to work at the intersection of offensive security research and defensive engineering at Meta represents exactly the kind of high-impact role I've been preparing for throughout my career.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the offensive and defensive security expertise that directly aligns with Meta's security engineering needs. I conduct 40+ penetration tests annually across web applications, cloud infrastructure, and internal networks, consistently uncovering critical vulnerabilities before threat actors can exploit them. One of my proudest achievements was leading a red team exercise simulating an APT attack on a healthcare client, where I successfully demonstrated lateral movement and data exfiltration techniques—findings that drove a complete security architecture overhaul. Additionally, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%, demonstrating my ability to build scalable detection systems. My AWS Security Specialty certification and hands-on experience implementing zero-trust network access policies for enterprise clients have given me the cloud security foundation essential for protecting Meta's infrastructure.
+
+What draws me to Meta beyond the technical challenges is your commitment to transparent security practices and your investment in the broader security community through bug bounty programs and open-source contributions. I share this philosophy—I regularly mentor junior analysts and believe that elevating the entire security community makes us all more resilient. Meta's mission to build connection while maintaining user trust resonates deeply with my belief that security shouldn't be an afterthought but a fundamental enabler of innovation.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, incident response experience, and passion for proactive security can contribute to Meta's security engineering team. Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

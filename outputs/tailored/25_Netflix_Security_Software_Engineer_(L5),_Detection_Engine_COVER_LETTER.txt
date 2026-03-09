@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Netflix
+United States
+
+Dear Netflix Security Team,
+
+I've been a Netflix member since the days of DVD mailers, but what truly excites me is the opportunity to protect the streaming experience for 230+ million members worldwide. The Detection Engineering role represents exactly what I've been building toward: combining offensive security expertise with defensive capabilities to stay ahead of sophisticated threats at unprecedented scale. Netflix's commitment to freedom and responsibility in security—trusting engineers to make bold decisions while protecting member data—is the environment where I do my best work.
+
+In my current role at SecureNet Solutions, I've developed detection capabilities that directly align with Netflix's needs. I built custom SIEM dashboards in Splunk that reduced mean time to detect security incidents by 38%, creating detection rules that identified anomalous behavior patterns across diverse client environments. During a red team exercise simulating an APT attack on a healthcare client, I mapped the complete attack chain from initial access through data exfiltration—then translated those offensive tactics into defensive detections that prevented similar attacks. This dual perspective is critical for detection engineering: you need to think like an attacker to build effective defenses. Additionally, I've conducted 40+ penetration tests annually, uncovering an average of 12 critical vulnerabilities per engagement, which has sharpened my ability to anticipate where adversaries will strike before they do.
+
+What draws me to Netflix beyond the technical challenge is the culture of context over control. I thrive in environments that value high-performing individuals who can operate autonomously while collaborating transparently. My experience working remotely with Fortune 500 clients has taught me to communicate complex security findings clearly to diverse stakeholders—from developers to executives. I'm energized by Netflix's philosophy that the best security doesn't slow down innovation; it enables it. The opportunity to protect content, infrastructure, and member trust at Netflix's scale while working alongside some of the industry's best security minds is exactly the challenge I'm seeking.
+
+I'd welcome the opportunity to discuss how my detection engineering mindset and hands-on security experience can contribute to Netflix's security mission. Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Canopy
+South Jordan, UT
+
+Dear Hiring Manager,
+
+I'm excited to apply for the Security Engineer position at Canopy. As someone who's spent the past four years protecting financial and healthcare systems from evolving threats, I'm drawn to Canopy's mission of simplifying legal practice management through secure, reliable technology. The legal industry handles some of the most sensitive client data imaginable, and I'm eager to bring my offensive and defensive security expertise to help Canopy maintain the trust that law firms place in your platform.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact blend of skills needed to excel as Canopy's Security Engineer. I conduct 40+ penetration tests annually across web applications, cloud infrastructure, and internal networks—experience that directly translates to securing a SaaS platform like yours. One achievement I'm particularly proud of is leading a red team exercise for a healthcare client where I simulated an APT attack, demonstrating lateral movement and data exfiltration that prompted a complete security architecture redesign. Additionally, I developed a custom SIEM dashboard that reduced mean time to detect security incidents by 38%, ensuring threats are identified and neutralized before they impact users. I've also implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%—the kind of proactive security posture that's essential for protecting law firms' confidential data.
+
+What resonates with me about Canopy is your commitment to removing friction from legal practice while maintaining rigorous security standards. I've always believed that the best security is invisible to legitimate users but impenetrable to attackers. My experience translating complex technical findings into actionable guidance for non-technical stakeholders—evidenced by my 95% client re-test pass rate—would enable me to collaborate effectively with Canopy's product and engineering teams to build security into every feature from the ground up, not bolt it on afterward.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security certifications (including AWS Security Specialty), and passion for defending critical systems can contribute to Canopy's continued growth and security excellence. I'm available at your convenience and look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

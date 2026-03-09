@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+S-RM
+USA
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Senior Cybersecurity Analyst (SOC) position at S-RM. As someone who has followed S-RM's intelligence-led approach to risk management, I'm particularly drawn to your unique positioning at the intersection of cybersecurity and strategic risk consulting. The opportunity to protect clients operating in complex, high-threat environments while working with a team that values both technical excellence and real-world intelligence is exactly the challenge I've been seeking in my next role.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the comprehensive SOC skillset this position demands. I built and maintain a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, directly improving our clients' security posture through faster threat identification and response. During a red team exercise for a healthcare client, I successfully simulated an APT attack demonstrating lateral movement and data exfiltration—an engagement that resulted in a complete security architecture overhaul. This experience has given me deep familiarity with the MITRE ATT&CK framework and the adversarial mindset crucial for effective threat hunting. Additionally, I've conducted 40+ penetration tests annually across web applications, networks, and cloud infrastructure, uncovering an average of 12 critical vulnerabilities per engagement and maintaining a 95% client remediation success rate.
+
+What excites me most about S-RM is your commitment to providing intelligence-driven security solutions for clients facing geopolitical and operational risks. Having worked extensively with Fortune 500 clients across healthcare, finance, and enterprise sectors, I understand that effective cybersecurity requires more than technical controls—it demands contextual awareness of the threat landscape and the ability to communicate complex risks to diverse stakeholders. My experience translating technical findings into actionable business guidance, combined with my certifications in CEH, Security+, and AWS Security Specialty, aligns perfectly with S-RM's consultative approach.
+
+I would welcome the opportunity to discuss how my SOC operations experience, threat intelligence capabilities, and passion for proactive security can contribute to S-RM's mission. I'm available at your convenience for a conversation.
+
+Sincerely,
+Alex J. Carter

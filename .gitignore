@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Debug/test files
+*.log
+outputs/screenshots/
+outputs/*.png
+
+# Sensitive
+.env
+profiles/.browser_sessions/
+
+# Large generated outputs (optional — uncomment if you want to track them)
+# outputs/tailored/

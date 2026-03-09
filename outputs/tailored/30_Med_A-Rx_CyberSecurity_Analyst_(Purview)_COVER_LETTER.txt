@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Med A/Rx
+United States
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the CyberSecurity Analyst (Purview) position at Med A/Rx. As someone who has dedicated significant focus to healthcare security—including leading a red team exercise that transformed a healthcare client's entire security architecture—I'm excited about the opportunity to bring my Microsoft Purview expertise and defensive security skills to an organization operating at the critical intersection of healthcare and pharmacy services. Protecting sensitive patient data and ensuring HIPAA compliance isn't just a job requirement for me; it's a mission I'm deeply committed to.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed exactly the skill set Med A/Rx needs for this position. I've conducted 40+ annual penetration tests and vulnerability assessments across diverse environments, with particular depth in cloud security—holding an AWS Security Specialty certification and implementing zero-trust network access policies that reduced attack surfaces by 60% for enterprise clients. My experience developing custom SIEM dashboards in Splunk, which reduced mean time to detect incidents by 38%, directly translates to the monitoring and threat detection capabilities essential for Microsoft Purview administration. Additionally, I've authored over 80 detailed security reports with actionable remediation guidance, achieving a 95% client re-test pass rate—demonstrating my ability to not just identify risks but drive meaningful security improvements.
+
+What draws me to Med A/Rx specifically is your commitment to safeguarding healthcare data in an increasingly complex threat landscape. Having worked extensively with healthcare clients, I understand the unique regulatory pressures, the sensitivity of prescription and medical records, and the devastating impact security breaches can have on patient trust. I'm passionate about translating complex technical findings into clear guidance for diverse stakeholders, and I thrive in environments where security directly protects people's wellbeing and privacy.
+
+I would welcome the opportunity to discuss how my penetration testing background, cloud security expertise, and proven track record in security operations can contribute to Med A/Rx's security posture. I'm available at your convenience and look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Aretec, Inc.
+
+Dear Hiring Team,
+
+I was immediately drawn to the Threat Hunting Analyst position at Aretec because of your company's reputation for delivering mission-critical cybersecurity solutions to federal agencies and enterprises facing the most sophisticated threat actors. The opportunity to proactively hunt for advanced persistent threats rather than simply respond to alerts aligns perfectly with my passion for offensive security techniques and my experience conducting red team operations that simulate real-world adversary behavior.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the proactive mindset essential for effective threat hunting. I led a red team exercise for a healthcare client where I successfully simulated APT tactics—achieving lateral movement and data exfiltration—which directly resulted in a complete security architecture overhaul. This experience taught me to think like an attacker while hunting for indicators of compromise. Additionally, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect by 38%, demonstrating my ability to build detection capabilities that surface hidden threats. Through conducting 40+ annual penetration tests, I've gained deep familiarity with attacker tradecraft and the MITRE ATT&CK framework, enabling me to identify subtle anomalies that automated tools miss.
+
+What excites me most about Aretec is your commitment to protecting critical infrastructure and supporting government missions where security failures have real-world consequences. Having implemented zero-trust architectures that reduced attack surfaces by 60% for enterprise clients, I understand the importance of defense-in-depth strategies in high-stakes environments. I'm particularly drawn to working with a team that values continuous learning and staying ahead of emerging threats—a philosophy I live by through my ongoing CySA+ certification and constant research into new attack vectors.
+
+I would welcome the opportunity to discuss how my blend of offensive security expertise, threat detection experience, and passion for proactive defense can contribute to Aretec's mission. I'm confident that my hands-on experience hunting threats and thinking adversarially would make me an immediate contributor to your team.
+
+Thank you for your consideration. I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

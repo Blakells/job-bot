@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Glean
+United States
+
+Dear Glean Hiring Team,
+
+I've been following Glean's mission to transform workplace knowledge discovery, and I'm thrilled to apply for the Security Engineer, Cloud Security position. As someone who has secured cloud infrastructure for Fortune 500 clients while maintaining the delicate balance between robust security and seamless user experience, I'm excited about the opportunity to protect the platform that's reimagining how teams access and utilize their collective intelligence.
+
+In my current role at SecureNet Solutions, I've built deep expertise in cloud security that directly aligns with Glean's needs. I've conducted over 40 penetration tests annually on cloud infrastructure, consistently identifying critical vulnerabilities before they could be exploited—achieving a 95% remediation success rate. Most notably, I led a red team exercise for a healthcare client that simulated an advanced persistent threat, successfully demonstrating attack vectors that prompted a complete security architecture overhaul. Additionally, I implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%. My AWS Security certification and hands-on experience with SIEM platforms like Splunk have equipped me to build security monitoring and incident response capabilities that scale with rapid growth.
+
+What draws me to Glean beyond the technical challenge is your commitment to making information accessible without compromising security—a philosophy I deeply share. Throughout my career, I've prioritized security solutions that empower rather than obstruct users. I've delivered security awareness training that transforms employees from potential vulnerabilities into active defenders, and I've mentored junior analysts to think like both attackers and protectors. Glean's AI-powered approach to knowledge management represents the future of work, and I'm energized by the prospect of ensuring that innovation is built on an unshakeable security foundation.
+
+I'd welcome the opportunity to discuss how my offensive and defensive security expertise can contribute to Glean's continued success. I'm confident that my technical skills, proactive security mindset, and passion for enabling secure innovation make me an excellent fit for your team.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

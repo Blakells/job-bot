@@ -1,0 +1,19 @@
+Alex J. Carter
+Florence, SC
+alex.carter@gmail.com
+(843) 555-0192
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Penetration Tester position. The opportunity to join a team that prioritizes proactive security testing across hybrid environments immediately caught my attention. With the increasing complexity of modern attack surfaces—especially in hybrid work models spanning multiple UK locations—I'm excited about the challenge of identifying vulnerabilities before adversaries can exploit them, and contributing to a security-first culture that protects both infrastructure and people.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients. One engagement I'm particularly proud of involved leading a red team exercise for a healthcare organization where I successfully simulated APT tactics—demonstrating lateral movement and data exfiltration—which ultimately drove a complete security architecture overhaul. I've consistently uncovered an average of 12 critical vulnerabilities per engagement, and my detailed remediation reports have achieved a 95% client re-test pass rate within 30 days. Additionally, I hold CEH and AWS Security Specialty certifications, ensuring I bring both recognized expertise and current knowledge of evolving attack techniques to every assessment.
+
+Beyond technical skills, I'm deeply committed to making security accessible and actionable. I've mentored junior analysts, translated complex findings for C-suite stakeholders, and implemented zero-trust policies that reduced attack surfaces by 60%. I believe penetration testing isn't just about breaking things—it's about building trust through transparency, education, and collaboration. The hybrid nature of this role aligns perfectly with my remote work experience and my belief that effective security transcends physical boundaries. I'm eager to bring this mindset to your team, contributing not just technical rigor but also clear communication that empowers organizations to strengthen their defenses.
+
+I'd welcome the opportunity to discuss how my hands-on penetration testing experience, proven track record of uncovering critical vulnerabilities, and passion for proactive security can contribute to your team's success. I'm available at your convenience for an interview and can be reached at (843) 555-0192 or alex.carter@gmail.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

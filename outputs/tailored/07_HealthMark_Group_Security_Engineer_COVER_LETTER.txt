@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+HealthMark Group
+United States
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Security Engineer position at HealthMark Group. As someone who has directly witnessed the critical importance of healthcare security—having led a red team exercise that exposed vulnerabilities in a healthcare client's infrastructure and drove a complete security overhaul—I am excited about the opportunity to protect sensitive patient data and healthcare systems at an organization dedicated to improving health outcomes.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I have built a comprehensive skill set that directly aligns with the demands of healthcare security engineering. I conduct 40+ penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before malicious actors can exploit them. My work developing a custom SIEM dashboard using Splunk reduced mean time to detect security incidents by 38%, a capability that would be invaluable in protecting HealthMark Group's systems against the increasingly sophisticated threats targeting healthcare organizations. Additionally, I implemented zero-trust network access policies for three mid-size enterprise clients, reducing their attack surface by an estimated 60%—an approach that aligns perfectly with modern healthcare security frameworks requiring strict access controls and data segmentation.
+
+What draws me to HealthMark Group specifically is the intersection of healthcare impact and security excellence. Having worked extensively with healthcare clients, I understand the unique compliance challenges of HIPAA, the devastating consequences of ransomware attacks on patient care, and the delicate balance between security and clinical workflow efficiency. I am passionate about translating complex technical findings into actionable guidance for diverse stakeholders—a skill I have honed through authoring 80+ detailed vulnerability reports and mentoring junior analysts. I am eager to bring this collaborative, education-focused approach to HealthMark Group's security team.
+
+I would welcome the opportunity to discuss how my penetration testing expertise, incident response experience, and healthcare security background can contribute to HealthMark Group's mission. I am available at your convenience for an interview and can be reached at (843) 555-0192 or alex.carter@gmail.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

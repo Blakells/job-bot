@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+InterEx Group
+United States
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Cyber Security Analyst position at InterEx Group. As a cybersecurity professional who has spent the past four years protecting Fortune 500 organizations from evolving threats, I'm particularly drawn to InterEx Group's reputation for delivering comprehensive security solutions that balance innovation with practical risk management. The opportunity to contribute to a team that prioritizes both offensive and defensive security capabilities aligns perfectly with my career trajectory and technical expertise.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed a proven track record that directly translates to the requirements of this position. I conduct over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure, consistently identifying critical vulnerabilities before threat actors can exploit them—with a 95% remediation success rate. My work on a red team exercise for a healthcare client, where I simulated an APT attack demonstrating lateral movement and data exfiltration, led to a complete security architecture overhaul that significantly strengthened their defensive posture. Additionally, I've built custom SIEM dashboards using Splunk that reduced mean time to detect security incidents by 38%, demonstrating my ability to enhance both detection capabilities and operational efficiency.
+
+What excites me most about InterEx Group is the opportunity to work with an organization that values comprehensive security approaches. My experience implementing zero-trust network access policies for enterprise clients and mentoring junior analysts has taught me that effective cybersecurity requires both technical excellence and collaborative teamwork. I'm particularly energized by environments where I can leverage my dual expertise in offensive security testing and defensive monitoring to create holistic protection strategies. My remote work experience and strong client-facing communication skills position me to contribute immediately to your team's success.
+
+I would welcome the opportunity to discuss how my technical skills, certifications (CEH, Security+, AWS Security), and hands-on experience can contribute to InterEx Group's mission. I'm confident that my proactive approach to threat identification and passion for security innovation would make me a valuable addition to your team.
+
+Thank you for your consideration. I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

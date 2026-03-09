@@ -1,0 +1,23 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+Florence, SC
+
+Hiring Manager
+Robert Half
+North Charleston, SC
+
+Dear Hiring Manager,
+
+I was immediately drawn to the Penetration Tester position at Robert Half in North Charleston because of your firm's reputation for connecting top cybersecurity talent with organizations that truly value proactive security. As someone who has spent the past four years on the offensive side of cybersecurity, I'm excited about the opportunity to bring my penetration testing expertise to a company that understands the critical importance of identifying vulnerabilities before adversaries do. The proximity to North Charleston is particularly appealing, as I'm eager to contribute to the local cybersecurity community while working with a respected staffing leader.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients in healthcare and enterprise sectors. One of my most impactful engagements involved leading a red team exercise that simulated an advanced persistent threat attack on a healthcare organization. I successfully demonstrated lateral movement and data exfiltration capabilities, which prompted the client to completely overhaul their security architecture. My detailed vulnerability reports have consistently achieved a 95% remediation success rate, and I've uncovered an average of 12 critical vulnerabilities per engagement—findings that have prevented potential breaches and saved clients significant financial and reputational damage.
+
+What sets me apart is not just my technical capabilities with tools like Splunk, QRadar, and AWS security frameworks, but my ability to communicate complex security findings to both technical and non-technical stakeholders. Robert Half's client-focused approach resonates deeply with me because I've seen firsthand how effective communication transforms security assessments from technical reports into actionable business strategies. I've also mentored junior analysts and delivered security awareness training, which aligns well with the collaborative environment Robert Half cultivates.
+
+I would welcome the opportunity to discuss how my CEH certification, hands-on penetration testing experience, and proven track record of identifying critical vulnerabilities can add value to Robert Half's clients. I'm available for an interview at your earliest convenience and can be reached at (843) 555-0192.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

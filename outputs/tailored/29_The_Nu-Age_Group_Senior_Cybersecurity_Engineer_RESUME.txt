@@ -1,0 +1,90 @@
+ALEX J. CARTER
+Senior Cybersecurity Engineer
+
+Location: Florence, SC (Open to Remote)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Results-driven Senior Cybersecurity Engineer with 4+ years of progressive experience delivering enterprise-grade security solutions across cloud, network, and application environments. Expertise in penetration testing, security architecture design, threat detection, and incident response with proven success protecting Fortune 500 organizations. Certified in CEH, AWS Security, and Security+ with hands-on proficiency in SIEM platforms, zero-trust implementations, and red team operations. Adept at translating complex security challenges into actionable strategies while mentoring technical teams. Seeking to bring advanced offensive and defensive security capabilities to The Nu-Age Group's remote cybersecurity engineering team.
+
+------------------------------------------------------------
+PROFESSIONAL EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ annual penetration testing engagements across web applications, cloud infrastructure (AWS/Azure), and enterprise networks for Fortune 500 clients, identifying an average of 12 critical vulnerabilities per assessment.
+- Engineer and maintain custom SIEM detection rules and dashboards in Splunk, improving mean time to detect (MTTD) for security incidents by 38% and enhancing SOC operational efficiency.
+- Lead red team operations simulating advanced persistent threat (APT) scenarios, including lateral movement, privilege escalation, and data exfiltration exercises that drove comprehensive security architecture improvements for healthcare sector clients.
+- Design and implement zero-trust network access (ZTNA) architectures for 3 enterprise clients, reducing organizational attack surface by approximately 60% through micro-segmentation and least-privilege access controls.
+- Produce 80+ comprehensive vulnerability assessment and penetration test reports annually with prioritized remediation roadmaps; maintain 95% client remediation success rate within 30-day retest cycles.
+- Mentor junior security analysts through weekly technical training sessions covering emerging CVEs, threat intelligence analysis, and MITRE ATT&CK framework tactics.
+- Leverage offensive security tools including Metasploit, Burp Suite, Cobalt Strike, BloodHound, and Mimikatz to simulate real-world attack scenarios.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM, performing triage, correlation, and escalation of confirmed incidents with detailed technical context and initial containment recommendations.
+- Conducted quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint enterprise environment; managed remediation tracking and compliance reporting through Jira workflows.
+- Developed and deployed phishing simulation campaigns using GoPhish platform; reduced user susceptibility by 34% through data-driven security awareness training initiatives.
+- Created and maintained 15+ incident response playbooks and runbooks aligned with NIST Cybersecurity Framework, reducing average incident triage time by 22 minutes.
+- Participated in 24/7 Security Operations Center (SOC) on-call rotation, responding to critical P1 security incidents and ensuring SLA compliance for enterprise clients.
+- Utilized CrowdStrike Falcon, Wireshark, Snort, and OSSEC for endpoint detection, network traffic analysis, and intrusion detection.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered Tier 1 and Tier 2 technical support for 2,400+ end-users across 14 distributed locations, resolving hardware, software, and network connectivity issues.
+- Supported network infrastructure projects including switch configurations, VLAN implementations, and wireless access point deployments in Active Directory environments.
+- Identified and escalated 3 active malware infections through behavioral analysis and system monitoring, initiating proper incident response protocols and containment procedures.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Security Engineering & Architecture:
+Zero-Trust Architecture (ZTNA), Security Architecture Design, Cloud Security (AWS/Azure), IAM, Network Segmentation, Secure SDLC
+
+Penetration Testing & Offensive Security:
+Metasploit, Burp Suite, Cobalt Strike, Nmap, BloodHound, Mimikatz, SQLmap, Nikto, Red Team Operations
+
+Threat Detection & Response:
+Splunk, IBM QRadar, CrowdStrike Falcon, Azure Sentinel, AWS Security Hub, GuardDuty, SIEM Engineering, Incident Response
+
+Network & Endpoint Security:
+Wireshark, Snort, OSSEC, Zeek, Intrusion Detection/Prevention, Endpoint Detection & Response (EDR)
+
+Cloud Security Platforms:
+AWS Security Hub, Azure Sentinel, CloudTrail, Security Groups, AWS GuardDuty, IAM Policy Management
+
+Security Frameworks & Standards:
+NIST Cybersecurity Framework, MITRE ATT&CK, OWASP Top 10, CIS Controls, ISO 27001
+
+Scripting & Automation:
+Python, Bash, PowerShell, SQL, JavaScript
+
+Operating Systems & Platforms:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory, VMware ESXi
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

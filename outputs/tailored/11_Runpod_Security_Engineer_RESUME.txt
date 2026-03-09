@@ -1,0 +1,82 @@
+ALEX J. CARTER
+Security Engineer | Penetration Tester | Cloud Security Specialist
+
+Location: Florence, SC (Remote)
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security Engineer with 4+ years of progressive experience securing cloud infrastructure, conducting offensive security assessments, and implementing defense-in-depth strategies. Specialized in AWS security architecture, penetration testing, and vulnerability management with proven ability to identify and remediate critical security gaps before exploitation. Certified in AWS Security Specialty, CEH, and Security+ with hands-on expertise in both red team operations and security engineering. Seeking to leverage offensive and defensive security expertise to protect Runpod's infrastructure and customers in a remote security engineering role.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Cloud & Infrastructure Security:
+AWS Security Hub, GuardDuty, CloudTrail, IAM, Security Groups, Azure Sentinel, ZTNA, VMware ESXi
+
+Penetration Testing & Offensive Security:
+Metasploit, Burp Suite, Nmap, Cobalt Strike, BloodHound, Mimikatz, Nikto, SQLmap
+
+Security Engineering & Defense:
+Splunk, IBM QRadar, CrowdStrike Falcon, Wireshark, Snort, OSSEC, Zeek, SIEM Development
+
+Automation & Scripting:
+Python, Bash, PowerShell, SQL, JavaScript
+
+Security Frameworks:
+NIST CSF, MITRE ATT&CK, OWASP Top 10, CIS Controls, ISO 27001, Zero Trust Architecture
+
+Operating Systems:
+Kali Linux, Ubuntu, Windows Server 2019, Active Directory
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Execute 40+ annual penetration tests on web applications, internal networks, and cloud infrastructure (AWS, Azure) for Fortune 500 clients, identifying average of 12 critical vulnerabilities per engagement and delivering comprehensive remediation guidance.
+- Engineer and maintain custom SIEM detection rules and dashboards in Splunk, improving mean time to detect (MTTD) for security incidents by 38% across client environments.
+- Design and implement zero-trust network access (ZTNA) architectures for 3 enterprise clients, reducing attack surface by 60% through micro-segmentation and least-privilege access controls.
+- Lead red team operations simulating advanced persistent threat (APT) scenarios, including successful lateral movement and data exfiltration exercises that drove complete security architecture redesigns.
+- Produce 80+ detailed security assessment reports with actionable remediation steps; maintain 95% client re-test pass rate within 30-day remediation windows.
+- Mentor junior security analysts through weekly knowledge-sharing sessions on emerging CVEs, threat intelligence, and offensive security techniques.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ daily security events using IBM QRadar SIEM, performing triage, threat correlation, and escalation with detailed incident context and initial containment recommendations.
+- Conducted quarterly vulnerability assessments using Nessus and OpenVAS across 500+ endpoint infrastructure; managed remediation tracking and compliance verification through Jira workflows.
+- Engineered phishing simulation campaigns using GoPhish, reducing organizational click-through rates by 34% through targeted security awareness training programs.
+- Developed and maintained 15+ incident response playbooks, reducing average security incident triage time by 22 minutes and improving SOC efficiency.
+- Participated in 24/7 SOC on-call rotation, responding to critical P1 security incidents and ensuring SLA compliance for enterprise clients.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Delivered Tier 1/2 technical support for 2,400+ users across 14 locations, resolving hardware, software, and network connectivity issues.
+- Supported network infrastructure projects including switch configurations, VLAN implementation, and wireless access point deployments.
+- Identified and escalated 3 active malware infections through behavioral analysis, initiating incident response procedures and preventing lateral spread.
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | Expected 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Samsara
+Remote
+
+Dear Hiring Manager,
+
+I'm excited to apply for the Senior Security Engineer - Threat Modeling position at Samsara. As someone who has followed Samsara's growth in the IoT and connected operations space, I'm impressed by your commitment to securing the physical operations that keep our world moving. The opportunity to build threat models for systems that protect fleets, equipment, and workers in real-time environments is exactly the kind of high-impact security work that drives me.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed extensive experience in threat modeling using the MITRE ATT&CK framework. During a red team exercise for a healthcare client, I mapped attack paths from initial access through data exfiltration, identifying critical gaps in their security architecture that led to a complete redesign. This work directly mirrors the proactive threat modeling approach Samsara needs to stay ahead of adversaries targeting IoT infrastructure. Additionally, I've conducted 40+ penetration tests annually across web applications, networks, and cloud environments, uncovering an average of 12 critical vulnerabilities per engagement. My AWS Security Specialty certification and hands-on cloud security experience position me well to assess threats across Samsara's cloud-connected device ecosystem.
+
+What draws me to Samsara beyond the technical challenge is your mission to increase the safety, efficiency, and sustainability of physical operations. I've seen firsthand how security failures in connected systems can have real-world consequences. My approach has always been to think like an attacker while building defenses that protect people and operations—not just data. I thrive in environments where security enables innovation rather than blocking it, and Samsara's culture of empowering customers through technology resonates deeply with how I view the security engineer's role.
+
+I'd welcome the opportunity to discuss how my threat modeling expertise, offensive security background, and passion for IoT security can contribute to Samsara's mission. I'm confident I can help strengthen your security posture while supporting the rapid innovation your customers depend on.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

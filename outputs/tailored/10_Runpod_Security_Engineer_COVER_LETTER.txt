@@ -1,0 +1,20 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Runpod
+
+Dear Runpod Team,
+
+I'm excited to apply for the Security Engineer position at Runpod. As someone who's spent the last four years securing cloud infrastructure and conducting penetration tests on distributed systems, I've watched Runpod transform GPU cloud computing with genuine admiration. The challenge of securing a platform that democratizes access to high-performance computing—while maintaining the speed and flexibility developers demand—is exactly the kind of problem I want to solve.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed expertise directly applicable to Runpod's infrastructure needs. I've conducted 40+ annual penetration tests on cloud environments, with a focus on container security, API vulnerabilities, and multi-tenant isolation issues—uncovering an average of 12 critical vulnerabilities per engagement. Most relevant to Runpod's environment, I led a red team exercise that simulated an APT attack on cloud infrastructure, successfully demonstrating lateral movement across containerized workloads, which resulted in a complete security architecture redesign. I also hold an AWS Certified Security – Specialty certification and have implemented zero-trust network access policies for three enterprise clients, reducing their attack surface by an estimated 60%.
+
+What draws me to Runpod beyond the technical challenges is your commitment to making powerful computing accessible to individual developers and small teams, not just enterprises. I've always believed security shouldn't be a barrier to innovation—it should be an enabler. Throughout my career, I've focused on building security solutions that protect without slowing down development velocity. I've mentored junior analysts, translated complex security findings for non-technical stakeholders, and consistently achieved a 95% remediation pass rate because I prioritize practical, actionable guidance over theoretical perfection. That philosophy aligns perfectly with Runpod's developer-first approach.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, cloud security experience, and proactive security mindset can help Runpod continue scaling securely. I'm confident I can contribute immediately to protecting your platform and your users.
+
+Thank you for your consideration.
+
+Alex J. Carter

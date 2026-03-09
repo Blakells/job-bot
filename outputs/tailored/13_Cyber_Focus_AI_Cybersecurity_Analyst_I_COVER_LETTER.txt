@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+Cyber Focus AI
+United States
+
+Dear Hiring Manager,
+
+I'm excited to apply for the Cybersecurity Analyst I position at Cyber Focus AI. As someone who has spent the last four years at the intersection of offensive security and AI-enhanced threat detection, I'm particularly drawn to your company's mission of leveraging artificial intelligence to revolutionize cybersecurity operations. The opportunity to contribute to a team that's pushing the boundaries of automated threat hunting and intelligent security analytics aligns perfectly with where I see the future of our industry heading.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed expertise that directly translates to the challenges Cyber Focus AI is solving. I conduct 40+ annual penetration tests across web applications, networks, and cloud infrastructure, consistently identifying critical vulnerabilities before threat actors can exploit them. Most relevant to your AI-driven approach, I developed a custom SIEM dashboard using Splunk that reduced mean time to detect security incidents by 38%—demonstrating my ability to transform raw security data into actionable intelligence. Additionally, I led a red team exercise simulating an APT attack on a healthcare client that resulted in a complete security architecture overhaul, showcasing my understanding of both attacker methodologies and defensive strategies that could inform AI training models.
+
+What excites me most about Cyber Focus AI is the opportunity to work at a company where innovation isn't just encouraged—it's fundamental to the mission. Throughout my career, I've been the person who builds custom tools, mentors junior analysts, and translates complex technical findings into language that stakeholders understand. I believe cybersecurity's greatest challenges require both technical excellence and creative problem-solving, which is why I'm pursuing my CySA+ certification and constantly experimenting with new detection techniques. Your commitment to using AI to stay ahead of evolving threats resonates deeply with my own approach to proactive security.
+
+I'd welcome the opportunity to discuss how my penetration testing expertise, SIEM development experience, and passion for innovative security solutions can contribute to Cyber Focus AI's continued growth. I'm available for a conversation at your convenience and can be reached at (843) 555-0192 or alex.carter@gmail.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

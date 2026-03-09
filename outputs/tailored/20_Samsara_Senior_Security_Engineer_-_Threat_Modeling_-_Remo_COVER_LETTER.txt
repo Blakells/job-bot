@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Samsara
+Remote
+
+Dear Samsara Hiring Team,
+
+I've been following Samsara's growth in the connected operations space with genuine admiration—your platform is literally keeping drivers safer and supply chains running. When I saw the Senior Security Engineer - Threat Modeling role, I knew this was the opportunity I'd been waiting for. The chance to proactively identify security risks in IoT infrastructure that protects real people and critical operations is exactly the kind of impactful work that drives me.
+
+My experience conducting 40+ annual penetration tests and red team exercises has taught me to think like an attacker to build better defenses—precisely the mindset threat modeling demands. At SecureNet Solutions, I led a red team exercise for a healthcare client that simulated an APT attack, successfully demonstrating lateral movement vulnerabilities that resulted in a complete security architecture redesign. This proactive approach prevented what could have been a catastrophic breach. Additionally, I've implemented zero-trust network access policies for enterprise clients, reducing their attack surface by 60%. These experiences have sharpened my ability to anticipate threats before they materialize and translate technical risks into business impact—skills that directly translate to building robust threat models for Samsara's IoT ecosystem.
+
+What excites me most about Samsara is your mission-driven culture. You're not just building software; you're creating technology that prevents accidents, reduces emissions, and improves working conditions for millions. Having worked extensively with Fortune 500 clients across healthcare and enterprise sectors, I understand the weight of responsibility that comes with securing systems where failure has real-world consequences. My 95% remediation success rate stems from this same philosophy: security isn't about finding problems—it's about solving them in ways that empower teams to build safer products. I'm energized by the prospect of embedding security thinking into Samsara's development lifecycle from day one.
+
+I'd welcome the opportunity to discuss how my offensive security background and passion for proactive defense can strengthen Samsara's threat modeling program. I'm confident I can hit the ground running and contribute to keeping your platform—and the people who depend on it—secure.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

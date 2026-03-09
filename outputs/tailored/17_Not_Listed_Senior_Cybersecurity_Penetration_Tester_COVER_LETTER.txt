@@ -1,0 +1,18 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Senior Cybersecurity Penetration Tester position. As someone who has built their career around thinking like an attacker to better defend organizations, I'm excited by the opportunity to bring my offensive security expertise to a role that prioritizes proactive threat identification. The senior-level focus of this position aligns perfectly with my progression from hands-on testing to leading complex engagements and mentoring junior team members.
+
+Over the past four years, I've conducted more than 40 penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients in highly regulated industries like healthcare. One of my most impactful engagements involved leading a red team exercise that simulated an advanced persistent threat attack, where I successfully demonstrated lateral movement and data exfiltration capabilities that prompted a complete security architecture overhaul for the client. My penetration testing work has consistently uncovered critical vulnerabilities—averaging 12 per engagement—with detailed remediation guidance that has achieved a 95% re-test pass rate within 30 days. I've also developed expertise in cloud security assessments, particularly within AWS environments, which has become increasingly vital as organizations accelerate their cloud adoption.
+
+Beyond technical skills, I'm passionate about the educational aspect of offensive security work. I believe the best penetration testers don't just find vulnerabilities—they help organizations understand their security posture and build lasting defensive capabilities. This philosophy has driven me to mentor two junior analysts and deliver security awareness training that translates complex technical findings into actionable business risk. I thrive in remote work environments where clear communication and detailed documentation are essential, and I take pride in delivering reports that security teams and executives alike can understand and act upon.
+
+I would welcome the opportunity to discuss how my offensive security experience, industry certifications (CEH, Security+, AWS Security), and commitment to continuous learning can contribute to your security testing initiatives. I'm confident that my combination of technical depth and client-facing communication skills would make me a valuable addition to your team.
+
+Thank you for your consideration. I look forward to speaking with you soon.
+
+Sincerely,
+Alex J. Carter

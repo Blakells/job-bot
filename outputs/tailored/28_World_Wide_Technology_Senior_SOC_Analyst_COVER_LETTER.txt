@@ -1,0 +1,22 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+
+Hiring Manager
+World Wide Technology
+Remote
+
+Dear Hiring Manager,
+
+I'm writing to express my strong interest in the Senior SOC Analyst position at World Wide Technology. As someone who has followed WWT's evolution from a product reseller to a global technology solutions provider, I'm particularly impressed by your Advanced Technology Center and commitment to helping clients navigate complex security challenges. The opportunity to join a SOC team that supports such diverse enterprise environments—from Fortune 500 companies to government agencies—is exactly the challenge I've been seeking to take my security operations career to the next level.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've developed the exact blend of offensive and defensive security expertise that makes for an effective SOC analyst. I built and maintain a custom SIEM dashboard using Splunk that reduced our mean time to detect security incidents by 38%, directly improving our ability to stop threats before they cause damage. Beyond monitoring, I've conducted 40+ penetration tests annually, giving me the attacker's perspective that's crucial for threat hunting and incident analysis. This dual mindset allowed me to lead a red team exercise simulating an APT attack on a healthcare client, where I successfully demonstrated lateral movement techniques—experience that now helps me recognize these same patterns when analyzing security alerts and investigating incidents.
+
+What draws me to WWT beyond the technical scope is your culture of continuous learning and innovation. Your investment in employee development through the WWT Research team and hands-on labs aligns perfectly with my approach to cybersecurity—I'm currently pursuing my CySA+ certification and consistently mentor junior analysts because I believe the best security teams are learning teams. WWT's collaborative approach to solving client problems, rather than simply selling products, resonates with how I've always approached security: as a partner to the business, translating technical findings into actionable strategies that stakeholders can understand and support.
+
+I'd welcome the opportunity to discuss how my experience in penetration testing, SIEM operations, and incident response can contribute to WWT's SOC team. I'm confident that my technical skills and collaborative mindset would make me a valuable addition to your security operations.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex Carter

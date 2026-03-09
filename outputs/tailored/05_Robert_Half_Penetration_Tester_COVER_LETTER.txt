@@ -1,0 +1,23 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@gmail.com
+Florence, SC
+
+Hiring Manager
+Robert Half
+North Charleston, SC
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the Penetration Tester position at Robert Half in North Charleston. As a cybersecurity professional based in South Carolina with over four years of specialized experience in offensive security, I'm excited about the opportunity to bring my penetration testing expertise to a respected staffing and consulting firm known for connecting top talent with organizations that need robust security solutions. Robert Half's commitment to placing skilled professionals in critical roles resonates deeply with me, and I'm eager to contribute to protecting your clients' digital assets.
+
+In my current role as Cybersecurity Analyst II at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud environments for Fortune 500 clients. I've consistently uncovered an average of 12 critical vulnerabilities per engagement, translating complex technical findings into actionable remediation strategies that achieve a 95% client re-test pass rate within 30 days. One of my most impactful projects involved leading a red team exercise for a healthcare client where I simulated an advanced persistent threat attack, successfully demonstrating lateral movement and data exfiltration. This engagement directly led to a complete security architecture overhaul, preventing potential HIPAA violations and data breaches. My certifications—including CEH, Security+, and AWS Security Specialty—complement this hands-on experience and ensure I stay current with evolving attack vectors and defensive strategies.
+
+What draws me to Robert Half is your unique position at the intersection of talent and technology. I understand that as a penetration tester in your organization, I would not only be conducting security assessments but also representing the caliber of expertise Robert Half delivers to clients. My experience mentoring junior analysts and translating technical vulnerabilities for non-technical stakeholders has honed my ability to communicate effectively across all organizational levels—a crucial skill when working with diverse client environments. I'm particularly excited about the opportunity to work in North Charleston, allowing me to contribute to the local business community while staying rooted in South Carolina.
+
+I would welcome the opportunity to discuss how my penetration testing expertise and client-focused approach can add value to Robert Half's cybersecurity practice. I'm available at your convenience for an interview and can be reached at (843) 555-0192 or alex.carter@gmail.com.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter

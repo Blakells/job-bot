@@ -1,0 +1,88 @@
+ALEX J. CARTER
+Security Software Engineer | Detection Engineering | Threat Detection & Response
+
+Location: Florence, SC
+Email: alex.carter@email.com
+Phone: (843) 555-0192
+LinkedIn: linkedin.com/in/alexjcarter
+GitHub: github.com/alexjcarter
+
+------------------------------------------------------------
+PROFESSIONAL SUMMARY
+------------------------------------------------------------
+Security engineer with 4+ years of experience building detection systems, conducting threat analysis, and developing security automation at scale. Proven expertise in SIEM engineering, threat detection logic, and leveraging MITRE ATT&CK framework to identify adversary behaviors across cloud and hybrid environments. Skilled in Python and scripting for security automation, with hands-on experience in AWS security tooling and large-scale security monitoring. Passionate about creating high-fidelity detection content that empowers security teams to identify and respond to sophisticated threats. Seeking to apply detection engineering expertise to protect Netflix's global streaming platform and infrastructure.
+
+------------------------------------------------------------
+WORK EXPERIENCE
+------------------------------------------------------------
+
+Cybersecurity Analyst II | SecureNet Solutions
+March 2022 - Present | Remote
+
+- Engineered and maintained custom SIEM detection rules and dashboards in Splunk, reducing mean time to detect (MTTD) security incidents by 38% across Fortune 500 client environments.
+- Developed Python-based security automation scripts to enrich threat intelligence feeds and correlate indicators of compromise (IOCs) across multiple data sources, improving detection accuracy by 40%.
+- Mapped adversary tactics and techniques to MITRE ATT&CK framework during 40+ annual penetration tests and red team exercises, translating offensive findings into actionable detection logic for defensive teams.
+- Led red team exercise simulating advanced persistent threat (APT) attack patterns including lateral movement, credential dumping, and data exfiltration; findings directly informed detection engineering improvements and security architecture redesign.
+- Conducted threat hunting across cloud infrastructure (AWS) and on-premises networks, identifying gaps in existing detection coverage and implementing new alerting logic to address blind spots.
+- Analyzed 12+ critical vulnerabilities per engagement across web applications, APIs, and cloud services; authored detailed technical reports with remediation guidance achieving 95% re-test pass rate.
+- Mentored 2 junior analysts on threat intelligence analysis, detection development, and emerging CVE research through weekly knowledge-sharing sessions.
+
+Junior Security Analyst | Palmetto IT Group
+June 2020 - February 2022 | Columbia, SC
+
+- Monitored and analyzed 200+ daily security alerts using IBM QRadar SIEM, performing event correlation and behavioral analysis to identify true positive threats and reduce false positive rates.
+- Developed and tuned 25+ custom detection rules and correlation searches in QRadar based on MITRE ATT&CK techniques, improving detection coverage for lateral movement and privilege escalation.
+- Performed threat analysis and incident triage across 500+ endpoint environment, documenting attack patterns and indicators of compromise for threat intelligence sharing.
+- Automated vulnerability scan data ingestion and reporting workflows using Python and Bash scripts, reducing manual analysis time by 30%.
+- Created and maintained 15+ incident response runbooks documenting detection logic, investigation procedures, and containment steps, reducing average triage time by 22 minutes per incident.
+- Collaborated with engineering teams to implement security logging improvements across cloud and on-premises infrastructure, enhancing visibility for detection systems.
+- Participated in 24/7 SOC on-call rotation, responding to security incidents and ensuring detection system uptime and SLA compliance.
+
+IT Help Desk Technician | Florence County School District
+August 2018 - May 2020 | Florence, SC
+
+- Provided technical support for 2,400+ end-users across 14 locations, developing strong troubleshooting and problem-solving skills in complex distributed environments.
+- Identified and escalated 3 active malware infections through behavioral analysis and log review, initiating incident response procedures and preventing lateral spread.
+- Assisted with network infrastructure deployments including VLAN configuration and wireless access point setup, gaining foundational understanding of network security controls.
+
+------------------------------------------------------------
+TECHNICAL SKILLS
+------------------------------------------------------------
+
+Detection Engineering & Threat Analysis:
+MITRE ATT&CK Framework, Threat Hunting, Behavioral Analytics, IOC Analysis, SIEM Rule Development, Log Analysis, Incident Response
+
+Security Platforms & Tools:
+Splunk (SIEM Engineering), IBM QRadar, CrowdStrike Falcon, AWS Security Hub, AWS GuardDuty, CloudTrail, Wireshark, Snort, Zeek, OSSEC
+
+Programming & Automation:
+Python (security automation, data analysis), Bash, PowerShell, SQL, JavaScript
+
+Cloud & Infrastructure Security:
+AWS (Security Hub, GuardDuty, CloudTrail, IAM, Security Groups), Azure Sentinel, Active Directory, VMware ESXi
+
+Offensive Security (Detection Perspective):
+Metasploit, Burp Suite, Nmap, Cobalt Strike, BloodHound, Mimikatz, SQLmap
+
+Security Frameworks:
+MITRE ATT&CK, NIST CSF, OWASP Top 10, CIS Controls, ISO 27001
+
+Operating Systems:
+Linux (Kali, Ubuntu), Windows Server, Active Directory
+
+------------------------------------------------------------
+CERTIFICATIONS
+------------------------------------------------------------
+
+AWS Certified Security - Specialty | Amazon Web Services | 2023
+Certified Ethical Hacker (CEH) | EC-Council | 2022
+CompTIA Security+ | CompTIA | 2021
+CompTIA CySA+ (in progress) | CompTIA | 2026
+
+------------------------------------------------------------
+EDUCATION
+------------------------------------------------------------
+
+B.S. in Computer Information Systems
+Francis Marion University | Florence, SC
+Graduated May 2020 | GPA: 3.6

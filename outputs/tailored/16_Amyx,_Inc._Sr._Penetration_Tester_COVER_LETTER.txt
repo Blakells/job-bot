@@ -1,0 +1,21 @@
+Alex J. Carter
+(843) 555-0192
+alex.carter@email.com
+
+Hiring Manager
+Amyx, Inc.
+
+Dear Hiring Team,
+
+I was immediately drawn to the Sr. Penetration Tester position at Amyx because of your company's reputation for delivering mission-critical cybersecurity solutions to federal agencies and commercial clients. The opportunity to conduct sophisticated offensive security assessments for organizations where security isn't just important—it's essential—aligns perfectly with both my technical capabilities and my commitment to protecting critical infrastructure. Your focus on innovation and technical excellence in the cybersecurity space makes Amyx exactly the type of forward-thinking organization where I want to grow my career.
+
+In my current role at SecureNet Solutions, I've conducted over 40 penetration tests annually across web applications, internal networks, and cloud infrastructure for Fortune 500 clients. One of my most impactful engagements involved leading a red team exercise for a healthcare organization where I successfully simulated an APT attack, demonstrating lateral movement and data exfiltration capabilities that exposed critical gaps in their security posture. This led to a complete security architecture overhaul. My penetration testing work has consistently uncovered an average of 12 critical vulnerabilities per engagement, and I've maintained a 95% client remediation success rate by delivering clear, actionable reports that bridge the gap between technical findings and business risk. Additionally, my hands-on experience implementing zero-trust architecture for enterprise clients has given me deep insight into modern security frameworks that go beyond traditional perimeter defense.
+
+What excites me most about Amyx is your commitment to supporting both government and commercial sectors with cutting-edge security solutions. I thrive in environments where precision and thoroughness matter, and where the work directly contributes to national security and organizational resilience. My experience mentoring junior analysts and delivering security awareness training demonstrates my belief that strong security is built through both technical rigor and team collaboration—values I see reflected in Amyx's approach to client partnerships.
+
+I would welcome the opportunity to discuss how my offensive security expertise and proven track record can contribute to Amyx's continued success. I'm confident that my technical skills, client-facing experience, and passion for ethical hacking make me an excellent fit for your team.
+
+Thank you for your consideration.
+
+Sincerely,
+Alex J. Carter
