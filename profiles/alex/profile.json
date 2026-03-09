@@ -4,6 +4,7 @@
     "email": "alex.carter@gmail.com",
     "phone": "(843) 555-0192",
     "location": "Florence, SC",
+    "zip_code": "29501",
     "linkedin_url": "linkedin.com/in/alexjcarter",
     "portfolio_url": "",
     "github_url": "github.com/alexjcarter"
@@ -212,8 +213,9 @@
   "summary": "Alex J. Carter is a mid-level cybersecurity professional with 4+ years of hands-on experience specializing in penetration testing, vulnerability assessment, and security incident response. Currently serving as Cybersecurity Analyst II at SecureNet Solutions, Alex conducts 40+ annual penetration tests, has reduced MTTD by 38% through custom SIEM development, and holds industry certifications including CEH, Security+, and AWS Security Specialty. With proven expertise in both offensive and defensive security, MITRE ATT&CK-based threat modeling, and strong communication skills for translating technical findings to diverse stakeholders, Alex is well-positioned for advanced roles in enterprise security, red teaming, or SOC leadership.",
   "extra_answers": {
     "How did you hear about this job?": "LinkedIn",
-    "Do you have a security clearance or are you eligible?": "Yes",
-    "Are you willing to undergo a background check?": "Yes"
+    "Do you have a security clearance or are you eligible?": "No, but willing to obtain if required",
+    "Are you willing to undergo a background check?": "Yes",
+    "what level clearance do you currently": "None — willing to obtain if required"
   },
   "work_authorization": {
     "authorized_to_work_in_us": true,

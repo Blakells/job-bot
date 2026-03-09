@@ -138,105 +138,143 @@ def end_session(session_id):
 
 
 def screenshot(page, name):
-    """Take and save a screenshot."""
+    """Take and save a screenshot, clearing any overlays first."""
     Path("outputs/screenshots").mkdir(parents=True, exist_ok=True)
     path = f"outputs/screenshots/{name}.png"
+    # Clear any cookie banners, modals, or backdrops before the screenshot
+    try:
+        page.evaluate("""() => {
+            // Remove cookie/consent overlays
+            document.querySelectorAll(
+                '[class*="cookie"], [class*="Cookie"], [id*="cookie"], [id*="Cookie"], ' +
+                '[class*="consent"], [class*="Consent"], [class*="gdpr"], ' +
+                '[data-role="modal-wrapper"], [data-role="backdrop"], ' +
+                '[data-evergreen-dialog-backdrop], .modal-backdrop, ' +
+                '[class*="modal-overlay"], [class*="dialog-backdrop"]'
+            ).forEach(el => {
+                // Only remove large overlay-type elements, not small links
+                const rect = el.getBoundingClientRect();
+                if (rect.width > 200 || el.getAttribute('data-role')) {
+                    el.remove();
+                }
+            });
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        }""")
+        time.sleep(0.3)
+    except Exception:
+        pass
     page.screenshot(path=path)
     print(f"  📸 {path}")
     return path
 
 
-def find_tailored_files(company, title, apply_url=None):
+def find_tailored_files(company, title, apply_url=None, profile_path=None):
     """
     Find tailored resume and cover letter for a job.
     
     Search strategy (in order):
-    1. APPLICATION_SUMMARY.json — match by URL (most reliable)
-    2. APPLICATION_SUMMARY.json — match by company name
-    3. Direct filename search in outputs/tailored/
-    4. Default resume from resumes/ directory
+    1. Per-profile tailored dir (profiles/{name}/tailored/) — APPLICATION_SUMMARY + filename
+    2. Global tailored dir (outputs/tailored/) — APPLICATION_SUMMARY + filename
+    3. Default resume from resumes/ directory
     """
-    tailored_dir = Path("outputs/tailored")
+    # Build list of directories to search: per-profile first, then global
+    search_dirs = []
+    if profile_path:
+        profile_dir = Path(profile_path).parent
+        per_profile_tailored = profile_dir / "tailored"
+        if per_profile_tailored.exists():
+            search_dirs.append(per_profile_tailored)
+    search_dirs.append(Path("outputs/tailored"))
+
     resume = None
     cover_letter = None
 
-    # ── Strategy 1 & 2: Use APPLICATION_SUMMARY.json ──────────────────
-    summary_path = tailored_dir / "00_APPLICATION_SUMMARY.json"
-    if summary_path.exists():
-        try:
-            summary = json.loads(summary_path.read_text())
+    for tailored_dir in search_dirs:
+        if not tailored_dir.exists():
+            continue
 
-            matched_entry = None
+        # ── Strategy 1 & 2: Use APPLICATION_SUMMARY.json ──────────────────
+        summary_path = tailored_dir / "00_APPLICATION_SUMMARY.json"
+        if summary_path.exists():
+            try:
+                summary = json.loads(summary_path.read_text())
 
-            # Strategy 1: Match by URL (exact or partial)
-            if apply_url:
-                for entry in summary:
-                    entry_url = entry.get("apply_url", "")
-                    # Match if URLs are the same or one contains the other
-                    if entry_url and (
-                        entry_url == apply_url
-                        or entry_url in apply_url
-                        or apply_url in entry_url
-                    ):
-                        matched_entry = entry
-                        break
+                matched_entry = None
 
-            # Strategy 2: Match by company name
-            if not matched_entry:
-                company_lower = company.lower().strip()
-                for entry in summary:
-                    if entry.get("company", "").lower().strip() == company_lower:
-                        matched_entry = entry
-                        break
-                # Fuzzy company match
-                if not matched_entry:
+                # Strategy 1: Match by URL (exact or partial)
+                if apply_url:
                     for entry in summary:
-                        entry_co = entry.get("company", "").lower().strip()
-                        if (company_lower in entry_co or entry_co in company_lower):
+                        entry_url = entry.get("apply_url", "")
+                        if entry_url and (
+                            entry_url == apply_url
+                            or entry_url in apply_url
+                            or apply_url in entry_url
+                        ):
                             matched_entry = entry
                             break
 
-            if matched_entry:
-                # Summary stores .txt paths — check for .pdf version first
-                txt_resume = matched_entry.get("resume_file", "")
-                txt_cover = matched_entry.get("cover_letter_file", "")
+                # Strategy 2: Match by company name
+                if not matched_entry:
+                    company_lower = company.lower().strip()
+                    for entry in summary:
+                        if entry.get("company", "").lower().strip() == company_lower:
+                            matched_entry = entry
+                            break
+                    if not matched_entry:
+                        for entry in summary:
+                            entry_co = entry.get("company", "").lower().strip()
+                            if (company_lower in entry_co or entry_co in company_lower):
+                                matched_entry = entry
+                                break
 
-                # Try PDF first, fall back to TXT
-                for txt_path, label in [(txt_resume, "resume"), (txt_cover, "cover_letter")]:
-                    if not txt_path:
-                        continue
-                    pdf_path = txt_path.replace(".txt", ".pdf")
-                    if Path(pdf_path).exists():
-                        if label == "resume":
-                            resume = str(Path(pdf_path).absolute())
-                        else:
-                            cover_letter = str(Path(pdf_path).absolute())
-                    elif Path(txt_path).exists():
-                        if label == "resume":
-                            resume = str(Path(txt_path).absolute())
-                        else:
-                            cover_letter = str(Path(txt_path).absolute())
+                if matched_entry:
+                    txt_resume = matched_entry.get("resume_file", "")
+                    txt_cover = matched_entry.get("cover_letter_file", "")
 
-                if resume:
-                    print(f"  📄 Resume: {Path(resume).name}")
-                    if cover_letter:
-                        print(f"  📄 Cover:  {Path(cover_letter).name}")
-                    return resume, cover_letter
+                    for txt_path, label in [(txt_resume, "resume"), (txt_cover, "cover_letter")]:
+                        if not txt_path:
+                            continue
+                        # Check paths relative to both the tailored dir and as absolute
+                        candidates = [txt_path, str(tailored_dir / Path(txt_path).name)]
+                        pdf_candidates = [
+                            txt_path.replace(".txt", ".pdf"),
+                            str(tailored_dir / Path(txt_path.replace(".txt", ".pdf")).name)
+                        ]
+                        for pdf_path in pdf_candidates:
+                            if Path(pdf_path).exists():
+                                if label == "resume":
+                                    resume = str(Path(pdf_path).absolute())
+                                else:
+                                    cover_letter = str(Path(pdf_path).absolute())
+                                break
+                        if (label == "resume" and resume) or (label == "cover_letter" and cover_letter):
+                            continue
+                        for txt_p in candidates:
+                            if Path(txt_p).exists():
+                                if label == "resume":
+                                    resume = str(Path(txt_p).absolute())
+                                else:
+                                    cover_letter = str(Path(txt_p).absolute())
+                                break
 
-        except Exception as e:
-            print(f"  ⚠️  Error reading summary: {e}")
+                    if resume:
+                        print(f"  📄 Resume: {Path(resume).name}")
+                        if cover_letter:
+                            print(f"  📄 Cover:  {Path(cover_letter).name}")
+                        return resume, cover_letter
 
-    # ── Strategy 3: Direct filename search ────────────────────────────
-    if tailored_dir.exists():
+            except Exception as e:
+                print(f"  ⚠️  Error reading summary: {e}")
+
+        # ── Strategy 3: Direct filename search ────────────────────────────
         company_norm = re.sub(r'[^a-zA-Z0-9]+', '_', company).strip('_').lower()
 
         for ext in ['.pdf', '.txt']:
             for file in sorted(tailored_dir.glob(f"*_RESUME{ext}"), reverse=True):
                 filename = file.stem.lower()
-                # Check if company name appears in filename
                 if company_norm in filename.replace('.', '_'):
                     resume = str(file.absolute())
-                    # Find matching cover letter
                     cover_name = file.name.replace(f"_RESUME{ext}", f"_COVER_LETTER{ext}")
                     cover_file = file.parent / cover_name
                     if cover_file.exists():
@@ -247,17 +285,26 @@ def find_tailored_files(company, title, apply_url=None):
                     return resume, cover_letter
 
     # ── Strategy 4: Default resume ────────────────────────────────────
-    for candidate in [
+    # Also check the profile's own directory for a base resume
+    default_candidates = [
         "resumes/my_resume.txt", "resumes/my_resume.pdf",
         "profiles/resume.pdf", "profiles/resume.txt",
-    ]:
+    ]
+    if profile_path:
+        profile_dir = Path(profile_path).parent
+        for ext in [".pdf", ".txt", ".docx"]:
+            for f in profile_dir.glob(f"*Resume*{ext}"):
+                default_candidates.insert(0, str(f))
+            for f in profile_dir.glob(f"*resume*{ext}"):
+                default_candidates.insert(0, str(f))
+
+    for candidate in default_candidates:
         if Path(candidate).exists():
             resume = str(Path(candidate).absolute())
             print(f"  📄 Resume: {candidate} (default — not tailored)")
             return resume, None
 
-    if not resume:
-        print(f"  ⚠️  No resume found for {company}")
+    print(f"  ⚠️  No resume found for {company}")
     return None, None
 
 
@@ -921,11 +968,18 @@ def parse_greenhouse_fields(page):
 def build_answer_map(profile, company):
     """
     Build a mapping of field labels/IDs → answers from the user profile.
-    This covers all standard Greenhouse fields.
+    Covers standard fields for Greenhouse AND universal forms.
     """
     name_parts = profile["personal"]["name"].split(" ", 1)
     first_name = name_parts[0]
     last_name = name_parts[1] if len(name_parts) > 1 else ""
+    location = profile["personal"].get("location", "")
+    location_parts = [p.strip() for p in location.split(",")]
+    city = location_parts[0] if location_parts else ""
+    state_abbrev = location_parts[1].strip() if len(location_parts) > 1 else ""
+    state_full = STATE_MAP.get(state_abbrev.lower(), state_abbrev)
+    state_full = state_full.title() if state_full.islower() else state_full
+    location_full = f"{city}, {state_full}, United States" if city else location
 
     answers = {
         # Standard fields (by ID)
@@ -933,10 +987,14 @@ def build_answer_map(profile, company):
         "last_name": last_name,
         "email": profile["personal"]["email"],
         "phone": profile["personal"]["phone"],
+        "firstname": first_name,
+        "lastname": last_name,
+        "fname": first_name,
+        "lname": last_name,
 
         # React-Select dropdowns (by ID)
         "country": "United States",
-        "candidate-location": profile["personal"]["location"],
+        "candidate-location": location_full,
 
         # EEOC fields (by ID)
         "gender": "Male",
@@ -949,49 +1007,173 @@ def build_answer_map(profile, company):
         "cover_letter": "COVER_LETTER_FILE",
     }
 
-    # Dynamic question fields — match by label keywords
-    location = profile["personal"].get("location", "")
-    location_parts = [p.strip() for p in location.split(",")]
-    state_abbrev = location_parts[1] if len(location_parts) > 1 else ""
-
-    # Expand state abbreviation to full name using shared STATE_MAP
-    state_full = STATE_MAP.get(state_abbrev.lower(), state_abbrev)
-    # Capitalize for display: "south carolina" → "South Carolina"
-    state_full = state_full.title() if state_full.islower() else state_full
+    # Dynamic question fields — match by label keywords (case-insensitive)
+    # Organized by category for clarity
+    salary_str = str(profile.get("salary_range", {}).get("min", ""))
+    linkedin_url = profile["personal"].get("linkedin_url", "")
+    portfolio_url = profile["personal"].get("portfolio_url", "")
+    github_url = profile["personal"].get("github_url", "")
+    summary_text = profile.get("summary", "")
+    years_exp = str(profile.get("years_of_experience", ""))
+    work_history = profile.get("work_history", [])
+    current_job = work_history[0] if work_history else {}
+    certs = profile.get("certifications", [])
 
     label_answers = {
-        "legally authorized to work": "Yes",
-        "work authorization": "Yes",
-        "authorized to work in the united states": "Yes",
-        "require sponsorship": "No",
-        "visa status": "No",
-        "visa sponsorship": "No",
-        "how did you hear": "LinkedIn",
-        "linkedin profile": profile["personal"].get("linkedin_url", ""),
-        "linkedin url": profile["personal"].get("linkedin_url", ""),
-        "do you know anyone": "No",
-        "know anyone who currently works": "No",
+        # ── Name fields ──────────────────────────────────────────────
+        "first name": first_name,
+        "last name": last_name,
         "full legal name": profile["personal"]["name"],
         "full name": profile["personal"]["name"],
         "preferred first name": first_name,
-        "website": profile["personal"].get("portfolio_url", ""),
-        "github": profile["personal"].get("github_url", ""),
-        "years of experience": str(profile.get("years_of_experience", "")),
-        "salary": str(profile.get("salary_range", {}).get("min", "")),
-        "desired salary": str(profile.get("salary_range", {}).get("min", "")),
-        # State / location fields
+        "preferred name": first_name,
+        "name of candidate": profile["personal"]["name"],
+        "candidate name": profile["personal"]["name"],
+
+        # ── Contact ──────────────────────────────────────────────────
+        "email address": profile["personal"]["email"],
+        "email": profile["personal"]["email"],
+        "phone number": profile["personal"]["phone"],
+        "phone": profile["personal"]["phone"],
+        "mobile": profile["personal"]["phone"],
+        "cell": profile["personal"]["phone"],
+
+        # ── Work Authorization ───────────────────────────────────────
+        "legally authorized to work": "Yes",
+        "work authorization": "Yes",
+        "authorized to work in the united states": "Yes",
+        "authorized to work in the u.s": "Yes",
+        "eligible to work": "Yes",
+        "right to work": "Yes",
+        "require sponsorship": "No",
+        "need sponsorship": "No",
+        "visa status": "No",
+        "visa sponsorship": "No",
+        "immigration sponsorship": "No",
+        "work permit": "Yes",
+        "citizen or permanent resident": "Yes",
+        "us citizen": "Yes",
+        "u.s. citizen": "Yes",
+
+        # ── Referral / Source ────────────────────────────────────────
+        "how did you hear": "LinkedIn",
+        "hear about this": "LinkedIn",
+        "hear about us": "LinkedIn",
+        "referred by": "",
+        "referral source": "LinkedIn",
+        "source": "LinkedIn",
+        "where did you find": "LinkedIn",
+
+        # ── URLs & Online Presence ───────────────────────────────────
+        "linkedin profile": linkedin_url,
+        "linkedin url": linkedin_url,
+        "linkedin": linkedin_url,
+        "website": portfolio_url,
+        "personal website": portfolio_url,
+        "portfolio": portfolio_url,
+        "portfolio url": portfolio_url,
+        "github": github_url,
+        "github url": github_url,
+        "github profile": github_url,
+
+        # ── Professional Info ────────────────────────────────────────
+        "years of experience": years_exp,
+        "total experience": years_exp,
+        "years in": years_exp,
+        "experience level": profile.get("experience_level", ""),
+        "current title": current_job.get("title", ""),
+        "current job title": current_job.get("title", ""),
+        "current position": current_job.get("title", ""),
+        "current employer": current_job.get("company", ""),
+        "current company": current_job.get("company", ""),
+        "most recent employer": current_job.get("company", ""),
+        "most recent company": current_job.get("company", ""),
+
+        # ── Salary ───────────────────────────────────────────────────
+        "salary": salary_str,
+        "desired salary": salary_str,
+        "salary expectation": salary_str,
+        "salary requirement": salary_str,
+        "expected salary": salary_str,
+        "compensation": salary_str,
+        "desired compensation": salary_str,
+        "minimum salary": salary_str,
+        "pay expectation": salary_str,
+
+        # ── Location / Address ───────────────────────────────────────
+        "city": city,
+        "state": state_full,
+        "state/province": state_full,
+        "zip": "29501",
+        "zip code": "29501",
+        "postal code": "29501",
+        "postcode": "29501",
+        "country": "United States",
+        "location": location_full,
+        "address": location_full,
+        "current location": location_full,
         "which state": state_full,
         "what state": state_full,
         "state do you": state_full,
         "state of residence": state_full,
-        "where are you located": location,
-        # Schedule / commitment questions
+        "where are you located": location_full,
+        "where do you currently reside": location_full,
+        "where are you based": location_full,
+
+        # ── Schedule / Availability ──────────────────────────────────
         "commit to this schedule": "Yes",
         "can you commute": "Yes",
         "willing to relocate": "Yes",
+        "open to relocation": "Yes",
         "able to work": "Yes",
         "available to start": "Immediately",
         "start date": "Immediately",
+        "when can you start": "Immediately",
+        "earliest start date": "Immediately",
+        "notice period": "2 weeks",
+        "available for": "Full-time",
+        "desired employment type": "Full-time",
+        "employment type": "Full-time",
+
+        # ── Background / Compliance ──────────────────────────────────
+        "background check": "Yes",
+        "willing to undergo": "Yes",
+        "drug test": "Yes",
+        "drug screen": "Yes",
+        "non-compete": "No",
+        "non-disclosure": "Yes",
+        "non compete agreement": "No",
+        "security clearance": "No, but willing to obtain if required",
+        "clearance level": "None",
+        "do you currently hold": "No, but willing to obtain if required",
+        "what level clearance": "None — willing to obtain if required",
+
+        # ── Summary / Bio / About ───────────────────────────────────
+        "summary": summary_text,
+        "professional summary": summary_text,
+        "about yourself": summary_text,
+        "tell us about yourself": summary_text,
+        "brief description": summary_text,
+        "introduction": summary_text,
+        "cover letter": "COVER_LETTER_TEXT",
+        "additional information": summary_text,
+        "anything else": "",
+
+        # ── EEOC / Demographics (Decline-friendly defaults) ──────────
+        "gender": "Decline to self-identify",
+        "race": "Decline to self-identify",
+        "ethnicity": "Decline to self-identify",
+        "hispanic": "No",
+        "veteran": "I am not a protected veteran",
+        "disability": "No, I don't have a disability",
+        "protected veteran": "I am not a protected veteran",
+        "sexual orientation": "Decline to self-identify",
+        "pronouns": "Decline to self-identify",
+
+        # ── Social referral ──────────────────────────────────────────
+        "do you know anyone": "No",
+        "know anyone who currently works": "No",
+        "employee referral": "No",
     }
 
     # Merge in any saved extra answers from the profile
@@ -1082,35 +1264,150 @@ EXTRACT_FIELDS_JS = """
     const seen = new Set();
     
     function getLabel(el) {
-        // Try: explicit label via for/id
+        let label = '';
+        
+        // 1. Explicit label via for/id
         if (el.id) {
-            const label = document.querySelector('label[for="' + el.id + '"]');
-            if (label) return label.innerText.trim();
+            const lbl = document.querySelector('label[for="' + el.id + '"]');
+            if (lbl) label = lbl.innerText.trim();
         }
-        // Try: parent label
-        const parentLabel = el.closest('label');
-        if (parentLabel) return parentLabel.innerText.trim();
-        // Try: aria-label
-        if (el.getAttribute('aria-label')) return el.getAttribute('aria-label').trim();
-        // Try: aria-labelledby
-        const labelledBy = el.getAttribute('aria-labelledby');
-        if (labelledBy) {
-            const ref = document.getElementById(labelledBy);
-            if (ref) return ref.innerText.trim();
+        
+        // 2. Parent label
+        if (!label) {
+            const parentLabel = el.closest('label');
+            if (parentLabel) {
+                // Get label text excluding the input's own text
+                const clone = parentLabel.cloneNode(true);
+                clone.querySelectorAll('input, select, textarea').forEach(c => c.remove());
+                label = clone.innerText.trim();
+            }
         }
-        // Try: placeholder
-        if (el.placeholder) return el.placeholder.trim();
-        // Try: preceding sibling text or parent div text
-        const prev = el.previousElementSibling;
-        if (prev && prev.tagName !== 'INPUT' && prev.innerText) return prev.innerText.trim().slice(0, 100);
-        // Try: name attribute cleaned up
-        if (el.name) return el.name.replace(/[_\\-\\[\\]]/g, ' ').trim();
-        return '';
+        
+        // 3. aria-label
+        if (!label && el.getAttribute('aria-label')) {
+            label = el.getAttribute('aria-label').trim();
+        }
+        
+        // 4. aria-labelledby
+        if (!label) {
+            const labelledBy = el.getAttribute('aria-labelledby');
+            if (labelledBy) {
+                const parts = labelledBy.split(/\\s+/).map(id => {
+                    const ref = document.getElementById(id);
+                    return ref ? ref.innerText.trim() : '';
+                }).filter(Boolean);
+                if (parts.length) label = parts.join(' ');
+            }
+        }
+        
+        // 5. aria-describedby (often used for field descriptions)
+        if (!label) {
+            const describedBy = el.getAttribute('aria-describedby');
+            if (describedBy) {
+                const ref = document.getElementById(describedBy);
+                if (ref) label = ref.innerText.trim();
+            }
+        }
+
+        // 6. data-* attributes that hint at the field purpose
+        if (!label) {
+            for (const attr of ['data-automation-id', 'data-field-name', 'data-qa', 
+                                'data-testid', 'data-label', 'data-name']) {
+                const val = el.getAttribute(attr);
+                if (val) {
+                    label = val.replace(/[_\\-\\.]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim();
+                    break;
+                }
+            }
+        }
+        
+        // 7. Placeholder
+        if (!label && el.placeholder) {
+            label = el.placeholder.trim();
+        }
+        
+        // 8. Look at nearby siblings and parent structure
+        if (!label) {
+            // Check preceding siblings: label, span, div, p, h3, h4, legend
+            let sibling = el.previousElementSibling;
+            let tries = 0;
+            while (sibling && tries < 3) {
+                const tag = sibling.tagName.toLowerCase();
+                if (['label', 'span', 'div', 'p', 'h3', 'h4', 'h5', 'legend'].includes(tag)) {
+                    const txt = sibling.innerText.trim();
+                    if (txt && txt.length < 150 && txt.length > 0) {
+                        label = txt;
+                        break;
+                    }
+                }
+                sibling = sibling.previousElementSibling;
+                tries++;
+            }
+        }
+        
+        // 9. Parent container: look for nearby text in the field's wrapper div
+        if (!label) {
+            const wrapper = el.closest('.field, .form-group, .form-field, .form-row, ' +
+                '.question, .field-group, .input-group, .MuiFormControl-root, ' +
+                '[class*="field"], [class*="question"], [class*="form-group"]');
+            if (wrapper) {
+                // Get text from spans, labels, divs that are direct children
+                const candidates = wrapper.querySelectorAll(':scope > span, :scope > label, ' +
+                    ':scope > div > label, :scope > div > span, :scope > p, :scope > legend, ' +
+                    ':scope > h3, :scope > h4, :scope > .label, :scope > [class*="label"]');
+                for (const c of candidates) {
+                    const txt = c.innerText.trim();
+                    if (txt && txt.length < 150 && txt.length > 1) {
+                        label = txt;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // 10. Section header: find the nearest heading above this field
+        if (!label) {
+            const fieldRect = el.getBoundingClientRect();
+            const headings = document.querySelectorAll('h1, h2, h3, h4, h5, legend, .section-title');
+            let closest = null;
+            let closestDist = Infinity;
+            for (const h of headings) {
+                const hRect = h.getBoundingClientRect();
+                if (hRect.bottom <= fieldRect.top) {
+                    const dist = fieldRect.top - hRect.bottom;
+                    if (dist < closestDist && dist < 200) {
+                        closestDist = dist;
+                        closest = h;
+                    }
+                }
+            }
+            // Only use section header if no other field between header and us already claimed it
+            // (approximation: just note it as context, not primary label)
+        }
+        
+        // 11. Name attribute as final fallback
+        if (!label && el.name) {
+            label = el.name.replace(/[_\\-\\[\\]\\d]+/g, ' ')
+                          .replace(/([a-z])([A-Z])/g, '$1 $2')
+                          .trim();
+        }
+        
+        // Clean up: remove asterisks, "required", excess whitespace
+        label = label.replace(/\\*/g, '').replace(/\\(required\\)/gi, '').replace(/\\s+/g, ' ').trim();
+        return label.slice(0, 200);
     }
     
     function getOptions(el) {
         if (el.tagName === 'SELECT') {
-            return Array.from(el.options).map(o => o.text.trim()).filter(t => t && t !== '');
+            return Array.from(el.options).map(o => o.text.trim()).filter(t => t && t !== '' && t !== 'Select' && t !== 'Choose');
+        }
+        // Check for nearby radio buttons with the same name
+        if (el.type === 'radio' && el.name) {
+            const radios = document.querySelectorAll('input[type="radio"][name="' + el.name + '"]');
+            return Array.from(radios).map(r => {
+                const lbl = document.querySelector('label[for="' + r.id + '"]');
+                return lbl ? lbl.innerText.trim() : r.value;
+            }).filter(Boolean);
         }
         return [];
     }
@@ -1121,6 +1418,54 @@ EXTRACT_FIELDS_JS = """
         return rect.width > 0 && rect.height > 0 && 
                style.display !== 'none' && style.visibility !== 'hidden' &&
                style.opacity !== '0';
+    }
+
+    function getFieldContext(el) {
+        // Grab contextual clues: parent class names, nearby text, section, helper text
+        const ctx = {};
+        // Parent class names (useful for identifying field purpose)
+        const parent = el.closest('[class]');
+        if (parent) ctx.parentClass = parent.className.slice(0, 200);
+        // Check if it's inside a section with a heading
+        const section = el.closest('section, fieldset, [role="group"]');
+        if (section) {
+            const heading = section.querySelector('h1, h2, h3, h4, legend, .section-title');
+            if (heading) ctx.section = heading.innerText.trim().slice(0, 100);
+        }
+        // Helper text / description below the field
+        // Check aria-describedby, then look for small/span/p after the field
+        const describedBy = el.getAttribute('aria-describedby');
+        if (describedBy) {
+            const ref = document.getElementById(describedBy);
+            if (ref) ctx.helperText = ref.innerText.trim().slice(0, 200);
+        }
+        if (!ctx.helperText) {
+            const wrapper = el.closest('.field, .form-group, .form-field, [class*="field"]');
+            if (wrapper) {
+                const helpers = wrapper.querySelectorAll('small, .helper, .help-text, .description, ' +
+                    '[class*="helper"], [class*="hint"], [class*="description"], ' +
+                    'p:not(:first-child), span[class*="sub"]');
+                for (const h of helpers) {
+                    const txt = h.innerText.trim();
+                    if (txt && txt.length > 5 && txt.length < 200) {
+                        ctx.helperText = txt;
+                        break;
+                    }
+                }
+            }
+            // Also check the next sibling
+            if (!ctx.helperText) {
+                const next = el.nextElementSibling;
+                if (next && ['small', 'span', 'p', 'div'].includes(next.tagName.toLowerCase())) {
+                    const txt = next.innerText.trim();
+                    if (txt && txt.length > 5 && txt.length < 200 && 
+                        !txt.includes('Submit') && !txt.includes('Upload')) {
+                        ctx.helperText = txt;
+                    }
+                }
+            }
+        }
+        return ctx;
     }
     
     // Scan all standard form elements
@@ -1135,6 +1480,8 @@ EXTRACT_FIELDS_JS = """
         const key = el.id || el.name || Math.random().toString(36).slice(2);
         if (seen.has(key)) return;
         seen.add(key);
+
+        const ctx = getFieldContext(el);
         
         fields.push({
             tag: el.tagName.toLowerCase(),
@@ -1146,12 +1493,94 @@ EXTRACT_FIELDS_JS = """
             required: el.required || el.getAttribute('aria-required') === 'true',
             options: getOptions(el),
             value: el.value || '',
+            helperText: ctx.helperText || '',
+            parentClass: ctx.parentClass || '',
+            section: ctx.section || '',
             selector: el.id ? '#' + CSS.escape(el.id) : 
                       el.name ? '[name="' + el.name + '"]' : 
                       null
         });
     });
     
+    // ── Scan for YES/NO toggle button groups ─────────────────────────
+    // Workable and other ATS use custom button toggles instead of checkboxes.
+    // They look like: <div class="question"><span>Question text</span><button>YES</button><button>NO</button></div>
+    const toggleSeen = new Set();
+    document.querySelectorAll('button, [role="button"]').forEach(btn => {
+        const text = (btn.textContent || '').trim().toUpperCase();
+        if (text !== 'YES' && text !== 'NO') return;
+        if (!isVisible(btn)) return;
+        
+        // Find the question container (parent that has the question text + both buttons)
+        const container = btn.closest('[class*="question"], [class*="toggle"], [class*="field"], [class*="group"]')
+                       || btn.parentElement?.parentElement;
+        if (!container) return;
+        
+        // Get the question label text (usually in a span, p, or div before the buttons)
+        let questionText = '';
+        const textEls = container.querySelectorAll('span, p, div, label, h3, h4');
+        for (const tel of textEls) {
+            const t = tel.innerText.trim();
+            // Skip if it's just YES/NO or very short
+            if (t && t.length > 5 && t !== 'YES' && t !== 'NO' && !t.match(/^(YES|NO)$/i)) {
+                questionText = t.replace(/\\*/g, '').trim();
+                break;
+            }
+        }
+        if (!questionText) return;
+        
+        // Deduplicate by question text
+        if (toggleSeen.has(questionText)) return;
+        toggleSeen.add(questionText);
+        
+        // Find both YES and NO buttons
+        const buttons = container.querySelectorAll('button, [role="button"]');
+        let yesSelector = null, noSelector = null;
+        for (const b of buttons) {
+            const bt = (b.textContent || '').trim().toUpperCase();
+            if (bt === 'YES' || bt.includes('YES')) {
+                yesSelector = b.id ? '#' + CSS.escape(b.id) :
+                    b.getAttribute('data-ui') ? '[data-ui="' + b.getAttribute('data-ui') + '"]' : null;
+                // If no good selector, store a CSS path
+                if (!yesSelector) {
+                    // Build a unique-ish selector from parent + nth-child
+                    const parent = b.parentElement;
+                    const idx = Array.from(parent.children).indexOf(b);
+                    yesSelector = '__TOGGLE_YES__' + questionText;
+                }
+            }
+            if (bt === 'NO' || bt.includes('NO')) {
+                noSelector = b.id ? '#' + CSS.escape(b.id) :
+                    b.getAttribute('data-ui') ? '[data-ui="' + b.getAttribute('data-ui') + '"]' : null;
+                if (!noSelector) {
+                    noSelector = '__TOGGLE_NO__' + questionText;
+                }
+            }
+        }
+        
+        // Check if required (asterisk in label)
+        const fullText = container.innerText || '';
+        const isRequired = fullText.includes('*');
+        
+        fields.push({
+            tag: 'toggle',
+            type: 'toggle',
+            id: '',
+            name: '',
+            label: questionText.slice(0, 200),
+            placeholder: '',
+            required: isRequired,
+            options: ['YES', 'NO'],
+            value: '',
+            helperText: '',
+            parentClass: '',
+            section: '',
+            selector: null,
+            yesSelector: yesSelector,
+            noSelector: noSelector
+        });
+    });
+
     return fields;
 }
 """
@@ -1180,64 +1609,98 @@ def claude_map_fields(fields, profile, job):
     # Build a compact description of each unmapped field
     field_descriptions = []
     for i, f in enumerate(fields):
-        desc = "{}. [{}] label='{}' placeholder='{}' required={}".format(
+        desc = "{}. [{}] label='{}' placeholder='{}' required={} name='{}'".format(
             i, f.get("type", "text"), f.get("label", ""), 
-            f.get("placeholder", ""), f.get("required", False))
+            f.get("placeholder", ""), f.get("required", False),
+            f.get("name", ""))
         if f.get("options"):
-            desc += " options={}".format(f["options"][:10])
+            desc += " options={}".format(f["options"][:15])
+        if f.get("section"):
+            desc += " section='{}'".format(f["section"])
+        if f.get("helperText"):
+            desc += " hint='{}'".format(f["helperText"][:100])
         field_descriptions.append(desc)
 
-    prompt = """You are filling out a job application form. Map the candidate's profile data to these form fields.
+    # Build work history string
+    work_history = profile.get("work_history", [])
+    work_hist_str = ""
+    for wh in work_history[:3]:
+        work_hist_str += "\n  - {} at {} ({})".format(
+            wh.get("title", ""), wh.get("company", ""), wh.get("duration", ""))
+
+    prompt = """You are filling out a job application form. Map the candidate's profile data to ALL fields you can answer — both required AND optional.
 
 ## CANDIDATE PROFILE:
 Name: {name}
 Email: {email}
 Phone: {phone}
-Location: {location}
+Location: {location} (City: {city}, State: {state_full}, Country: United States)
 LinkedIn: {linkedin}
 Portfolio: {portfolio}
 GitHub: {github}
 Experience: {years} years ({level})
+Current role: {current_title} at {current_company}
+Work history:{work_history}
 Target roles: {roles}
 Certifications: {certs}
+Summary: {summary}
 Authorized to work in US: Yes
 Requires sponsorship: No
 US citizen: Yes
+Available to start: Immediately
+Willing to relocate: Yes
 
 ## JOB:
 Title: {title}
 Company: {company}
 
-## FORM FIELDS:
+## FORM FIELDS (that need answers):
 {fields}
 
 ## INSTRUCTIONS:
-Return ONLY a JSON object mapping field index numbers to answers. Example:
-{{"0": "Alex", "1": "Carter", "3": "Yes"}}
+Return ONLY a JSON object mapping field index numbers to answers.
+Example: {{"0": "Alex", "1": "Carter", "3": "Yes", "5": "85000"}}
 
-Rules:
-- Only include fields you can confidently answer
-- For file upload fields, use "RESUME_FILE" or "COVER_LETTER_FILE"  
-- For optional EEOC/demographic fields, use "Decline to self-identify" or leave out
-- For yes/no fields about work authorization, answer "Yes" for authorized, "No" for sponsorship
-- For select dropdowns, pick the EXACT text from the options list
-- Skip fields you're unsure about (the user will be asked)
-- Do NOT fabricate information
+CRITICAL RULES:
+- Answer EVERY field you can, not just required ones — more fields filled = better application
+- For file upload fields: use "RESUME_FILE" or "COVER_LETTER_FILE"
+- For textarea fields about cover letter: use "COVER_LETTER_TEXT"
+- For select/dropdown fields: pick the EXACT text from the options list
+- For yes/no work authorization questions: "Yes" for authorized, "No" for needs sponsorship
+- For "how did you hear" type questions: "LinkedIn"
+- For EEOC/demographic fields (gender, race, veteran, disability): use "Decline to self-identify" or the closest declining option from the available options list
+- For city fields: just "{city}"
+- For state fields: "{state_full}"
+- For country fields: "United States"
+- For salary/compensation: "{salary}"
+- For years of experience: "{years}"
+- Do NOT fabricate information or make up answers
+- Do NOT skip optional fields if you can answer them from the profile
 
-Return ONLY the JSON object.""".format(
+Return ONLY the JSON object, no explanation.""".format(
         name=profile["personal"].get("name", ""),
         email=profile["personal"].get("email", ""),
         phone=profile["personal"].get("phone", ""),
         location=profile["personal"].get("location", ""),
+        city=profile["personal"].get("location", "").split(",")[0].strip(),
+        state_full=STATE_MAP.get(
+            profile["personal"].get("location", "").split(",")[-1].strip().lower(),
+            profile["personal"].get("location", "").split(",")[-1].strip()
+        ).title(),
         linkedin=profile["personal"].get("linkedin_url", ""),
         portfolio=profile["personal"].get("portfolio_url", ""),
         github=profile["personal"].get("github_url", ""),
         years=profile.get("years_of_experience", 0),
         level=profile.get("experience_level", ""),
+        current_title=work_history[0].get("title", "") if work_history else "",
+        current_company=work_history[0].get("company", "") if work_history else "",
+        work_history=work_hist_str,
         roles=", ".join(profile.get("target_roles", [])[:5]),
         certs=", ".join(profile.get("certifications", [])[:5]),
+        summary=profile.get("summary", "")[:300],
         title=job.get("title", ""),
         company=job.get("company", ""),
+        salary=str(profile.get("salary_range", {}).get("min", "")),
         fields="\n".join(field_descriptions),
     )
 
@@ -1267,12 +1730,94 @@ Return ONLY the JSON object.""".format(
     return {}
 
 
+def fill_toggle_button(page, field, answer):
+    """
+    Click a YES or NO toggle button on forms like Workable.
+    These are custom button elements, not standard form inputs.
+    """
+    answer_upper = answer.strip().upper()
+    if answer_upper not in ("YES", "NO"):
+        # Interpret yes-like and no-like answers
+        if answer.lower() in ("yes", "true", "1", "y"):
+            answer_upper = "YES"
+        elif answer.lower() in ("no", "false", "0", "n"):
+            answer_upper = "NO"
+        else:
+            return False
+
+    question_text = field.get("label", "")
+
+    try:
+        # Strategy 1: Use stored selectors from extraction
+        sel_key = "yesSelector" if answer_upper == "YES" else "noSelector"
+        stored_sel = field.get(sel_key, "")
+        
+        if stored_sel and not stored_sel.startswith("__TOGGLE_"):
+            try:
+                btn = page.locator(stored_sel)
+                if btn.count() > 0:
+                    btn.first.click(force=True, timeout=5000)
+                    time.sleep(0.3)
+                    return True
+            except Exception:
+                pass
+
+        # Strategy 2: Find the button by question text + button text via JavaScript
+        clicked = page.evaluate("""(args) => {
+            const questionText = args.question.toLowerCase();
+            const targetBtn = args.target; // "YES" or "NO"
+            
+            // Find all button-like elements
+            const buttons = document.querySelectorAll('button, [role="button"]');
+            
+            for (const btn of buttons) {
+                const btnText = (btn.textContent || '').trim().toUpperCase();
+                if (btnText !== targetBtn) continue;
+                
+                // Check if this button is near the question text
+                const container = btn.closest('[class*="question"], [class*="toggle"], [class*="field"], [class*="group"]')
+                              || btn.parentElement?.parentElement;
+                if (!container) continue;
+                
+                const containerText = container.innerText.toLowerCase();
+                // Match if the container includes the question text (fuzzy — first 30 chars)
+                const questionStart = questionText.slice(0, 30);
+                if (containerText.includes(questionStart)) {
+                    btn.click();
+                    return true;
+                }
+            }
+            return false;
+        }""", {"question": question_text, "target": answer_upper})
+
+        if clicked:
+            time.sleep(0.3)
+            return True
+
+        # Strategy 3: Just find any YES/NO button with matching text via Playwright
+        try:
+            btn = page.get_by_role("button", name=answer_upper, exact=True)
+            # If multiple YES buttons, we need the right one — skip this if ambiguous
+            if btn.count() == 1:
+                btn.first.click(force=True, timeout=3000)
+                time.sleep(0.3)
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    except Exception as e:
+        print(f"      ⚠️  Toggle button error: {e}")
+        return False
+
+
 def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=None):
     """
     Fill a single form field using generic Playwright actions.
     Works on any website — text inputs, selects, textareas, file uploads.
     """
-    if not answer:
+    if not answer or answer == "SKIP_FIELD":
         return False
 
     selector = field.get("selector")
@@ -1286,6 +1831,35 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
     elif answer in ("RESUME_FILE", "COVER_LETTER_FILE"):
         return False
 
+    # Handle cover letter as text (for textarea fields)
+    if answer == "COVER_LETTER_TEXT":
+        if not cover_letter_path or not Path(cover_letter_path).exists():
+            return False
+        ext = Path(cover_letter_path).suffix.lower()
+        if ext == ".txt":
+            try:
+                answer = Path(cover_letter_path).read_text()
+            except Exception:
+                return False
+        elif ext == ".pdf":
+            # Look for .txt companion file (tailor_resume.py creates both)
+            txt_companion = cover_letter_path.replace(".pdf", ".txt")
+            if Path(txt_companion).exists():
+                try:
+                    answer = Path(txt_companion).read_text()
+                except Exception:
+                    return False
+            else:
+                # No text version available — skip gracefully
+                print(f"      ℹ️  Cover letter is PDF only, no .txt companion found for textarea paste")
+                return False
+        else:
+            return False
+
+    # Handle YES/NO toggle buttons (Workable, custom ATS)
+    if field_type == "toggle":
+        return fill_toggle_button(page, field, answer)
+
     if not selector:
         return False
 
@@ -1295,16 +1869,28 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
             return False
 
         if field_type == "select-one" or field.get("tag") == "select":
-            # Standard HTML select
+            # Standard HTML select — try label match, then value match,
+            # then partial text match
             try:
                 el.select_option(label=answer)
                 return True
             except Exception:
-                try:
-                    el.select_option(value=answer)
-                    return True
-                except Exception:
-                    pass
+                pass
+            try:
+                el.select_option(value=answer)
+                return True
+            except Exception:
+                pass
+            # Try partial match against option texts
+            try:
+                options = field.get("options", [])
+                answer_lower = answer.lower().strip()
+                for opt in options:
+                    if answer_lower in opt.lower() or opt.lower() in answer_lower:
+                        el.select_option(label=opt)
+                        return True
+            except Exception:
+                pass
             return False
 
         elif field_type == "checkbox":
@@ -1323,11 +1909,71 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
 
         else:
             # text, email, tel, number, textarea, url
-            el.click()
-            el.fill(str(answer))
+            try:
+                el.click(timeout=5000)
+                el.fill(str(answer))
+            except Exception:
+                # Fallback: use JavaScript to fill (bypasses overlay interception)
+                # Uses React-compatible native setter trick so the UI actually updates
+                try:
+                    page.evaluate("""(args) => {
+                        const el = document.querySelector(args.selector);
+                        if (!el) return;
+                        
+                        // Use the native setter — this is the key to making React
+                        // recognize the value change. React overrides the value property
+                        // on inputs, so setting el.value directly doesn't trigger re-render.
+                        const isTextarea = el.tagName === 'TEXTAREA';
+                        const proto = isTextarea 
+                            ? window.HTMLTextAreaElement.prototype 
+                            : window.HTMLInputElement.prototype;
+                        const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+                        
+                        el.focus();
+                        nativeSetter.call(el, args.value);
+                        
+                        // Dispatch events that React listens for
+                        el.dispatchEvent(new Event('input', {bubbles: true}));
+                        el.dispatchEvent(new Event('change', {bubbles: true}));
+                        el.dispatchEvent(new Event('blur', {bubbles: true}));
+                    }""", {"selector": selector, "value": str(answer)})
+                    print(f"      ℹ️  Used JS fill (overlay was blocking)")
+                except Exception as js_err:
+                    print(f"      ⚠️  JS fill also failed: {js_err}")
+                    return False
+            # Trigger blur/change events for validation
+            try:
+                el.press("Tab")
+                time.sleep(0.2)
+            except Exception:
+                pass
             return True
 
     except Exception as e:
+        # Last resort: try React-compatible JavaScript fill
+        if selector:
+            try:
+                page.evaluate("""(args) => {
+                    const el = document.querySelector(args.selector);
+                    if (!el) return;
+                    
+                    const isTextarea = el.tagName === 'TEXTAREA';
+                    const proto = isTextarea 
+                        ? window.HTMLTextAreaElement.prototype 
+                        : window.HTMLInputElement.prototype;
+                    const nativeSetter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+                    
+                    el.focus();
+                    nativeSetter.call(el, args.value);
+                    
+                    el.dispatchEvent(new Event('input', {bubbles: true}));
+                    el.dispatchEvent(new Event('change', {bubbles: true}));
+                    el.dispatchEvent(new Event('blur', {bubbles: true}));
+                }""", {"selector": selector, "value": str(answer)})
+                print(f"      ℹ️  Used JS fill fallback for {field.get('label','')}")
+                return True
+            except Exception:
+                pass
         print(f"      ⚠️  Could not fill {field.get('label','')}: {e}")
         return False
 
@@ -1388,6 +2034,319 @@ def handle_file_upload(page, field, file_path):
     return False
 
 
+def dismiss_overlays(page):
+    """
+    Dismiss ANY modal overlay, dialog, backdrop, or advertisement that blocks
+    interaction with the form underneath. This goes beyond cookie banners —
+    it handles Workable's advertisement modals, GDPR dialogs, login prompts, etc.
+    
+    Strategy:
+    1. Try pressing Escape (closes most modal dialogs)
+    2. Click close/dismiss buttons inside modals
+    3. Click backdrop overlays to close modals
+    4. Nuclear option: remove blocking elements via JavaScript
+    """
+    dismissed = False
+
+    # Strategy 1: Press Escape (universally closes modals)
+    try:
+        page.keyboard.press("Escape")
+        time.sleep(0.5)
+    except Exception:
+        pass
+
+    # Strategy 2: Click close/X buttons inside modal dialogs
+    close_selectors = [
+        "[data-role='modal-wrapper'] button[aria-label='Close']",
+        "[data-role='modal-wrapper'] [class*='close']",
+        "[data-role='dialog'] button[aria-label='Close']",
+        ".modal button[aria-label='Close']",
+        ".modal .close",
+        "[role='dialog'] button[aria-label='Close']",
+        "[role='dialog'] [class*='close']",
+        "[aria-label='Close']",
+        "button.close",
+    ]
+    for sel in close_selectors:
+        try:
+            btn = page.locator(sel)
+            if btn.count() > 0 and btn.first.is_visible():
+                btn.first.click(timeout=2000)
+                time.sleep(0.5)
+                dismissed = True
+                print(f"  🔲 Dismissed modal overlay (close button)")
+                break
+        except Exception:
+            continue
+
+    # Strategy 3: Click the backdrop to close
+    if not dismissed:
+        backdrop_selectors = [
+            "[data-role='backdrop']",
+            "[data-evergreen-dialog-backdrop]",
+            ".modal-backdrop",
+            ".overlay",
+        ]
+        for sel in backdrop_selectors:
+            try:
+                backdrop = page.locator(sel)
+                if backdrop.count() > 0 and backdrop.first.is_visible():
+                    # Click the edge of the backdrop (outside the dialog)
+                    backdrop.first.click(position={"x": 5, "y": 5}, timeout=2000)
+                    time.sleep(0.5)
+                    dismissed = True
+                    print(f"  🔲 Dismissed modal overlay (backdrop click)")
+                    break
+            except Exception:
+                continue
+
+    # Strategy 4: Nuclear — remove ALL blocking overlays via JavaScript
+    # Always run this regardless of whether previous strategies worked,
+    # because cookie banners and ad modals can stack
+    try:
+        removed = page.evaluate("""() => {
+            let removed = 0;
+            
+            // Remove modal wrappers
+            document.querySelectorAll(
+                '[data-role="modal-wrapper"], ' +
+                '[data-role="backdrop"], ' +
+                '[data-evergreen-dialog-backdrop], ' +
+                '.modal-backdrop, ' +
+                '[class*="modal-overlay"], ' +
+                '[class*="dialog-backdrop"]'
+            ).forEach(el => {
+                el.remove();
+                removed++;
+            });
+            
+            // Remove advertisement overlays specifically
+            const adOverlay = document.getElementById('advertisement');
+            if (adOverlay) {
+                const wrapper = adOverlay.closest('[data-role="modal-wrapper"]') || adOverlay.parentElement;
+                if (wrapper) { wrapper.remove(); removed++; }
+                else { adOverlay.remove(); removed++; }
+            }
+            
+            // Remove any cookie consent dialogs still lingering
+            document.querySelectorAll(
+                '[class*="cookie"], [class*="Cookie"], ' +
+                '[id*="cookie"], [id*="Cookie"], ' +
+                '[class*="consent"], [class*="Consent"], ' +
+                '[class*="gdpr"], [class*="GDPR"]'
+            ).forEach(el => {
+                // Only remove if it looks like an overlay (not just a link/small element)
+                const rect = el.getBoundingClientRect();
+                if (rect.width > 200 && rect.height > 100) {
+                    el.remove();
+                    removed++;
+                }
+            });
+            
+            // Re-enable scrolling on body (modals often set overflow:hidden)
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            
+            return removed;
+        }""")
+        if removed > 0:
+            dismissed = True
+            print(f"  🔲 Removed {removed} blocking overlay(s) via JS")
+            time.sleep(0.5)
+    except Exception:
+        pass
+
+    return dismissed
+
+
+def fill_toggle_buttons_sweep(page, profile):
+    """
+    Post-fill sweep: find and click YES/NO toggle button groups on the page.
+    
+    Workable uses custom toggle UI: <span class="styles--1h-sV">YES</span>
+    inside <div class="styles--3qHIU"> (the clickable target).
+    These are NOT buttons, roles, or any standard HTML — just styled spans/divs.
+    
+    Strategy: find all elements whose direct text is "YES" or "NO",
+    walk up the DOM to find the question text, determine the answer,
+    and click the parent div.
+    """
+    YES_RULES = [
+        "authorized to work",
+        "eligible to work", 
+        "legally authorized",
+        "right to work",
+        "background check",
+        "willing to undergo",
+        "drug test",
+        "drug screen",
+        "able to work",
+        "willing to relocate",
+        "open to relocation",
+        "security+",
+        "comptia",
+        "sec+",
+        "certification",
+        "commit to this schedule",
+        "experience",
+        "willing to travel",
+        "work authorization",
+        "are you 18",
+        "legal age",
+        "agree to",
+        "consent to",
+        "bachelor",
+        "degree",
+    ]
+    
+    NO_RULES = [
+        "require sponsorship",
+        "need sponsorship",
+        "visa sponsorship",
+        "non-compete",
+        "convicted",
+        "felony",
+        "currently hold an active public trust",
+        "active security clearance",
+        "active clearance",
+        "currently hold a clearance",
+    ]
+
+    try:
+        results = page.evaluate("""(rules) => {
+            const yesRules = rules.yes;
+            const noRules = rules.no;
+            const actions = [];
+            const processedQuestions = new Set();
+            
+            // Find ALL elements whose direct text content is exactly YES or NO
+            // This catches <span>YES</span>, <div>YES</div>, <label>YES</label>, etc.
+            const walker = document.createTreeWalker(
+                document.body, NodeFilter.SHOW_ELEMENT
+            );
+            
+            const yesNoElements = [];
+            while (walker.nextNode()) {
+                const el = walker.currentNode;
+                // Check if this element's own text (not children's text) is YES or NO
+                const directText = (el.childNodes.length === 1 && el.childNodes[0].nodeType === 3)
+                    ? el.childNodes[0].textContent.trim() : null;
+                if (directText === 'YES' || directText === 'NO' ||
+                    directText === 'Yes' || directText === 'No') {
+                    yesNoElements.push({el: el, text: directText.toUpperCase()});
+                }
+            }
+            
+            // Group YES/NO pairs by their question container
+            // For each YES element, find the question text by walking up the DOM
+            for (const item of yesNoElements) {
+                if (item.text !== 'YES') continue; // Process each question once via its YES element
+                
+                // The clickable target is the parent div
+                const clickTarget = item.el.parentElement;
+                if (!clickTarget) continue;
+                
+                // Walk up the DOM to find the question text
+                // Structure: span(YES) > div(clickable) > div(toggle group) > div(question container)
+                let questionContainer = clickTarget;
+                let questionText = '';
+                for (let i = 0; i < 8; i++) {
+                    questionContainer = questionContainer.parentElement;
+                    if (!questionContainer) break;
+                    
+                    const fullText = questionContainer.innerText || '';
+                    // The question container will have text much longer than just YES/NO
+                    // and will contain a question mark or be a substantial string
+                    const textWithoutYesNo = fullText
+                        .replace(/\\bYES\\b/g, '')
+                        .replace(/\\bNO\\b/g, '')
+                        .replace(/[\\n\\r]+/g, ' ')
+                        .trim();
+                    
+                    if (textWithoutYesNo.length > 20) {
+                        questionText = textWithoutYesNo;
+                        break;
+                    }
+                }
+                
+                if (!questionText || questionText.length < 10) continue;
+                
+                // Clean up question text
+                questionText = questionText.replace(/\\*/g, '').trim();
+                const questionKey = questionText.slice(0, 50).toLowerCase();
+                
+                // Skip if we already processed this question
+                if (processedQuestions.has(questionKey)) continue;
+                processedQuestions.add(questionKey);
+                
+                // Determine the answer using keyword rules
+                const qLower = questionText.toLowerCase();
+                let answer = null;
+                
+                for (const kw of yesRules) {
+                    if (qLower.includes(kw.toLowerCase())) {
+                        answer = 'YES';
+                        break;
+                    }
+                }
+                if (!answer) {
+                    for (const kw of noRules) {
+                        if (qLower.includes(kw.toLowerCase())) {
+                            answer = 'NO';
+                            break;
+                        }
+                    }
+                }
+                
+                if (!answer) {
+                    // Default: if it asks "Do you have X?", default YES
+                    // This is a reasonable default for qualification questions
+                    if (qLower.includes('do you have') || qLower.includes('are you')) {
+                        answer = 'YES';
+                    } else {
+                        continue; // Skip questions we can't answer
+                    }
+                }
+                
+                // Find the target element to click (YES or NO span's parent div)
+                // Look within the question container for all YES/NO spans
+                const allSpans = questionContainer.querySelectorAll('span, div, label');
+                let targetEl = null;
+                for (const span of allSpans) {
+                    const dt = (span.childNodes.length === 1 && span.childNodes[0].nodeType === 3)
+                        ? span.childNodes[0].textContent.trim().toUpperCase() : null;
+                    if (dt === answer) {
+                        // Click the parent div (the actual clickable target)
+                        targetEl = span.parentElement || span;
+                        break;
+                    }
+                }
+                
+                if (targetEl) {
+                    targetEl.click();
+                    actions.push({
+                        question: questionText.slice(0, 80),
+                        answer: answer
+                    });
+                }
+            }
+            
+            return actions;
+        }""", {"yes": YES_RULES, "no": NO_RULES})
+
+        if results:
+            for r in results:
+                print(f"     ✅ Toggle: {r['question'][:55]}... → {r['answer']}")
+            return len(results)
+        else:
+            print(f"     ℹ️  No toggle buttons found to fill")
+            return 0
+
+    except Exception as e:
+        print(f"     ⚠️  Toggle sweep error: {e}")
+        return 0
+
+
 def run_universal_application(page, job, profile, profile_path, resume_path, cover_letter_path, slug, dry_run, browser_ctx=None, platform="unknown"):
     """
     Fill a job application form on ANY website using AI-assisted field mapping.
@@ -1430,6 +2389,13 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
     if not fields:
         # No fields found — try clicking Apply button automatically first
         print(f"\n  🔍 No form fields yet — trying to find and click Apply button...")
+        
+        # CRITICAL: Clear all overlays before trying to click Apply
+        # Cookie banners and ad modals block the Apply button
+        dismiss_cookie_banner(page)
+        dismiss_overlays(page)
+        time.sleep(1)
+        
         page_text = ""
         try:
             page_text = page.inner_text("body")[:5000].lower()
@@ -1439,7 +2405,24 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
         clicked = click_apply_button(page)
         if clicked:
             time.sleep(4)
-            dismiss_cookie_banner(page)  # New page might have its own cookie banner
+            # Dismiss cookie banners — may need multiple attempts as banners
+            # sometimes re-appear after page navigation
+            for _ in range(3):
+                dismissed = dismiss_cookie_banner(page)
+                if not dismissed:
+                    break
+                time.sleep(1.5)
+            
+            # Extra: try clicking X/close button on any remaining modal
+            try:
+                close_btn = page.locator("[aria-label='Close'], button.close, .modal-close, [class*='cookie'] [class*='close']")
+                if close_btn.count() > 0 and close_btn.first.is_visible():
+                    close_btn.first.click()
+                    time.sleep(1)
+            except Exception:
+                pass
+
+            time.sleep(1)  # Final pause for animations
             screenshot(page, f"{slug}_02_after_apply_click")
 
             # Re-extract fields after clicking
@@ -1513,37 +2496,185 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
     auto_mapped = {}
     unmapped_fields = []
 
+    # Pre-compute location components for smart address handling
+    location = profile["personal"].get("location", "")
+    loc_parts = [p.strip() for p in location.split(",")]
+    city = loc_parts[0] if loc_parts else ""
+    state_abbrev = loc_parts[1].strip() if len(loc_parts) > 1 else ""
+    state_full = STATE_MAP.get(state_abbrev.lower(), state_abbrev)
+    state_full = state_full.title() if state_full.islower() else state_full
+    location_full = f"{city}, {state_full}, United States" if city else location
+
+    # Load cover letter text (for textarea paste)
+    cover_letter_text = ""
+    if cover_letter_path and Path(cover_letter_path).exists():
+        ext = Path(cover_letter_path).suffix.lower()
+        if ext == ".txt":
+            try:
+                cover_letter_text = Path(cover_letter_path).read_text()
+            except Exception:
+                pass
+
     for i, f in enumerate(fields):
         fid = f.get("id", "").lower()
         fname = f.get("name", "").lower()
         flabel = f.get("label", "").lower()
+        fplaceholder = f.get("placeholder", "").lower()
+        ftype = f.get("type", "")
+        ftag = f.get("tag", "")
+        fhelper = f.get("helperText", "").lower()
+        parent_class = f.get("parentClass", "").lower()
+        section = f.get("section", "").lower()
+        # Combine all text clues for broader matching
+        all_text = f" {fid} {fname} {flabel} {fplaceholder} {fhelper} "
 
         answer = None
 
-        # Try ID match
+        # ── 1. Direct ID/name exact match ────────────────────────────
         for key, val in answers_by_id.items():
             if key == fid or key == fname:
                 answer = val
                 break
 
-        # Try label keyword match
+        # ── 2. ID/name fuzzy match (handle variants like first-name, firstName) ──
+        if not answer:
+            fid_norm = re.sub(r'[\-_\.\d]+', '', fid)
+            fname_norm = re.sub(r'[\-_\.\d]+', '', fname)
+            for key, val in answers_by_id.items():
+                key_norm = re.sub(r'[\-_\.\d]+', '', key)
+                if key_norm and (key_norm == fid_norm or key_norm == fname_norm):
+                    answer = val
+                    break
+
+        # ── 3. Label keyword match ───────────────────────────────────
         if not answer:
             for key, val in answers_by_label.items():
                 if key in flabel:
                     answer = val
                     break
 
-        # Try file field detection
-        if not answer and f.get("type") == "file":
-            if any(kw in flabel for kw in ["resume", "cv"]):
+        # ── 4. Placeholder/name keyword match (for fields with blank labels) ──
+        if not answer and not flabel:
+            for key, val in answers_by_label.items():
+                if key in fplaceholder or key in fname.replace("_", " ").replace("-", " "):
+                    answer = val
+                    break
+
+        # ── 5. Smart file field detection ────────────────────────────
+        if not answer and ftype == "file":
+            file_clues = f"{flabel} {fid} {fname} {parent_class} {section}"
+            # Skip photo/headshot/avatar uploads — these are NOT document fields
+            if any(kw in file_clues for kw in ["photo", "headshot", "avatar", 
+                                                 "picture", "profile pic", "image"]):
+                answer = "SKIP_FIELD"  # Mark as intentionally skipped (won't go to Claude)
+            elif any(kw in file_clues for kw in ["resume", "cv", "curriculum"]):
                 answer = "RESUME_FILE"
-            elif "cover" in flabel or "letter" in flabel:
+            elif any(kw in file_clues for kw in ["cover", "letter", "motivation"]):
                 answer = "COVER_LETTER_FILE"
+            else:
+                # Positional: count only non-photo file fields seen so far
+                prior_doc_fields = [
+                    fields[j] for j in range(i)
+                    if fields[j].get("type") == "file"
+                    and not any(kw in f"{fields[j].get('label','')} {fields[j].get('id','')} {fields[j].get('name','')}".lower()
+                                for kw in ["photo", "headshot", "avatar", "picture", "image"])
+                ]
+                if len(prior_doc_fields) == 0:
+                    answer = "RESUME_FILE"
+                elif len(prior_doc_fields) == 1:
+                    answer = "COVER_LETTER_FILE"
+
+        # ── 6. Textarea for cover letter or summary ──────────────────
+        if not answer and ftag == "textarea":
+            if any(kw in all_text for kw in ["cover letter", "cover_letter", "coverletter"]):
+                answer = "COVER_LETTER_TEXT"
+            elif any(kw in all_text for kw in ["summary", "about yourself", "about you",
+                                                 "tell us", "introduction", "bio",
+                                                 "additional information", "message"]):
+                answer = profile.get("summary", "")
+
+        # ── 7. Smart location field detection ────────────────────────
+        if not answer:
+            loc_clues = f"{flabel} {fplaceholder} {fid} {fname}"
+            helper_clues = fhelper  # Helper text under the field
+            
+            if any(kw in loc_clues for kw in ["city", "town"]):
+                if "state" not in loc_clues and "country" not in loc_clues:
+                    answer = city  # Just the city
+            elif any(kw in loc_clues for kw in ["state", "province", "region"]):
+                if "country" not in loc_clues:
+                    answer = state_full
+            elif any(kw in loc_clues for kw in ["country", "nation"]):
+                answer = "United States"
+            elif "zip" in loc_clues or "postal" in loc_clues or "postcode" in loc_clues:
+                answer = "29501"
+            elif any(kw in loc_clues for kw in ["address", "location"]):
+                # Check helper text for hints about what to include
+                if any(kw in helper_clues for kw in ["city, region, and country",
+                                                       "city, state, and country",
+                                                       "city, state, country",
+                                                       "include your city"]):
+                    answer = location_full  # "Florence, South Carolina, United States"
+                elif "country" in helper_clues:
+                    answer = location_full
+                else:
+                    answer = location_full  # Default to full address anyway
+
+        # ── 8. Toggle button (YES/NO) auto-mapping ──────────────────
+        if not answer and ftype == "toggle":
+            toggle_label = flabel
+            # Match common yes/no questions
+            yes_keywords = [
+                "authorized to work", "eligible to work", "right to work",
+                "legally authorized", "background check", "drug test",
+                "willing to undergo", "able to work", "willing to relocate",
+                "security+", "comptia", "certification", "certified",
+                "commit to this schedule", "experience",
+            ]
+            no_keywords = [
+                "require sponsorship", "need sponsorship", "visa sponsorship",
+                "non-compete", "convicted", "felony",
+                "currently hold an active public trust",
+            ]
+            
+            for kw in yes_keywords:
+                if kw in toggle_label:
+                    answer = "YES"
+                    break
+            if not answer:
+                for kw in no_keywords:
+                    if kw in toggle_label:
+                        answer = "NO"
+                        break
 
         if answer:
             auto_mapped[str(i)] = answer
         else:
             unmapped_fields.append((i, f))
+
+    # ── Post-processing: fix type mismatches ─────────────────────────
+    for idx_str, answer in list(auto_mapped.items()):
+        i = int(idx_str)
+        f = fields[i]
+        ftag = f.get("tag", "")
+        ftype = f.get("type", "")
+
+        # COVER_LETTER_FILE assigned to a textarea → switch to COVER_LETTER_TEXT
+        if answer == "COVER_LETTER_FILE" and ftag == "textarea":
+            auto_mapped[idx_str] = "COVER_LETTER_TEXT"
+
+        # RESUME_FILE assigned to a non-file field → remove (shouldn't paste filename)
+        if answer == "RESUME_FILE" and ftype != "file":
+            del auto_mapped[idx_str]
+            unmapped_fields.append((i, f))
+
+        # COVER_LETTER_FILE assigned to a non-file, non-textarea field → remove
+        if answer == "COVER_LETTER_FILE" and ftype != "file" and ftag != "textarea":
+            del auto_mapped[idx_str]
+            unmapped_fields.append((i, f))
+
+    # Re-sort unmapped_fields by index since we may have added new entries
+    unmapped_fields.sort(key=lambda x: x[0])
 
     print(f"  📊 Auto-mapped: {len(auto_mapped)} | Unmapped: {len(unmapped_fields)}")
 
@@ -1583,6 +2714,12 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
             display = "📄 {}".format(Path(resume_path).name) if resume_path else "NO FILE"
         elif answer == "COVER_LETTER_FILE":
             display = "📄 {}".format(Path(cover_letter_path).name) if cover_letter_path else "NO FILE"
+        elif answer == "COVER_LETTER_TEXT":
+            display = "✉️  Cover letter text (pasted)" if cover_letter_path else "NO FILE"
+        elif answer == "SKIP_FIELD":
+            display = "(skip — not a document field)"
+        elif answer and len(str(answer)) > 50:
+            display = str(answer)[:47] + "..."
         elif answer:
             display = str(answer)[:50]
         else:
@@ -1590,23 +2727,36 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
 
         print(f"     {ftype:12s} | {flabel:45s}{req} → {display}")
 
+    # Count actual fields that will be filled (excluding SKIP_FIELD)
+    fillable_count = sum(1 for v in all_answers.values() if v != "SKIP_FIELD")
+
     print(f"  {'─'*80}")
+    # Dismiss any lingering cookie banner before screenshot
+    dismiss_cookie_banner(page)
+    time.sleep(0.5)
+    # Scroll to top of form so screenshot shows something useful
+    page.evaluate("window.scrollTo(0, 0)")
+    time.sleep(0.5)
     screenshot(page, f"{slug}_universal_plan")
 
     if dry_run:
-        print(f"\n  [DRY RUN] Would fill {len(all_answers)} of {len(fields)} fields")
+        print(f"\n  [DRY RUN] Would fill {fillable_count} of {len(fields)} fields")
         return "dry_run_ok"
 
     # Step 5: Fill fields
+    # First, dismiss any modal overlays blocking the form
+    dismiss_overlays(page)
+    time.sleep(0.5)
+    
     print(f"\n  ✏️  Filling fields...")
     filled = 0
     failed = []
 
     for i, f in enumerate(fields):
         answer = all_answers.get(str(i))
-        if not answer:
+        if not answer or answer == "SKIP_FIELD":
             # Ask user for required fields without an answer
-            if f.get("required"):
+            if f.get("required") and answer != "SKIP_FIELD":
                 label = f.get("label", f.get("name", "unknown field"))
                 user_answer = input(f"\n  ❓ {label}: ").strip()
                 if user_answer:
@@ -1629,87 +2779,113 @@ def run_universal_application(page, job, profile, profile_path, resume_path, cov
 
         time.sleep(0.3)  # Brief pause between fields
 
+    # ── Post-fill sweep: handle custom UI elements (toggles, add-sections) ──
+    print(f"\n  🔄 Post-fill sweep: checking for toggle buttons & expandable sections...")
+    # Scroll through the entire page to trigger lazy-loaded elements
+    try:
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        time.sleep(1)
+        page.evaluate("window.scrollTo(0, 0)")
+        time.sleep(0.5)
+    except Exception:
+        pass
+    extra_filled = fill_toggle_buttons_sweep(page, profile)
+    filled += extra_filled
+
     screenshot(page, f"{slug}_filled")
-    print(f"\n  📊 Filled {filled}/{len(fields)} fields")
+    total_fields = len(fields) + extra_filled
+    print(f"\n  📊 Filled {filled}/{total_fields} fields")
 
     if failed:
         print(f"  ⚠️  {len(failed)} fields could not be filled")
 
-    return filled, len(fields), failed
+    return filled, total_fields, failed
 
 
 
 def dismiss_cookie_banner(page):
     """
     Automatically dismiss cookie consent banners that block page interaction.
-    Tries clicking common accept/close buttons found across websites.
+    Uses JavaScript for reliability — Playwright clicks often get intercepted
+    by the very overlay we're trying to dismiss.
     """
-    COOKIE_BUTTON_PATTERNS = [
-        "Accept all", "Accept All", "Accept all cookies", "Accept Cookies",
-        "Accept cookies", "I Accept", "I agree", "Allow all", "Allow All",
-        "Allow cookies", "OK", "Got it", "Got it!", "Agree",
-        "Agree and close", "Dismiss", "Consent",
-    ]
-
-    for pattern in COOKIE_BUTTON_PATTERNS:
-        try:
-            btn = page.get_by_role("button", name=pattern, exact=False)
-            if btn.count() > 0 and btn.first.is_visible():
-                btn.first.click()
-                time.sleep(1)
-                print(f"  🍪 Dismissed cookie banner ('{pattern}')")
-                return True
-        except Exception:
-            pass
-
-    COOKIE_SELECTORS = [
-        "button[id*='accept']", "button[id*='cookie']",
-        "button[class*='accept']", "button[class*='consent']",
-        "a[id*='accept']", "a[class*='accept']",
-        "[data-testid*='cookie'] button", "[data-testid*='accept']",
-        ".cookie-banner button", ".cookie-consent button",
-        ".cc-accept", ".cc-btn",
-        "#onetrust-accept-btn-handler",
-        "#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll",
-        ".evidon-banner-acceptbutton",
-    ]
-
-    for selector in COOKIE_SELECTORS:
-        try:
-            el = page.locator(selector)
-            if el.count() > 0 and el.first.is_visible():
-                el.first.click()
-                time.sleep(1)
-                print(f"  🍪 Dismissed cookie banner")
-                return True
-        except Exception:
-            continue
-
-    # Last resort: close overlays that mention cookies/privacy
     try:
-        close_btns = page.locator("[aria-label='Close'], [aria-label='close'], .close-button, .modal-close")
-        for i in range(min(close_btns.count(), 3)):
-            btn = close_btns.nth(i)
-            if btn.is_visible():
-                parent_text = ""
-                try:
-                    parent_text = btn.locator("..").inner_text()[:200].lower()
-                except Exception:
-                    pass
-                if any(kw in parent_text for kw in ["cookie", "consent", "privacy", "gdpr", "tracking"]):
-                    btn.click()
-                    time.sleep(1)
-                    print(f"  🍪 Dismissed cookie overlay")
-                    return True
+        removed = page.evaluate("""() => {
+            let dismissed = false;
+            
+            // Strategy 1: Click "Accept all" / "Accept" / "OK" buttons via JS
+            const buttonTexts = [
+                'accept all', 'accept all cookies', 'accept cookies', 'accept',
+                'allow all', 'allow all cookies', 'allow cookies', 'allow',
+                'i accept', 'i agree', 'agree', 'ok', 'got it', 'dismiss',
+                'agree and close', 'consent', 'save settings'
+            ];
+            
+            const allButtons = document.querySelectorAll('button, a[role="button"], [class*="btn"]');
+            for (const btn of allButtons) {
+                const text = (btn.textContent || btn.innerText || '').trim().toLowerCase();
+                if (buttonTexts.some(t => text === t || text.startsWith(t))) {
+                    const rect = btn.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        btn.click();
+                        dismissed = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Strategy 2: Click known cookie consent selectors
+            if (!dismissed) {
+                const selectors = [
+                    '#onetrust-accept-btn-handler',
+                    '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll',
+                    '.evidon-banner-acceptbutton',
+                    '[data-testid="cookie-accept"]',
+                    'button[id*="accept"]',
+                    'button[class*="accept"]',
+                    '.cc-accept', '.cc-btn',
+                ];
+                for (const sel of selectors) {
+                    const el = document.querySelector(sel);
+                    if (el) { el.click(); dismissed = true; break; }
+                }
+            }
+            
+            // Strategy 3: Remove cookie banners/modals from DOM entirely
+            const removeSelectors = [
+                '[class*="cookie-banner"]', '[class*="cookie-consent"]',
+                '[class*="cookieBanner"]', '[class*="CookieConsent"]',
+                '[id*="cookie-banner"]', '[id*="cookie-consent"]',
+                '[id*="cookieBanner"]', '[id*="CookieConsent"]',
+                '[data-testid*="cookie"]', '[class*="gdpr"]',
+                '.cc-window', '#onetrust-banner-sdk',
+                '#CybotCookiebotDialog',
+            ];
+            for (const sel of removeSelectors) {
+                document.querySelectorAll(sel).forEach(el => {
+                    el.remove();
+                    dismissed = true;
+                });
+            }
+            
+            // Re-enable body scroll
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            
+            return dismissed;
+        }""")
+        if removed:
+            print(f"  🍪 Dismissed cookie banner")
+            time.sleep(0.5)
+        return removed
     except Exception:
         pass
-
     return False
 
 
 def click_apply_button(page):
     """Click the Apply button if we're on a job description page.
-    Handles buttons, links, and page navigation (iCIMS, Lever, etc.)."""
+    Handles buttons, links, tabs, and page navigation (iCIMS, Lever, Workable, etc.)."""
     
     apply_patterns = [
         "Apply for this job online",
@@ -1718,6 +2894,7 @@ def click_apply_button(page):
         "Apply Now",
         "Apply now",
         "Apply",
+        "Application",  # Workable uses a tab called "APPLICATION"
         "Start Application",
         "Start application",
         "Begin Application",
@@ -1726,14 +2903,16 @@ def click_apply_button(page):
 
     old_url = page.url
 
-    # Try button elements
+    # Try button elements (with force=True fallback for overlay-blocked clicks)
     for pattern in apply_patterns:
         try:
             btn = page.get_by_role("button", name=pattern)
             if btn.count() > 0 and btn.first.is_visible():
-                btn.first.click()
+                try:
+                    btn.first.click(timeout=5000)
+                except Exception:
+                    btn.first.click(force=True, timeout=5000)
                 time.sleep(4)
-                # Check if we navigated to a new page
                 if page.url != old_url:
                     print(f"  📄 Navigated to: {page.url[:70]}")
                     time.sleep(2)
@@ -1741,12 +2920,15 @@ def click_apply_button(page):
         except Exception:
             continue
 
-    # Try link elements
+    # Try link elements (with force=True fallback)
     for pattern in apply_patterns:
         try:
             link = page.get_by_role("link", name=pattern)
             if link.count() > 0 and link.first.is_visible():
-                link.first.click()
+                try:
+                    link.first.click(timeout=5000)
+                except Exception:
+                    link.first.click(force=True, timeout=5000)
                 time.sleep(4)
                 if page.url != old_url:
                     print(f"  📄 Navigated to: {page.url[:70]}")
@@ -1755,11 +2937,37 @@ def click_apply_button(page):
         except Exception:
             continue
 
-    # Try any element containing apply text (some sites use <div> or <span>)
+    # Try tab elements (Workable uses role="tab" for APPLICATION)
+    for pattern in apply_patterns:
+        try:
+            tab = page.get_by_role("tab", name=pattern)
+            if tab.count() > 0 and tab.first.is_visible():
+                tab.first.click(force=True, timeout=5000)
+                time.sleep(3)
+                return True
+        except Exception:
+            continue
+
+    # JavaScript fallback: find and click apply-like elements directly
     try:
-        apply_el = page.locator("text=/[Aa]pply/i").first
-        if apply_el.is_visible():
-            apply_el.click()
+        clicked = page.evaluate("""() => {
+            const patterns = ['apply', 'application', 'start application', 'apply now'];
+            
+            // Check buttons, links, and tabs
+            const elements = document.querySelectorAll('button, a, [role="button"], [role="tab"], [role="link"]');
+            for (const el of elements) {
+                const text = (el.textContent || el.innerText || '').trim().toLowerCase();
+                if (patterns.some(p => text.includes(p))) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        el.click();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }""")
+        if clicked:
             time.sleep(4)
             if page.url != old_url:
                 print(f"  📄 Navigated to: {page.url[:70]}")
@@ -1927,6 +3135,7 @@ def run_application(connect_url, job, profile, profile_path, resume_path, cover_
 
             # Dismiss any cookie banners before interacting
             dismiss_cookie_banner(page)
+            dismiss_overlays(page)
 
             screenshot(page, f"{slug}_01_loaded")
 
@@ -1944,6 +3153,7 @@ def run_application(connect_url, job, profile, profile_path, resume_path, cover_
                     if clicked:
                         time.sleep(3)
                         dismiss_cookie_banner(page)
+                        dismiss_overlays(page)
                         screenshot(page, f"{slug}_02_form_opened")
                     else:
                         print(f"  ⚠️  Could not find apply button")
@@ -2065,7 +3275,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true",
                         help="Analyze and fill-plan only, don't submit")
     parser.add_argument("--single", type=int, default=None,
-                        help="Run only job at this index (0-based)")
+                        help="Run only job at this number (1-based, matches dashboard #)")
     parser.add_argument("--url", type=str, default=None,
                         help="Apply to a single URL directly")
     parser.add_argument("--resume", type=str, default=None,
@@ -2128,7 +3338,7 @@ def main():
 
         if not resume_path:
             resume_path, cover_letter_path = find_tailored_files(
-                job_company, job_title, apply_url=args.url
+                job_company, job_title, apply_url=args.url, profile_path=args.profile
             )
         else:
             print(f"  📄 Resume: {Path(resume_path).name} (CLI)")
@@ -2152,10 +3362,11 @@ def main():
     qualified = [j for j in jobs if j.get("score", 0) >= args.min_score]
 
     if args.single is not None:
-        if 0 <= args.single < len(qualified):
-            qualified = [qualified[args.single]]
+        idx = args.single - 1  # Convert 1-based → 0-based
+        if 0 <= idx < len(qualified):
+            qualified = [qualified[idx]]
         else:
-            print(f"  ❌ Index {args.single} out of range (0-{len(qualified)-1})")
+            print(f"  ❌ Job #{args.single} out of range (1-{len(qualified)})")
             return
 
     results = []
@@ -2176,7 +3387,7 @@ def main():
             continue
 
         # Find tailored files
-        resume_path, cover_letter_path = find_tailored_files(company, title, apply_url=url)
+        resume_path, cover_letter_path = find_tailored_files(company, title, apply_url=url, profile_path=args.profile)
         if not resume_path:
             results.append({"job": title, "company": company, "status": "no_resume"})
             continue

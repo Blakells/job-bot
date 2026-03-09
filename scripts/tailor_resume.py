@@ -96,7 +96,8 @@ def main():
     parser.add_argument("--resume",  default="resumes/my_resume.txt")
     parser.add_argument("--profile", default="profiles/job_profile.json")
     parser.add_argument("--min-score", type=int, default=50)
-    parser.add_argument("--output",  default="outputs/tailored")
+    parser.add_argument("--output",  default=None,
+                        help="Output dir (default: profiles/{name}/tailored/)")
     args = parser.parse_args()
 
     print("\n🚀 Job Bot — Phase 3: Tailoring Resume & Cover Letters")
@@ -111,11 +112,23 @@ def main():
     resume  = Path(args.resume).read_text()
     profile = json.loads(Path(args.profile).read_text())
 
+    # Determine output directory: per-profile by default, --output as override
+    if args.output:
+        output_dir = Path(args.output)
+    else:
+        # Auto-detect from --profile path: profiles/alex/profile.json → profiles/alex/tailored/
+        profile_dir = Path(args.profile).parent
+        if profile_dir.name != "profiles" and (profile_dir / "profile.json").exists():
+            output_dir = profile_dir / "tailored"
+        else:
+            # Fallback for legacy paths like profiles/job_profile.json
+            output_dir = Path("outputs/tailored")
+    print(f"  📁 Output: {output_dir}/")
+
     # Filter by score
     qualified = [j for j in jobs if j.get("score", 0) >= args.min_score]
     print(f"  ✅ {len(qualified)} jobs qualify (score >= {args.min_score}%)")
 
-    output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     summary = []
