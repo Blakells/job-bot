@@ -1,6 +1,7 @@
 """Form field extraction: JavaScript-based DOM parsing for any ATS platform."""
 
 import re
+from datetime import date
 from pathlib import Path
 
 from job_bot.ai import ask_claude, parse_json_response
@@ -195,7 +196,7 @@ EXTRACT_FIELDS_JS = """
     document.querySelectorAll('input, select, textarea').forEach(el => {
         const type = el.type || el.tagName.toLowerCase();
         if (['hidden', 'submit', 'button', 'image', 'reset'].includes(type)) return;
-        if (type !== 'file' && !isVisible(el)) return;
+        if (type !== 'file' && el.tagName !== 'SELECT' && !isVisible(el)) return;
 
         const key = el.id || el.name || Math.random().toString(36).slice(2);
         if (seen.has(key)) return;
@@ -397,6 +398,7 @@ def claude_map_fields(fields, profile, job):
     zip_code = profile["personal"].get("zip_code", "")
     street_address = profile["personal"].get("street_address", "")
     county = profile["personal"].get("county", city)
+    today_date = date.today().strftime("%m/%d/%Y")
     salary_min = profile.get("salary_range", {}).get("min", 0)
     salary_max = profile.get("salary_range", {}).get("max", 0)
     if salary_min and not salary_max:
@@ -429,7 +431,7 @@ Summary: {summary}
 Authorized to work in US: Yes
 Requires sponsorship: No
 US citizen: Yes
-Available to start: Immediately
+Available to start: {today_date}
 Willing to relocate: Yes
 
 ## JOB:
@@ -463,6 +465,7 @@ CRITICAL RULES:
 - For salary type fields: "Yearly" or "Annual" (pick the matching option)
 - For "have you applied before" type fields: "No"
 - For SMS/text permission fields: "Yes"
+- For date fields (start date, available to start, MM/DD/YYYY): "{today_date}"
 - For years of experience: "{years}"
 - Do NOT fabricate information or make up answers
 
@@ -490,6 +493,7 @@ Return ONLY the JSON object, no explanation.""".format(
         company=job.get("company", ""),
         salary_min=str(salary_min) if salary_min else "",
         salary_max=str(salary_max) if salary_max else "",
+        today_date=today_date,
         gender=gender,
         zip_code=zip_code,
         fields="\n".join(field_descriptions),

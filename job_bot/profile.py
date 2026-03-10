@@ -2,6 +2,7 @@
 
 import json
 import re
+from datetime import date
 from pathlib import Path
 
 from job_bot.config import STATE_MAP, STATE_MAP_REVERSE
@@ -160,6 +161,7 @@ def build_answer_map(profile, company):
     zip_code = profile["personal"].get("zip_code", "")
     street_address = profile["personal"].get("street_address", "")
     county = profile["personal"].get("county", city)  # Default county to city name
+    today_date = date.today().strftime("%m/%d/%Y")
 
     # Read EEOC values from profile (with sensible defaults)
     eeoc = profile.get("eeoc", {})
@@ -297,9 +299,10 @@ def build_answer_map(profile, company):
 
         # Location / Address — using profile values
         # NOTE: "country" must come before "state" to avoid "Country United States"
-        # matching "state" as a substring first
+        # matching "state" as a substring first.
+        # NOTE: "address line" and "address" removed — handled by smart location
+        # detection (step 7 in applier.py) which properly distinguishes Line 1 vs 2.
         "country": "United States",
-        "address line": street_address,
         "street address": street_address,
         "county": county,
         "city": city,
@@ -314,7 +317,6 @@ def build_answer_map(profile, company):
         "postcode": zip_code,
         "zip": zip_code,
         "location": location_full,
-        "address": street_address,
         "current location": location_full,
         "where are you located": location_full,
         "where do you currently reside": location_full,
@@ -326,10 +328,11 @@ def build_answer_map(profile, company):
         "willing to relocate": "Yes",
         "open to relocation": "Yes",
         "able to work": "Yes",
-        "available to start": "Immediately",
-        "start date": "Immediately",
-        "when can you start": "Immediately",
-        "earliest start date": "Immediately",
+        "available to start": today_date,
+        "start date": today_date,
+        "when can you start": today_date,
+        "earliest start date": today_date,
+        "mm/dd/yyyy": today_date,
         "notice period": "2 weeks",
         "available for": "Full-time",
         "desired employment type": "Full-time",
