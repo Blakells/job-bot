@@ -19,7 +19,8 @@ from job_bot.fields import (
 )
 from job_bot.react_select import fill_react_select
 from job_bot.form_filler import (
-    fill_text_field, upload_file, fill_generic_field, fill_toggle_buttons_sweep,
+    fill_text_field, upload_file, fill_generic_field,
+    fill_toggle_buttons_sweep, fill_dropdowns_sweep,
 )
 
 
@@ -587,8 +588,8 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
 
         time.sleep(0.3)
 
-    # Post-fill sweep for toggle buttons
-    print(f"\n  >> Post-fill sweep: checking for toggle buttons & expandable sections...")
+    # Post-fill sweep for toggle buttons and dropdowns
+    print(f"\n  >> Post-fill sweep: checking for toggle buttons, dropdowns & expandable sections...")
     try:
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         time.sleep(1)
@@ -598,6 +599,9 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
         pass
     extra_filled = fill_toggle_buttons_sweep(page, profile)
     filled += extra_filled
+
+    extra_dropdowns = fill_dropdowns_sweep(page, profile)
+    filled += extra_dropdowns
 
     screenshot(page, f"{slug}_filled")
     total_fields = len(fields) + extra_filled
