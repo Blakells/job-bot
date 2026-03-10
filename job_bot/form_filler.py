@@ -597,31 +597,17 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                         el.type(answer_str, delay=20)
                         time.sleep(0.3)
 
-                    # Native setter + events to sync React state & clear errors
-                    try:
-                        page.evaluate("""(args) => {
-                            const el = document.querySelector(args.selector);
-                            if (!el) return;
-                            const nativeSetter = Object.getOwnPropertyDescriptor(
-                                window.HTMLInputElement.prototype, 'value').set;
-                            nativeSetter.call(el, args.value);
-                            el.dispatchEvent(new InputEvent('input', {
-                                bubbles: true, inputType: 'insertText', data: args.value
-                            }));
-                            el.dispatchEvent(new Event('change', {bubbles: true}));
-                            // Blur + focus cycle to trigger validation clearing
-                            el.dispatchEvent(new FocusEvent('blur', {bubbles: true}));
-                            el.dispatchEvent(new FocusEvent('focusout', {bubbles: true}));
-                        }""", {"selector": selector, "value": answer_str})
-                    except Exception:
-                        pass
+                    # Press Space then Backspace — this is exactly what
+                    # clears Paylocity's email validation error.  Synthetic
+                    # JS events (blur, change, input) do NOT clear it; only
+                    # a real keyboard event inside the field does.
+                    el.press("End")          # cursor to end
+                    el.press("Space")        # triggers React re-validation
+                    time.sleep(2)            # let React settle
+                    el.press("Backspace")    # remove the space
                     time.sleep(0.3)
-                    # Tab away and back to mimic real user unfocusing
-                    try:
-                        el.press("Tab")
-                        time.sleep(0.2)
-                    except Exception:
-                        pass
+                    el.press("Tab")          # move focus away
+                    time.sleep(0.2)
                 elif len(answer_str) < 200:
                     # Short text: clear with fill("") then type() for real
                     # keyboard events (triggers React validation).
@@ -908,12 +894,23 @@ def _determine_dropdown_answer(label, available_options, profile):
 
     # ── 4. School Type / Education Level ────────────────────────────────
     if any(kw in label_lower for kw in ['school type', 'education level',
-                                         'degree type', 'education type']):
+                                         'education type']):
         edu = profile.get("education", [])
         if edu and isinstance(edu, list) and len(edu) > 0:
-            # If profile has education data, try to match
-            pass  # Would need mapping from degree to school type
-        # Default: prefer "College / University" (4-year) over others
+            degree = edu[0].get("degree", "").lower()
+            if any(k in degree for k in ["master", "mba", "m.s", "m.a"]):
+                for opt in available_options:
+                    if 'graduate' in opt.lower():
+                        return opt
+            # Bachelor's / Associates → College / University
+            for opt in available_options:
+                if 'university' in opt.lower():
+                    return opt
+            for opt in available_options:
+                ol = opt.lower()
+                if 'college' in ol and 'community' not in ol:
+                    return opt
+        # No education data — default to College / University
         for opt in available_options:
             if 'university' in opt.lower():
                 return opt
@@ -921,6 +918,51 @@ def _determine_dropdown_answer(label, available_options, profile):
             ol = opt.lower()
             if 'college' in ol and 'community' not in ol and 'vocational' not in ol:
                 return opt
+
+    # ── 5. Degree Type (e.g. "Associate's", "Bachelor's", "Master's") ──
+    if any(kw in label_lower for kw in ['degree type', 'degree level',
+                                         'type of degree', 'highest degree']):
+        edu = profile.get("education", [])
+        degree_label = ""
+        if edu and isinstance(edu, list) and len(edu) > 0:
+            degree_label = edu[0].get("degree", "")
+        # Map profile degree to common option labels
+        degree_map = {
+            "bachelor": "Bachelor's Degree",
+            "b.s": "Bachelor's Degree",
+            "b.a": "Bachelor's Degree",
+            "master": "Master's Degree",
+            "m.s": "Master's Degree",
+            "m.a": "Master's Degree",
+            "mba": "Master's Degree",
+            "associate": "Associate's Degree",
+            "a.s": "Associate's Degree",
+            "a.a": "Associate's Degree",
+            "doctor": "Doctorate",
+            "ph.d": "Doctorate",
+            "phd": "Doctorate",
+            "high school": "High School Diploma",
+            "ged": "High School Diploma",
+        }
+        target = ""
+        for key, val in degree_map.items():
+            if key in degree_label.lower():
+                target = val
+                break
+        if target:
+            # Exact match first
+            for opt in available_options:
+                if opt.lower().strip() == target.lower():
+                    return opt
+            # Contains match
+            for opt in available_options:
+                if target.lower() in opt.lower() or opt.lower() in target.lower():
+                    return opt
+            # Fuzzy — match the key word (e.g. "bachelor")
+            for opt in available_options:
+                for key in degree_map:
+                    if key in degree_label.lower() and key in opt.lower():
+                        return opt
 
     return None
 
