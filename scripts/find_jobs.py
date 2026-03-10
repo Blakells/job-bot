@@ -38,11 +38,10 @@ from typing import List, Dict, Set, Optional
 
 import requests
 
-# ── Config ───────────────────────────────────────────────────────────────────
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "anthropic/claude-sonnet-4-5"
+from job_bot.ai import ask_claude, parse_json_response
+from job_bot.config import OPENROUTER_API_KEY
 
 # Be polite to LinkedIn — wait between requests
 REQUEST_DELAY = 3  # seconds between page loads
@@ -77,70 +76,11 @@ def import_scrapling():
         from scrapling.fetchers import StealthyFetcher, StealthySession
         return StealthyFetcher, StealthySession
     except ImportError:
-        print("\n❌ Scrapling is not installed. Set it up with:\n")
-        print('   python3.13 -m pip install "scrapling[fetchers]" --break-system-packages')
-        print("   scrapling install\n")
-        sys.exit(1)
-
-
-# ── Claude API ───────────────────────────────────────────────────────────────
-
-def ask_claude(prompt, max_tokens=2000):
-    """Send a prompt to Claude via OpenRouter and return the response."""
-    if not OPENROUTER_API_KEY:
-        print("    ⚠️  No OPENROUTER_API_KEY — skipping AI scoring")
-        return ""
-
-    try:
-        resp = requests.post(
-            OPENROUTER_BASE,
-            headers={
-                "Authorization": "Bearer {}".format(OPENROUTER_API_KEY),
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": max_tokens,
-                "temperature": 0.1,
-            },
-            timeout=60,
+        raise ImportError(
+            "Scrapling is not installed. Set it up with:\n"
+            '  python3.13 -m pip install "scrapling[fetchers]" --break-system-packages\n'
+            "  scrapling install"
         )
-        data = resp.json()
-        if "choices" in data:
-            return data["choices"][0]["message"]["content"].strip()
-        elif "error" in data:
-            print("    ❌ API error: {}".format(data["error"].get("message", data["error"])[:100]))
-            return ""
-        else:
-            print("    ❌ Unexpected API response: {}".format(str(data)[:150]))
-            return ""
-    except Exception as e:
-        print("    ❌ Claude error: {}".format(e))
-        return ""
-
-
-def parse_json_response(raw):
-    """Parse JSON from Claude's response, handling markdown fences."""
-    raw = raw.strip()
-    if "```" in raw:
-        parts = raw.split("```")
-        for part in parts:
-            cleaned = part.strip()
-            if cleaned.startswith("json"):
-                cleaned = cleaned[4:].strip()
-            if cleaned.startswith("{"):
-                raw = cleaned
-                break
-
-    start = raw.find("{")
-    end = raw.rfind("}") + 1
-    if start >= 0 and end > start:
-        try:
-            return json.loads(raw[start:end])
-        except json.JSONDecodeError:
-            pass
-    return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -865,9 +805,9 @@ Examples:
 
     profile_path = Path(args.profile)
     if not profile_path.exists():
-        print("❌ Profile not found: {}".format(profile_path))
-        print("   Run build_profile_v2.py first to create one.")
-        sys.exit(1)
+        print("!! Profile not found: {}".format(profile_path))
+        print("   Run build_profile.py first to create one.")
+        return
 
     profile = json.loads(profile_path.read_text())
     name = profile.get("personal", {}).get("name", "Unknown")

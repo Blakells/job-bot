@@ -217,6 +217,13 @@
     "Are you willing to undergo a background check?": "Yes",
     "what level clearance do you currently": "None — willing to obtain if required"
   },
+  "eeoc": {
+    "gender": "Male",
+    "hispanic_ethnicity": "No",
+    "veteran_status": "I am not a protected veteran",
+    "disability_status": "No, I don't have a disability",
+    "race": "Decline to self-identify"
+  },
   "work_authorization": {
     "authorized_to_work_in_us": true,
     "requires_sponsorship": false,
