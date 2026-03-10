@@ -420,15 +420,18 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
 
             # Skip if field already has the correct value (avoids breaking
             # pre-filled react-select/autocomplete fields like Country)
+            field_label = field.get("label", "")
             try:
                 current_value = el.input_value() or ""
                 if current_value.strip().lower() == answer_str.strip().lower():
+                    print(f"      >> Skipping (input already has: {current_value[:30]})")
                     return True
 
                 # React-select / autocomplete: the <input> is for searching
                 # and may be empty, but the *displayed* value lives in a
                 # sibling span.  Check the parent container's visible text.
                 if not current_value.strip() and selector:
+                    print(f"      [debug] input empty for '{field_label[:30]}', checking react-select container...")
                     displayed = page.evaluate("""(sel) => {
                         const el = document.querySelector(sel);
                         if (!el) return '';
@@ -454,6 +457,26 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     if displayed and displayed.strip().lower() == answer_str.strip().lower():
                         print(f"      >> Skipping (react-select already shows: {displayed})")
                         return True
+
+                    # Broader fallback: check the closest parent's visible text
+                    # (works even without specific react-select class names)
+                    if not displayed:
+                        parent_text = page.evaluate("""(sel) => {
+                            const el = document.querySelector(sel);
+                            if (!el) return '';
+                            let p = el.parentElement;
+                            for (let i = 0; i < 3 && p; i++) {
+                                const t = p.textContent.trim();
+                                if (t && t.length < 100 && t !== '--') return t;
+                                p = p.parentElement;
+                            }
+                            return '';
+                        }""", selector)
+                        if parent_text:
+                            print(f"      [debug] parent text: '{parent_text[:60]}'")
+                            if parent_text.strip().lower() == answer_str.strip().lower():
+                                print(f"      >> Skipping (parent shows correct value)")
+                                return True
             except Exception:
                 pass
 
@@ -825,14 +848,17 @@ FIND_DROPDOWNS_JS = """() => {
 }"""
 
 
-# JS that finds custom (div-based) dropdown components by looking for
-# visible elements that display "--" as their text content.
-# Returns their labels and click coordinates for Playwright interaction.
+# JS that finds custom (div-based) dropdown components showing "--".
+# Tags each trigger with data-jobbot-dd="N" so Playwright can locate them
+# (auto-scroll, proper click handling).  Returns labels and indices.
 FIND_CUSTOM_DROPDOWNS_JS = """() => {
     const results = [];
     const seen = new Set();
+    let idx = 0;
 
-    // Walk all text nodes looking for exact "--" content
+    // Remove stale tags from previous runs
+    document.querySelectorAll('[data-jobbot-dd]').forEach(el => el.removeAttribute('data-jobbot-dd'));
+
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
         const textNode = walker.currentNode;
@@ -841,22 +867,17 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
         const el = textNode.parentElement;
         if (!el) continue;
 
-        // Must be visible and reasonable size
         const rect = el.getBoundingClientRect();
         if (rect.width < 20 || rect.height < 10) continue;
-
         const style = window.getComputedStyle(el);
         if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
-
-        // Skip if inside a <select> element (handled by Phase 1)
         if (el.closest('select')) continue;
 
-        // Dedup by approximate position
         const posKey = Math.round(rect.x / 10) + '_' + Math.round(rect.y / 10);
         if (seen.has(posKey)) continue;
         seen.add(posKey);
 
-        // Find the best clickable ancestor (the dropdown trigger)
+        // Find clickable ancestor
         let clickTarget = el;
         let ct = el;
         for (let i = 0; i < 6 && ct; i++) {
@@ -864,7 +885,6 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
             const role = ct.getAttribute('role');
             const tabindex = ct.getAttribute('tabindex');
             const tag = ct.tagName.toLowerCase();
-
             if (cursor === 'pointer' || role === 'combobox' || role === 'button' ||
                 role === 'listbox' || tabindex !== null || tag === 'button' || tag === 'a') {
                 clickTarget = ct;
@@ -873,17 +893,15 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
             ct = ct.parentElement;
         }
 
-        const clickRect = clickTarget.getBoundingClientRect();
+        // Tag the element so Playwright can locate it
+        clickTarget.setAttribute('data-jobbot-dd', String(idx));
 
-        // Find the associated label by walking up the DOM
+        // Find label
         let label = '';
-
-        // Check aria-label / aria-labelledby on the click target or ancestors
         let search = clickTarget;
         for (let i = 0; i < 6 && search && !label; i++) {
             const al = search.getAttribute('aria-label');
             if (al && al.trim().length > 3 && al.trim() !== '--') { label = al.trim(); break; }
-
             const alBy = search.getAttribute('aria-labelledby');
             if (alBy) {
                 const ref = document.getElementById(alBy);
@@ -891,8 +909,6 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
             }
             search = search.parentElement;
         }
-
-        // Walk up DOM to find question/label text
         if (!label) {
             let parent = clickTarget.parentElement;
             for (let i = 0; i < 10 && parent && !label; i++) {
@@ -903,106 +919,111 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
                     if (lbl.contains(clickTarget) || clickTarget.contains(lbl)) continue;
                     const txt = lbl.innerText.replace(/\\*/g, '').trim();
                     if (txt && txt.length > 3 && txt.length < 200 && txt !== '--') {
-                        label = txt;
-                        break;
+                        label = txt; break;
                     }
                 }
-
-                // Check explicit label[for]
                 if (!label && parent.id) {
                     const expl = document.querySelector('label[for="' + parent.id + '"]');
                     if (expl) label = expl.innerText.replace(/\\*/g, '').trim();
                 }
-
                 parent = parent.parentElement;
             }
         }
 
+        // Also capture the outerHTML of the trigger + parent for debugging
+        const triggerHtml = clickTarget.outerHTML.slice(0, 200);
+        const parentHtml = (clickTarget.parentElement || clickTarget).outerHTML.slice(0, 300);
+
         results.push({
             label: label || '',
-            clickX: Math.round(clickRect.x + clickRect.width / 2),
-            clickY: Math.round(clickRect.y + clickRect.height / 2),
+            index: idx,
             tagName: clickTarget.tagName,
+            triggerHtml: triggerHtml,
+            parentHtml: parentHtml,
         });
+        idx++;
     }
 
     return results;
 }"""
 
-# JS that finds and clicks a dropdown option after the dropdown is opened.
-# Uses fuzzy matching: exact → starts-with → contains → partial.
-# Returns {clicked: bool, debug: str} with info about what was found.
+# JS to find and click an option after a dropdown opens.
+# Searches ALL visible elements by direct text content (no CSS selector assumptions).
+# Prefers elements below the trigger and in popup-like containers.
 CLICK_DROPDOWN_OPTION_JS = """(args) => {
-    const answers = args.answers;   // list of acceptable answers
+    const answers = args.answers;
+    const triggerIdx = args.triggerIdx;
     const debug = [];
 
-    // Collect ALL visible candidate elements that could be options
+    // Get trigger position for proximity sorting
+    const trigger = document.querySelector('[data-jobbot-dd="' + triggerIdx + '"]');
+    const triggerRect = trigger ? trigger.getBoundingClientRect() : {x: 0, y: 0};
+
+    // Collect ALL visible elements with their DIRECT text content
     const candidates = [];
-
-    // Gather from role="option", li, class*="option", etc.
-    const selectorList = '[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"], [class*="choice"]';
-    document.querySelectorAll(selectorList).forEach(el => {
-        const text = el.textContent.trim();
-        if (!text || text === '--') return;
-        const rect = el.getBoundingClientRect();
-        if (rect.width <= 0 || rect.height <= 0) return;
-        const style = window.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden') return;
-
-        // Check if in a popup/overlay
-        let isPopup = false;
-        let p = el.parentElement;
-        for (let i = 0; i < 5 && p; i++) {
-            const ps = window.getComputedStyle(p);
-            const role = p.getAttribute('role');
-            if (ps.position === 'absolute' || ps.position === 'fixed' ||
-                role === 'listbox' || role === 'menu' ||
-                (p.className || '').toString().match(/dropdown|popup|overlay|menu|popover|modal/i)) {
-                isPopup = true; break;
-            }
-            p = p.parentElement;
+    const allEls = document.getElementsByTagName('*');
+    for (let i = 0; i < allEls.length; i++) {
+        const el = allEls[i];
+        // Get direct text only (not from children)
+        let directText = '';
+        for (const node of el.childNodes) {
+            if (node.nodeType === 3) directText += node.textContent;
         }
-        candidates.push({el, text, isPopup});
-    });
+        directText = directText.trim();
+        if (!directText || directText === '--' || directText.length > 100) continue;
 
-    debug.push('Found ' + candidates.length + ' option candidates');
-    const popupOpts = candidates.filter(c => c.isPopup);
-    debug.push('Popup options: ' + popupOpts.map(c => c.text).join(', '));
-    if (popupOpts.length === 0) {
-        debug.push('Non-popup: ' + candidates.slice(0, 10).map(c => c.text).join(', '));
+        const rect = el.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        const style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+        // Distance from trigger (prefer elements below it)
+        const dx = Math.abs(rect.x - triggerRect.x);
+        const dy = rect.y - triggerRect.y;
+        const dist = dx + Math.abs(dy);
+        const isBelow = dy > -10;
+
+        candidates.push({el, text: directText, dist, isBelow, rect});
     }
 
-    // Search targets: prefer popup candidates, fall back to all
-    const searchPool = popupOpts.length > 0 ? popupOpts : candidates;
+    debug.push('Visible text elements: ' + candidates.length);
 
-    // Try each answer candidate with progressively fuzzier matching
     for (const answer of answers) {
         const ansLower = answer.toLowerCase().trim();
+        // Find exact matches
+        let matches = candidates.filter(c => c.text.toLowerCase().trim() === ansLower);
+        // Fallback: starts-with or contains
+        if (matches.length === 0) {
+            matches = candidates.filter(c => {
+                const tl = c.text.toLowerCase().trim();
+                return tl.startsWith(ansLower) || ansLower.startsWith(tl) ||
+                       tl.includes(ansLower) || ansLower.includes(tl);
+            });
+        }
 
-        // Pass 1: exact match
-        for (const c of searchPool) {
-            if (c.text === answer || c.text.toLowerCase().trim() === ansLower) {
-                c.el.click();
-                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
-            }
-        }
-        // Pass 2: option starts with answer or answer starts with option
-        for (const c of searchPool) {
-            const tl = c.text.toLowerCase().trim();
-            if (tl.startsWith(ansLower) || ansLower.startsWith(tl)) {
-                c.el.click();
-                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
-            }
-        }
-        // Pass 3: contains (either direction)
-        for (const c of searchPool) {
-            const tl = c.text.toLowerCase().trim();
-            if (tl.includes(ansLower) || ansLower.includes(tl)) {
-                c.el.click();
-                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
-            }
+        debug.push('"' + answer + '": ' + matches.length + ' matches');
+
+        if (matches.length > 0) {
+            // Sort: prefer below trigger + close to trigger
+            matches.sort((a, b) => {
+                const aScore = (a.isBelow ? 0 : 10000) + a.dist;
+                const bScore = (b.isBelow ? 0 : 10000) + b.dist;
+                return aScore - bScore;
+            });
+            debug.push('Clicking: "' + matches[0].text + '" at y=' + matches[0].rect.y.toFixed(0));
+            matches[0].el.click();
+            return {clicked: true, matched: matches[0].text, debug: debug.join(' | ')};
         }
     }
+
+    // Debug: dump elements near the trigger
+    const nearby = candidates
+        .filter(c => c.dist < 400 && c.isBelow)
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 15);
+    debug.push('Elements near trigger: ' + nearby.map(c =>
+        c.el.tagName + ':"' + c.text.slice(0, 25) + '"'
+    ).join(', '));
 
     return {clicked: false, matched: null, debug: debug.join(' | ')};
 }"""
@@ -1122,16 +1143,20 @@ def fill_dropdowns_sweep(page, profile):
 
     # Phase 2: Custom dropdown components (div-based, showing "--")
     # These are NOT <select> elements — they use divs/spans with click handlers.
-    # Strategy: find "--" text nodes, click to open, then click the correct option.
+    # Strategy: tag triggers with data-jobbot-dd, use Playwright locators
+    # (auto-scroll + real click), then search ALL visible elements for options.
     try:
         custom_dds = page.evaluate(FIND_CUSTOM_DROPDOWNS_JS)
         if custom_dds:
             print(f"     >> Custom dropdown scan: {len(custom_dds)} dropdown(s) showing '--'")
+            for dd in custom_dds:
+                lbl = dd.get('label', '(no label)')[:60]
+                print(f"        - [{dd['tagName']}] {lbl}")
+                print(f"          html: {dd.get('triggerHtml', '')[:120]}")
 
         for dd in custom_dds:
             label = dd.get('label', '')
             if not label:
-                print(f"        - '--' at ({dd['clickX']}, {dd['clickY']}) - no label, skipping")
                 continue
 
             # Match label against answer rules
@@ -1143,38 +1168,67 @@ def fill_dropdowns_sweep(page, profile):
                     break
 
             if not answer_candidates:
-                print(f"        - {label[:50]} - no matching rule")
                 continue
 
-            # Click the dropdown trigger to open it
+            # Click the dropdown trigger using Playwright locator
+            # (auto-scrolls into view, handles overlays)
             try:
-                page.mouse.click(dd['clickX'], dd['clickY'])
-                time.sleep(0.6)
+                selector = f'[data-jobbot-dd="{dd["index"]}"]'
+                trigger = page.locator(selector)
 
-                # Try to find and click the matching option (fuzzy matching)
+                if trigger.count() == 0:
+                    print(f"     !! Trigger element not found: {selector}")
+                    continue
+
+                trigger.scroll_into_view_if_needed()
+                time.sleep(0.2)
+                trigger.click(timeout=5000)
+                time.sleep(0.8)  # Wait for dropdown panel to render
+
+                # Search ALL visible elements for matching option text
                 result = page.evaluate(
                     CLICK_DROPDOWN_OPTION_JS,
-                    {"answers": answer_candidates})
+                    {"answers": answer_candidates, "triggerIdx": str(dd["index"])})
 
                 if result and result.get("clicked"):
                     print(f"     >> Custom dropdown: {label[:45]} -> {result.get('matched', '?')}")
                     filled += 1
                     time.sleep(0.3)
                 else:
-                    page.keyboard.press("Escape")
-                    time.sleep(0.2)
-                    debug_info = result.get("debug", "") if result else ""
-                    print(f"     !! Custom dropdown: no match for {label[:40]}")
-                    print(f"        tried: {answer_candidates}")
-                    print(f"        debug: {debug_info}")
+                    # Try Playwright text-based click as last resort
+                    pw_clicked = False
+                    for answer in answer_candidates:
+                        try:
+                            opt = page.get_by_text(answer, exact=True)
+                            for j in range(min(opt.count(), 5)):
+                                if opt.nth(j).is_visible():
+                                    opt.nth(j).click()
+                                    pw_clicked = True
+                                    print(f"     >> Custom dropdown (PW): {label[:40]} -> {answer}")
+                                    filled += 1
+                                    break
+                            if pw_clicked:
+                                break
+                        except Exception:
+                            continue
+
+                    if not pw_clicked:
+                        page.keyboard.press("Escape")
+                        time.sleep(0.2)
+                        debug_info = result.get("debug", "") if result else ""
+                        print(f"     !! Custom dropdown: no match for {label[:40]}")
+                        print(f"        tried: {answer_candidates}")
+                        print(f"        debug: {debug_info}")
             except Exception as e:
-                print(f"     !! Custom dropdown click error: {e}")
+                print(f"     !! Custom dropdown error for {label[:40]}: {e}")
                 try:
                     page.keyboard.press("Escape")
                 except Exception:
                     pass
 
     except Exception as e:
+        import traceback
         print(f"     !! Custom dropdown sweep error: {e}")
+        traceback.print_exc()
 
     return filled
