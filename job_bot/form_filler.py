@@ -429,54 +429,48 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
 
                 # React-select / autocomplete: the <input> is for searching
                 # and may be empty, but the *displayed* value lives in a
-                # sibling span.  Check the parent container's visible text.
+                # sibling span.  Walk up the DOM without requiring specific
+                # class names — look for value indicators and text matches.
                 if not current_value.strip() and selector:
-                    print(f"      [debug] input empty for '{field_label[:30]}', checking react-select container...")
-                    displayed = page.evaluate("""(sel) => {
-                        const el = document.querySelector(sel);
+                    print(f"      [debug] input empty for '{field_label[:30]}', checking for displayed value...")
+                    displayed = page.evaluate("""(args) => {
+                        const el = document.querySelector(args.selector);
                         if (!el) return '';
+                        const answer = args.answer.toLowerCase().trim();
+
                         let c = el.parentElement;
-                        for (let i = 0; i < 5 && c; i++) {
-                            const cls = (c.className || '').toString().toLowerCase();
-                            if (cls.includes('select') || cls.includes('combobox') ||
-                                cls.includes('dropdown') || cls.includes('autocomplete')) {
-                                const v = c.querySelector(
-                                    '[class*="singleValue"], [class*="value"]:not(input), ' +
-                                    '[class*="selected"], [class*="display"]');
-                                if (v) return v.textContent.trim();
-                                // fallback: any direct-child span with text
-                                for (const ch of c.querySelectorAll(':scope > div > span, :scope > span')) {
-                                    const t = ch.textContent.trim();
-                                    if (t && t.length > 1 && t !== '--') return t;
-                                }
+                        for (let i = 0; i < 8 && c; i++) {
+                            // Strategy 1: class-based value indicators
+                            const v = c.querySelector(
+                                '[class*="singleValue"], [class*="single-value"], ' +
+                                '[class*="selected"]:not([class*="container"]):not(select)');
+                            if (v) {
+                                const t = v.textContent.trim();
+                                if (t && t !== '--' && t.length > 1) return t;
                             }
+
+                            // Strategy 2: find any sibling/cousin whose direct
+                            // text content matches the expected answer
+                            for (const child of c.querySelectorAll('span, div, p, a, li')) {
+                                if (child.contains(el) || el.contains(child)) continue;
+                                if (child.tagName === 'INPUT' || child.tagName === 'SELECT') continue;
+                                let directText = '';
+                                for (const node of child.childNodes) {
+                                    if (node.nodeType === 3) directText += node.textContent;
+                                }
+                                directText = directText.trim();
+                                if (directText && directText.toLowerCase() === answer) return directText;
+                            }
+
+                            // Don't search past large containers (avoids form-level matches)
+                            if ((c.innerText || '').length > 800) break;
                             c = c.parentElement;
                         }
                         return '';
-                    }""", selector)
-                    if displayed and displayed.strip().lower() == answer_str.strip().lower():
-                        print(f"      >> Skipping (react-select already shows: {displayed})")
+                    }""", {"selector": selector, "answer": answer_str})
+                    if displayed:
+                        print(f"      >> Skipping (already shows: {displayed})")
                         return True
-
-                    # Broader fallback: check the closest parent's visible text
-                    # (works even without specific react-select class names)
-                    if not displayed:
-                        parent_text = page.evaluate("""(sel) => {
-                            const el = document.querySelector(sel);
-                            if (!el) return '';
-                            let p = el.parentElement;
-                            for (let i = 0; i < 3 && p; i++) {
-                                const t = p.textContent.trim();
-                                if (t && t.length < 100 && t !== '--') return t;
-                                p = p.parentElement;
-                            }
-                            return '';
-                        }""", selector)
-                        if parent_text:
-                            print(f"      [debug] parent text: '{parent_text[:60]}'")
-                            if parent_text.strip().lower() == answer_str.strip().lower():
-                                print(f"      >> Skipping (parent shows correct value)")
-                                return True
             except Exception:
                 pass
 
@@ -494,14 +488,15 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
             except Exception:
                 pass
 
+            # Detect email fields for special React-compatible fill
+            is_email = (field_type == 'email' or
+                        'email' in field.get('id', '').lower() or
+                        'email' in field.get('name', '').lower() or
+                        'email' in field.get('label', '').lower())
+
             try:
                 el.click(timeout=5000)
                 time.sleep(0.1)
-
-                # Detect email fields for special React-compatible fill
-                is_email = (field_type == 'email' or
-                            'email' in field.get('id', '').lower() or
-                            'email' in field.get('name', '').lower())
 
                 if is_autocomplete:
                     # Autocomplete/react-select: type search + Enter to select
@@ -554,6 +549,11 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     # Long text: use fill() for speed
                     el.fill(answer_str)
             except Exception:
+                if is_autocomplete:
+                    # Don't force-fill autocomplete/react-select — the click
+                    # failed but the value is likely already pre-filled.
+                    print(f"      >> Skipping autocomplete field (click blocked, likely pre-filled)")
+                    return True
                 try:
                     page.evaluate(REACT_NATIVE_FILL_JS, {"selector": selector, "value": answer_str})
                     print(f"      >> Used JS fill (overlay was blocking)")
@@ -727,25 +727,83 @@ def fill_toggle_buttons_sweep(page, profile):
 # Scans the full DOM for ALL dropdown-like elements (<select>, custom components),
 # analyzes their structure, determines the right answer, and fills them.
 
-DROPDOWN_ANSWER_RULES = {
-    # keyword in question → list of acceptable answers (tried in order)
-    "salary type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
-    "desired salary type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
-    "pay type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
-    "compensation type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
-    "applied for a job": ["No"],
-    "applied with us": ["No"],
-    "applied before": ["No"],
-    "worked with us": ["No"],
-    "worked here before": ["No"],
-    "have you applied": ["No"],
-    "have you worked": ["No"],
-    "permission to text": ["Yes"],
-    "sms": ["Yes"],
-    "text you": ["Yes"],
-    "text message": ["Yes"],
-    "contact you via text": ["Yes"],
-}
+def _determine_dropdown_answer(label, available_options, profile):
+    """
+    Dynamically determine the best answer for a dropdown based on:
+    1. Yes/No detection using toggle button keyword rules
+    2. Profile-based answer lookup
+    3. Common field-type defaults
+
+    Returns the exact option text to select, or None if undetermined.
+    """
+    label_lower = label.lower().replace('*', '').replace('(required)', '').strip()
+    opts_lower = [o.lower().strip() for o in available_options]
+
+    # ── 1. Yes/No dropdown detection ──────────────────────────────────────
+    yes_opts = [o for o in available_options if o.strip().lower() in ('yes', 'y')]
+    no_opts = [o for o in available_options if o.strip().lower() in ('no', 'n')]
+
+    if yes_opts and no_opts:
+        for kw in YES_RULES:
+            if kw.lower() in label_lower:
+                return yes_opts[0]
+        for kw in NO_RULES:
+            if kw.lower() in label_lower:
+                return no_opts[0]
+
+        # Heuristic defaults for common Yes/No patterns
+        if any(kw in label_lower for kw in [
+            'permission', 'consent', 'agree', 'sms', 'text',
+            'contact you', 'notify', 'send you',
+        ]):
+            return yes_opts[0]
+        if any(kw in label_lower for kw in [
+            'applied', 'worked', 'employed', 'before', 'previously',
+            'former', 'prior',
+        ]):
+            return no_opts[0]
+
+        # Unknown yes/no — skip
+        return None
+
+    # ── 2. Profile-based answer lookup ────────────────────────────────────
+    eeoc = profile.get("eeoc", {})
+    profile_answers = {
+        "salary type": "Yearly",
+        "pay type": "Yearly",
+        "compensation type": "Yearly",
+        "employment type": "Full-time",
+        "desired employment": "Full-time",
+        "job type": "Full-time",
+        "available for": "Full-time",
+        "work schedule": "Full-time",
+        "gender": eeoc.get("gender", ""),
+        "race": eeoc.get("race", ""),
+        "ethnicity": eeoc.get("race", ""),
+        "hispanic": eeoc.get("hispanic_ethnicity", ""),
+        "veteran": eeoc.get("veteran_status", ""),
+        "disability": eeoc.get("disability_status", ""),
+        "how did you hear": "LinkedIn",
+        "referral source": "LinkedIn",
+        "source": "LinkedIn",
+        "hear about": "LinkedIn",
+        "where did you find": "LinkedIn",
+    }
+
+    for keyword, answer in profile_answers.items():
+        if keyword in label_lower and answer:
+            answer_lower = answer.lower().strip()
+            # Exact match first
+            for opt in available_options:
+                if opt.lower().strip() == answer_lower:
+                    return opt
+            # Fuzzy: contains match
+            for opt in available_options:
+                opt_lower = opt.lower().strip()
+                if answer_lower in opt_lower or opt_lower in answer_lower:
+                    return opt
+
+    return None
 
 # JS that inspects the DOM to find ALL dropdown-like elements
 FIND_DROPDOWNS_JS = """() => {
@@ -1028,6 +1086,68 @@ CLICK_DROPDOWN_OPTION_JS = """(args) => {
     return {clicked: false, matched: null, debug: debug.join(' | ')};
 }"""
 
+# JS to read ALL visible option texts after opening a custom dropdown.
+# Returns a deduplicated list of option texts sorted by proximity to the trigger.
+READ_DROPDOWN_OPTIONS_JS = """(triggerIdx) => {
+    const trigger = document.querySelector('[data-jobbot-dd="' + triggerIdx + '"]');
+    const triggerRect = trigger ? trigger.getBoundingClientRect() : {x: 0, y: 0};
+
+    const options = [];
+    const allEls = document.getElementsByTagName('*');
+    for (let i = 0; i < allEls.length; i++) {
+        const el = allEls[i];
+        let directText = '';
+        for (const node of el.childNodes) {
+            if (node.nodeType === 3) directText += node.textContent;
+        }
+        directText = directText.trim();
+        if (!directText || directText === '--' || directText.length > 100) continue;
+
+        const rect = el.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        const style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+        // Only consider elements near/below the trigger
+        const dy = rect.y - triggerRect.y;
+        if (dy < -30) continue;
+        const dx = Math.abs(rect.x - triggerRect.x);
+        if (dx > 500) continue;
+
+        const dist = dx + Math.abs(dy);
+
+        // Check if in a popup/overlay container (strongly prefer these)
+        const isInPopup = !!el.closest(
+            '[class*="popup"], [class*="dropdown"], [class*="list"], ' +
+            '[class*="menu"], [class*="overlay"], [class*="panel"], ' +
+            '[role="listbox"], [role="menu"]'
+        );
+
+        options.push({text: directText, dist: dist, isInPopup: isInPopup});
+    }
+
+    // Sort by distance, strongly prefer popup items
+    options.sort((a, b) => {
+        const aScore = (a.isInPopup ? 0 : 5000) + a.dist;
+        const bScore = (b.isInPopup ? 0 : 5000) + b.dist;
+        return aScore - bScore;
+    });
+
+    // Deduplicate and return
+    const seen = new Set();
+    const unique = [];
+    for (const opt of options) {
+        const key = opt.text.toLowerCase().trim();
+        if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(opt.text);
+            if (unique.length >= 25) break;
+        }
+    }
+
+    return unique;
+}"""
+
 
 def fill_dropdowns_sweep(page, profile):
     """
@@ -1052,39 +1172,34 @@ def fill_dropdowns_sweep(page, profile):
                 opt_preview = ", ".join(o["text"] for o in dd["options"][:5])
                 print(f"        - [{dd['type']}] {label_preview} = '{dd['currentValue']}' | options: [{opt_preview}]")
 
-        # Step 2: Fill unfilled dropdowns
+        # Step 2: Fill unfilled dropdowns using dynamic answer determination
         for dd in unfilled:
             if not dd["selector"] or not dd["label"]:
                 continue
 
-            label_lower = dd["label"].lower().replace("*", "").strip()
+            option_texts = [o["text"] for o in dd["options"]]
+            answer = _determine_dropdown_answer(dd["label"], option_texts, profile)
 
-            # Determine answer candidates from keyword rules
-            answer_candidates = None
-            for keyword, ans_list in DROPDOWN_ANSWER_RULES.items():
-                if keyword in label_lower:
-                    answer_candidates = ans_list
-                    break
-
-            if not answer_candidates:
+            if not answer:
+                print(f"     -- Skipping dropdown (no answer): {dd['label'][:50]}")
                 continue
 
-            # Find the best matching option (try each candidate)
+            # Find the matching option object
             best_option = None
-            answer = answer_candidates[0]  # default for logging
-            for candidate in answer_candidates:
-                cand_lower = candidate.lower()
+            answer_lower = answer.lower().strip()
+            for opt in dd["options"]:
+                if opt["text"].lower().strip() == answer_lower:
+                    best_option = opt
+                    break
+            if not best_option:
                 for opt in dd["options"]:
                     opt_lower = opt["text"].lower().strip()
-                    if opt_lower == cand_lower or cand_lower in opt_lower or opt_lower in cand_lower:
+                    if answer_lower in opt_lower or opt_lower in answer_lower:
                         best_option = opt
-                        answer = candidate
                         break
-                if best_option:
-                    break
 
             if not best_option:
-                print(f"     !! No matching option for {answer_candidates} in {dd['label'][:40]}")
+                print(f"     !! No matching option for '{answer}' in {dd['label'][:40]}")
                 continue
 
             # Fill the dropdown
@@ -1092,7 +1207,6 @@ def fill_dropdowns_sweep(page, profile):
             selector = dd["selector"]
 
             if dd["type"] == "iframe-select":
-                # Fill inside iframe
                 try:
                     frame = page.frames[dd["iframeIndex"] + 1]  # +1 for main frame
                     frame_el = frame.locator(selector)
@@ -1105,7 +1219,6 @@ def fill_dropdowns_sweep(page, profile):
                     except Exception:
                         pass
             else:
-                # Fill on main page — try Playwright first, then JS
                 try:
                     el = page.locator(selector)
                     el.select_option(label=best_option["text"])
@@ -1159,19 +1272,7 @@ def fill_dropdowns_sweep(page, profile):
             if not label:
                 continue
 
-            # Match label against answer rules
-            label_lower = label.lower().replace('*', '').strip()
-            answer_candidates = None
-            for keyword, ans_list in DROPDOWN_ANSWER_RULES.items():
-                if keyword in label_lower:
-                    answer_candidates = ans_list
-                    break
-
-            if not answer_candidates:
-                continue
-
-            # Click the dropdown trigger using Playwright locator
-            # (auto-scrolls into view, handles overlays)
+            # Click the dropdown trigger, read options, decide, then click
             try:
                 selector = f'[data-jobbot-dd="{dd["index"]}"]'
                 trigger = page.locator(selector)
@@ -1185,10 +1286,33 @@ def fill_dropdowns_sweep(page, profile):
                 trigger.click(timeout=5000)
                 time.sleep(0.8)  # Wait for dropdown panel to render
 
-                # Search ALL visible elements for matching option text
+                # Read all visible option texts near the trigger
+                available_options = page.evaluate(
+                    READ_DROPDOWN_OPTIONS_JS, str(dd["index"]))
+
+                if available_options:
+                    print(f"        Options found: {available_options[:8]}")
+                else:
+                    print(f"     !! No options visible for: {label[:40]}")
+                    page.keyboard.press("Escape")
+                    time.sleep(0.2)
+                    continue
+
+                # Dynamically determine the best answer
+                answer = _determine_dropdown_answer(
+                    label, available_options, profile)
+
+                if not answer:
+                    print(f"     -- Skipping custom dropdown (no answer): {label[:40]}")
+                    print(f"        Options were: {available_options[:8]}")
+                    page.keyboard.press("Escape")
+                    time.sleep(0.2)
+                    continue
+
+                # Click the chosen option
                 result = page.evaluate(
                     CLICK_DROPDOWN_OPTION_JS,
-                    {"answers": answer_candidates, "triggerIdx": str(dd["index"])})
+                    {"answers": [answer], "triggerIdx": str(dd["index"])})
 
                 if result and result.get("clicked"):
                     print(f"     >> Custom dropdown: {label[:45]} -> {result.get('matched', '?')}")
@@ -1197,27 +1321,24 @@ def fill_dropdowns_sweep(page, profile):
                 else:
                     # Try Playwright text-based click as last resort
                     pw_clicked = False
-                    for answer in answer_candidates:
-                        try:
-                            opt = page.get_by_text(answer, exact=True)
-                            for j in range(min(opt.count(), 5)):
-                                if opt.nth(j).is_visible():
-                                    opt.nth(j).click()
-                                    pw_clicked = True
-                                    print(f"     >> Custom dropdown (PW): {label[:40]} -> {answer}")
-                                    filled += 1
-                                    break
-                            if pw_clicked:
+                    try:
+                        opt = page.get_by_text(answer, exact=True)
+                        for j in range(min(opt.count(), 5)):
+                            if opt.nth(j).is_visible():
+                                opt.nth(j).click()
+                                pw_clicked = True
+                                print(f"     >> Custom dropdown (PW): {label[:40]} -> {answer}")
+                                filled += 1
                                 break
-                        except Exception:
-                            continue
+                    except Exception:
+                        pass
 
                     if not pw_clicked:
                         page.keyboard.press("Escape")
                         time.sleep(0.2)
                         debug_info = result.get("debug", "") if result else ""
                         print(f"     !! Custom dropdown: no match for {label[:40]}")
-                        print(f"        tried: {answer_candidates}")
+                        print(f"        tried: {answer}")
                         print(f"        debug: {debug_info}")
             except Exception as e:
                 print(f"     !! Custom dropdown error for {label[:40]}: {e}")
