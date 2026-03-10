@@ -424,6 +424,36 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 current_value = el.input_value() or ""
                 if current_value.strip().lower() == answer_str.strip().lower():
                     return True
+
+                # React-select / autocomplete: the <input> is for searching
+                # and may be empty, but the *displayed* value lives in a
+                # sibling span.  Check the parent container's visible text.
+                if not current_value.strip() and selector:
+                    displayed = page.evaluate("""(sel) => {
+                        const el = document.querySelector(sel);
+                        if (!el) return '';
+                        let c = el.parentElement;
+                        for (let i = 0; i < 5 && c; i++) {
+                            const cls = (c.className || '').toString().toLowerCase();
+                            if (cls.includes('select') || cls.includes('combobox') ||
+                                cls.includes('dropdown') || cls.includes('autocomplete')) {
+                                const v = c.querySelector(
+                                    '[class*="singleValue"], [class*="value"]:not(input), ' +
+                                    '[class*="selected"], [class*="display"]');
+                                if (v) return v.textContent.trim();
+                                // fallback: any direct-child span with text
+                                for (const ch of c.querySelectorAll(':scope > div > span, :scope > span')) {
+                                    const t = ch.textContent.trim();
+                                    if (t && t.length > 1 && t !== '--') return t;
+                                }
+                            }
+                            c = c.parentElement;
+                        }
+                        return '';
+                    }""", selector)
+                    if displayed and displayed.strip().lower() == answer_str.strip().lower():
+                        print(f"      >> Skipping (react-select already shows: {displayed})")
+                        return True
             except Exception:
                 pass
 
@@ -458,11 +488,24 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     el.press("Enter")
                     time.sleep(0.3)
                 elif is_email and selector:
-                    # Email: type for keyboard events, then native setter
-                    # to sync React's internal state (fixes validation)
-                    el.fill("")
-                    el.type(answer_str, delay=20)
-                    time.sleep(0.3)
+                    # Email: avoid clearing a form-auto-filled value.
+                    # If already correct → just fire validation events.
+                    # Otherwise → type it once (no fill("") clear first).
+                    cur = ""
+                    try:
+                        cur = el.input_value() or ""
+                    except Exception:
+                        pass
+
+                    if cur.strip().lower() == answer_str.strip().lower():
+                        # Already correct — just retrigger validation
+                        print(f"      >> Email already correct, triggering validation")
+                    else:
+                        # Type the email fresh (only type, no clear)
+                        el.type(answer_str, delay=20)
+                        time.sleep(0.3)
+
+                    # Native setter + events to sync React state & clear errors
                     try:
                         page.evaluate("""(args) => {
                             const el = document.querySelector(args.selector);
@@ -662,23 +705,23 @@ def fill_toggle_buttons_sweep(page, profile):
 # analyzes their structure, determines the right answer, and fills them.
 
 DROPDOWN_ANSWER_RULES = {
-    # keyword in question → answer to select
-    "salary type": "Yearly",
-    "desired salary type": "Yearly",
-    "pay type": "Yearly",
-    "compensation type": "Yearly",
-    "applied for a job": "No",
-    "applied with us": "No",
-    "applied before": "No",
-    "worked with us": "No",
-    "worked here before": "No",
-    "have you applied": "No",
-    "have you worked": "No",
-    "permission to text": "Yes",
-    "sms": "Yes",
-    "text you": "Yes",
-    "text message": "Yes",
-    "contact you via text": "Yes",
+    # keyword in question → list of acceptable answers (tried in order)
+    "salary type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
+    "desired salary type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
+    "pay type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
+    "compensation type": ["Yearly", "Annual", "Annually", "Year", "Salary"],
+    "applied for a job": ["No"],
+    "applied with us": ["No"],
+    "applied before": ["No"],
+    "worked with us": ["No"],
+    "worked here before": ["No"],
+    "have you applied": ["No"],
+    "have you worked": ["No"],
+    "permission to text": ["Yes"],
+    "sms": ["Yes"],
+    "text you": ["Yes"],
+    "text message": ["Yes"],
+    "contact you via text": ["Yes"],
 }
 
 # JS that inspects the DOM to find ALL dropdown-like elements
@@ -887,76 +930,81 @@ FIND_CUSTOM_DROPDOWNS_JS = """() => {
 }"""
 
 # JS that finds and clicks a dropdown option after the dropdown is opened.
-# Looks for visible elements with exact text match, prioritizing elements
-# inside popup/overlay containers (absolutely/fixed positioned).
-CLICK_DROPDOWN_OPTION_JS = """(answer) => {
-    // Priority 1: ARIA role="option" with matching text
-    const roleOptions = document.querySelectorAll('[role="option"]');
-    for (const opt of roleOptions) {
-        if (opt.textContent.trim() === answer) {
-            const rect = opt.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
-                opt.click();
-                return true;
-            }
-        }
-    }
+# Uses fuzzy matching: exact → starts-with → contains → partial.
+# Returns {clicked: bool, debug: str} with info about what was found.
+CLICK_DROPDOWN_OPTION_JS = """(args) => {
+    const answers = args.answers;   // list of acceptable answers
+    const debug = [];
 
-    // Priority 2: li / option-class elements with matching text
-    const listItems = document.querySelectorAll(
-        'li, [class*="option"], [class*="item"], [class*="choice"]');
-    for (const li of listItems) {
-        if (li.textContent.trim() === answer) {
-            const rect = li.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
-                const style = window.getComputedStyle(li);
-                if (style.display !== 'none' && style.visibility !== 'hidden') {
-                    li.click();
-                    return true;
-                }
-            }
-        }
-    }
+    // Collect ALL visible candidate elements that could be options
+    const candidates = [];
 
-    // Priority 3: Any visible leaf-text element, prefer popup containers
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    const popupCandidates = [];
-    const otherCandidates = [];
-    while (walker.nextNode()) {
-        const node = walker.currentNode;
-        if (node.textContent.trim() !== answer) continue;
-        const el = node.parentElement;
-        if (!el) continue;
+    // Gather from role="option", li, class*="option", etc.
+    const selectorList = '[role="option"], [role="menuitem"], li, [class*="option"], [class*="item"], [class*="choice"]';
+    document.querySelectorAll(selectorList).forEach(el => {
+        const text = el.textContent.trim();
+        if (!text || text === '--') return;
         const rect = el.getBoundingClientRect();
-        if (rect.width <= 0 || rect.height <= 0) continue;
+        if (rect.width <= 0 || rect.height <= 0) return;
         const style = window.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden') continue;
+        if (style.display === 'none' || style.visibility === 'hidden') return;
 
-        // Check if it's in a popup/overlay container
+        // Check if in a popup/overlay
         let isPopup = false;
-        let parent = el.parentElement;
-        for (let i = 0; i < 5 && parent; i++) {
-            const ps = window.getComputedStyle(parent);
-            const role = parent.getAttribute('role');
+        let p = el.parentElement;
+        for (let i = 0; i < 5 && p; i++) {
+            const ps = window.getComputedStyle(p);
+            const role = p.getAttribute('role');
             if (ps.position === 'absolute' || ps.position === 'fixed' ||
                 role === 'listbox' || role === 'menu' ||
-                parent.className.toString().match(/dropdown|popup|overlay|menu|popover/i)) {
-                isPopup = true;
-                break;
+                (p.className || '').toString().match(/dropdown|popup|overlay|menu|popover|modal/i)) {
+                isPopup = true; break;
             }
-            parent = parent.parentElement;
+            p = p.parentElement;
         }
+        candidates.push({el, text, isPopup});
+    });
 
-        if (isPopup) popupCandidates.push(el);
-        else otherCandidates.push(el);
+    debug.push('Found ' + candidates.length + ' option candidates');
+    const popupOpts = candidates.filter(c => c.isPopup);
+    debug.push('Popup options: ' + popupOpts.map(c => c.text).join(', '));
+    if (popupOpts.length === 0) {
+        debug.push('Non-popup: ' + candidates.slice(0, 10).map(c => c.text).join(', '));
     }
 
-    // Click popup options first (most likely the opened dropdown)
-    for (const el of popupCandidates) { el.click(); return true; }
-    // Fallback: other visible matches
-    if (otherCandidates.length > 0) { otherCandidates[0].click(); return true; }
+    // Search targets: prefer popup candidates, fall back to all
+    const searchPool = popupOpts.length > 0 ? popupOpts : candidates;
 
-    return false;
+    // Try each answer candidate with progressively fuzzier matching
+    for (const answer of answers) {
+        const ansLower = answer.toLowerCase().trim();
+
+        // Pass 1: exact match
+        for (const c of searchPool) {
+            if (c.text === answer || c.text.toLowerCase().trim() === ansLower) {
+                c.el.click();
+                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
+            }
+        }
+        // Pass 2: option starts with answer or answer starts with option
+        for (const c of searchPool) {
+            const tl = c.text.toLowerCase().trim();
+            if (tl.startsWith(ansLower) || ansLower.startsWith(tl)) {
+                c.el.click();
+                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
+            }
+        }
+        // Pass 3: contains (either direction)
+        for (const c of searchPool) {
+            const tl = c.text.toLowerCase().trim();
+            if (tl.includes(ansLower) || ansLower.includes(tl)) {
+                c.el.click();
+                return {clicked: true, matched: c.text, debug: debug.join(' | ')};
+            }
+        }
+    }
+
+    return {clicked: false, matched: null, debug: debug.join(' | ')};
 }"""
 
 
@@ -990,27 +1038,32 @@ def fill_dropdowns_sweep(page, profile):
 
             label_lower = dd["label"].lower().replace("*", "").strip()
 
-            # Determine answer from keyword rules
-            answer = None
-            for keyword, ans in DROPDOWN_ANSWER_RULES.items():
+            # Determine answer candidates from keyword rules
+            answer_candidates = None
+            for keyword, ans_list in DROPDOWN_ANSWER_RULES.items():
                 if keyword in label_lower:
-                    answer = ans
+                    answer_candidates = ans_list
                     break
 
-            if not answer:
+            if not answer_candidates:
                 continue
 
-            # Find the best matching option
+            # Find the best matching option (try each candidate)
             best_option = None
-            answer_lower = answer.lower()
-            for opt in dd["options"]:
-                opt_lower = opt["text"].lower().strip()
-                if opt_lower == answer_lower or answer_lower in opt_lower or opt_lower in answer_lower:
-                    best_option = opt
+            answer = answer_candidates[0]  # default for logging
+            for candidate in answer_candidates:
+                cand_lower = candidate.lower()
+                for opt in dd["options"]:
+                    opt_lower = opt["text"].lower().strip()
+                    if opt_lower == cand_lower or cand_lower in opt_lower or opt_lower in cand_lower:
+                        best_option = opt
+                        answer = candidate
+                        break
+                if best_option:
                     break
 
             if not best_option:
-                print(f"     !! No matching option for '{answer}' in {dd['label'][:40]}")
+                print(f"     !! No matching option for {answer_candidates} in {dd['label'][:40]}")
                 continue
 
             # Fill the dropdown
@@ -1083,13 +1136,13 @@ def fill_dropdowns_sweep(page, profile):
 
             # Match label against answer rules
             label_lower = label.lower().replace('*', '').strip()
-            answer = None
-            for keyword, ans in DROPDOWN_ANSWER_RULES.items():
+            answer_candidates = None
+            for keyword, ans_list in DROPDOWN_ANSWER_RULES.items():
                 if keyword in label_lower:
-                    answer = ans
+                    answer_candidates = ans_list
                     break
 
-            if not answer:
+            if not answer_candidates:
                 print(f"        - {label[:50]} - no matching rule")
                 continue
 
@@ -1098,18 +1151,22 @@ def fill_dropdowns_sweep(page, profile):
                 page.mouse.click(dd['clickX'], dd['clickY'])
                 time.sleep(0.6)
 
-                # Try to find and click the matching option
-                option_clicked = page.evaluate(CLICK_DROPDOWN_OPTION_JS, answer)
+                # Try to find and click the matching option (fuzzy matching)
+                result = page.evaluate(
+                    CLICK_DROPDOWN_OPTION_JS,
+                    {"answers": answer_candidates})
 
-                if option_clicked:
-                    print(f"     >> Custom dropdown: {label[:55]} -> {answer}")
+                if result and result.get("clicked"):
+                    print(f"     >> Custom dropdown: {label[:45]} -> {result.get('matched', '?')}")
                     filled += 1
                     time.sleep(0.3)
                 else:
-                    # Close the dropdown and try alternate answer casing
                     page.keyboard.press("Escape")
                     time.sleep(0.2)
-                    print(f"     !! Custom dropdown: option '{answer}' not found for {label[:40]}")
+                    debug_info = result.get("debug", "") if result else ""
+                    print(f"     !! Custom dropdown: no match for {label[:40]}")
+                    print(f"        tried: {answer_candidates}")
+                    print(f"        debug: {debug_info}")
             except Exception as e:
                 print(f"     !! Custom dropdown click error: {e}")
                 try:
