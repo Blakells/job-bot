@@ -26,6 +26,47 @@ REACT_NATIVE_FILL_JS = """(args) => {
     el.dispatchEvent(new Event('blur', {bubbles: true}));
 }"""
 
+# JavaScript-based select filling — works even on hidden <select> elements
+# and custom-styled dropdowns that overlay the native select.
+SELECT_JS_FILL = """(args) => {
+    const el = document.querySelector(args.selector);
+    if (!el || el.tagName !== 'SELECT') return false;
+
+    const answer = (args.answer || '').toLowerCase().trim();
+
+    // Try exact match first, then fuzzy
+    let bestOption = null;
+    let bestScore = 0;
+    for (const opt of el.options) {
+        const text = opt.text.toLowerCase().trim();
+        const val = opt.value.toLowerCase().trim();
+
+        // Skip placeholder options
+        if (val === '' || text === '--' || text === '' || text === 'select' || text === 'choose') continue;
+
+        // Exact match
+        if (text === answer || val === answer) { bestOption = opt; bestScore = 100; break; }
+
+        // Containment match
+        if (text.includes(answer) || answer.includes(text)) {
+            const score = Math.min(text.length, answer.length) / Math.max(text.length, answer.length) * 50;
+            if (score > bestScore) { bestOption = opt; bestScore = score; }
+        }
+        if (val.includes(answer) || answer.includes(val)) {
+            const score = Math.min(val.length, answer.length) / Math.max(val.length, answer.length) * 40;
+            if (score > bestScore) { bestOption = opt; bestScore = score; }
+        }
+    }
+
+    if (bestOption) {
+        el.value = bestOption.value;
+        el.dispatchEvent(new Event('change', {bubbles: true}));
+        el.dispatchEvent(new Event('input', {bubbles: true}));
+        return bestOption.text;
+    }
+    return false;
+}"""
+
 
 def fill_text_field(page, field_id, answer):
     """Fill a standard text input by ID."""
@@ -325,17 +366,19 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
         if el.count() == 0:
             return False
 
-        if field_type == "select-one" or field.get("tag") == "select":
-            try:
-                el.select_option(label=answer)
-                return True
-            except Exception:
-                pass
-            try:
-                el.select_option(value=answer)
-                return True
-            except Exception:
-                pass
+        if field_type in ("select-one", "select-multiple") or field.get("tag") == "select":
+            # Strategy 1: Playwright select_option (standard visible selects)
+            for attempt_fn in [
+                lambda: el.select_option(label=answer),
+                lambda: el.select_option(value=answer),
+            ]:
+                try:
+                    attempt_fn()
+                    return True
+                except Exception:
+                    pass
+
+            # Strategy 2: Fuzzy option match via Playwright
             try:
                 options = field.get("options", [])
                 answer_lower = answer.lower().strip()
@@ -345,6 +388,16 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                         return True
             except Exception:
                 pass
+
+            # Strategy 3: JavaScript direct set (works on hidden/custom selects)
+            try:
+                result = page.evaluate(SELECT_JS_FILL, {"selector": selector, "answer": answer})
+                if result:
+                    print(f"      >> Used JS select fill -> {result}")
+                    return True
+            except Exception:
+                pass
+
             return False
 
         elif field_type == "checkbox":
@@ -363,12 +416,22 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
 
         else:
             # text, email, tel, number, textarea, url
+            answer_str = str(answer)
             try:
                 el.click(timeout=5000)
-                el.fill(str(answer))
+                time.sleep(0.1)
+                if len(answer_str) < 200:
+                    # Short text: use type() to fire real keyboard events.
+                    # This triggers React validation (onChange, onKeyUp, etc.)
+                    # that Playwright's .fill() alone does not.
+                    el.press("Control+a")
+                    el.type(answer_str, delay=12)
+                else:
+                    # Long text: use fill() for speed, then nudge React
+                    el.fill(answer_str)
             except Exception:
                 try:
-                    page.evaluate(REACT_NATIVE_FILL_JS, {"selector": selector, "value": str(answer)})
+                    page.evaluate(REACT_NATIVE_FILL_JS, {"selector": selector, "value": answer_str})
                     print(f"      >> Used JS fill (overlay was blocking)")
                 except Exception as js_err:
                     print(f"      !! JS fill also failed: {js_err}")
