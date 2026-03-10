@@ -581,19 +581,16 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     time.sleep(0.3)
                 elif is_email and selector:
                     # Email: the resume upload may auto-fill a different
-                    # email (e.g. alex.carter@email.com).  We MUST clear
-                    # first, then type the correct one fresh.
-                    # 1) Select all + Delete to clear any pre-filled value
-                    page.keyboard.press("Control+a")
-                    time.sleep(0.05)
-                    page.keyboard.press("Meta+a")   # macOS
-                    time.sleep(0.05)
-                    page.keyboard.press("Backspace")
+                    # email (e.g. alex.carter@email.com from the resume).
+                    # Strategy: triple-click to select all text, then type
+                    # the correct email which replaces the selection.
+                    # Each keystroke fires real input events so React
+                    # validates properly.
+                    el.click(click_count=3, timeout=3000)  # triple-click = select all
                     time.sleep(0.1)
-                    # 2) Type the email character by character
-                    el.type(answer_str, delay=20)
-                    time.sleep(2)            # let React validate
-                    el.press("Tab")          # move focus away
+                    el.type(answer_str, delay=20)   # replaces selection
+                    time.sleep(2)                    # let React validate
+                    el.press("Tab")                  # unfocus
                     time.sleep(0.3)
                 elif len(answer_str) < 200:
                     # Short text: clear with fill("") then type() for real
@@ -1534,5 +1531,85 @@ def fill_dropdowns_sweep(page, profile):
         import traceback
         print(f"     !! Custom dropdown sweep error: {e}")
         traceback.print_exc()
+
+    # Phase 3: Standard <select> elements with wrong defaults
+    # Some ATS auto-populate education fields from the resume but leave
+    # dropdowns like "Degree Obtained" set to "Other" or a wrong default.
+    # This sweep finds ALL <select> elements and fixes any that can be
+    # improved by _determine_dropdown_answer().
+    try:
+        all_selects = page.evaluate("""() => {
+            const results = [];
+            document.querySelectorAll('select').forEach(sel => {
+                const selectedText = sel.options[sel.selectedIndex]
+                    ? sel.options[sel.selectedIndex].text.trim() : '';
+                const options = Array.from(sel.options)
+                    .map(o => ({text: o.text.trim(), value: o.value}))
+                    .filter(o => o.text && o.text !== '' && o.text !== '--');
+
+                // Find label
+                let label = '';
+                if (sel.id) {
+                    const lbl = document.querySelector('label[for="' + sel.id + '"]');
+                    if (lbl) label = lbl.textContent.replace(/\\*/g, '').trim();
+                }
+                if (!label && sel.name) label = sel.name;
+                if (!label) {
+                    let p = sel.parentElement;
+                    for (let i = 0; i < 4 && p; i++) {
+                        const lbl = p.querySelector('label');
+                        if (lbl && !lbl.contains(sel)) {
+                            label = lbl.textContent.replace(/\\*/g, '').trim();
+                            break;
+                        }
+                        p = p.parentElement;
+                    }
+                }
+
+                const cssSelector = sel.id ? '#' + CSS.escape(sel.id)
+                    : sel.name ? 'select[name="' + sel.name + '"]' : null;
+
+                results.push({
+                    selector: cssSelector,
+                    label: label,
+                    currentValue: selectedText,
+                    options: options,
+                });
+            });
+            return results;
+        }""")
+
+        if all_selects:
+            corrections = 0
+            for sel in all_selects:
+                if not sel['selector'] or not sel['label']:
+                    continue
+                option_texts = [o['text'] for o in sel['options']]
+                better = _determine_dropdown_answer(sel['label'], option_texts, profile)
+                if better and better.lower().strip() != sel['currentValue'].lower().strip():
+                    try:
+                        el = page.locator(sel['selector'])
+                        el.select_option(label=better)
+                        print(f"     >> Select fix: {sel['label'][:40]} '{sel['currentValue']}' -> '{better}'")
+                        filled += 1
+                        corrections += 1
+                        time.sleep(0.2)
+                    except Exception:
+                        # Try by value
+                        for opt in sel['options']:
+                            if opt['text'].lower().strip() == better.lower().strip():
+                                try:
+                                    el.select_option(value=opt['value'])
+                                    print(f"     >> Select fix (val): {sel['label'][:40]} -> '{better}'")
+                                    filled += 1
+                                    corrections += 1
+                                except Exception:
+                                    pass
+                                break
+            if corrections:
+                print(f"     >> Phase 3: corrected {corrections} <select> element(s)")
+
+    except Exception as e:
+        print(f"     !! Select sweep error: {e}")
 
     return filled
