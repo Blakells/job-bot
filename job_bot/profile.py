@@ -158,6 +158,8 @@ def build_answer_map(profile, company):
     state_full = state_full.title() if state_full.islower() else state_full
     location_full = f"{city}, {state_full}, United States" if city else location
     zip_code = profile["personal"].get("zip_code", "")
+    street_address = profile["personal"].get("street_address", "")
+    county = profile["personal"].get("county", city)  # Default county to city name
 
     # Read EEOC values from profile (with sensible defaults)
     eeoc = profile.get("eeoc", {})
@@ -193,8 +195,15 @@ def build_answer_map(profile, company):
         "cover_letter": "COVER_LETTER_FILE",
     }
 
-    salary_str = str(profile.get("salary_range", {}).get("min", ""))
+    salary_min = profile.get("salary_range", {}).get("min", 0)
+    salary_max = profile.get("salary_range", {}).get("max", 0)
+    if salary_min and not salary_max:
+        salary_max = int(salary_min * 1.5)
+    salary_min_str = str(salary_min) if salary_min else ""
+    salary_max_str = str(salary_max) if salary_max else ""
     linkedin_url = profile["personal"].get("linkedin_url", "")
+    if linkedin_url and not linkedin_url.startswith("http"):
+        linkedin_url = "https://www." + linkedin_url if not linkedin_url.startswith("www.") else "https://" + linkedin_url
     portfolio_url = profile["personal"].get("portfolio_url", "")
     github_url = profile["personal"].get("github_url", "")
     summary_text = profile.get("summary", "")
@@ -273,32 +282,40 @@ def build_answer_map(profile, company):
         "most recent company": current_job.get("company", ""),
 
         # Salary
-        "salary": salary_str,
-        "desired salary": salary_str,
-        "salary expectation": salary_str,
-        "salary requirement": salary_str,
-        "expected salary": salary_str,
-        "compensation": salary_str,
-        "desired compensation": salary_str,
-        "minimum salary": salary_str,
-        "pay expectation": salary_str,
+        "minimum desired salary": salary_min_str,
+        "minimum salary": salary_min_str,
+        "maximum desired salary": salary_max_str,
+        "maximum salary": salary_max_str,
+        "salary": salary_min_str,
+        "desired salary": salary_min_str,
+        "salary expectation": salary_min_str,
+        "salary requirement": salary_min_str,
+        "expected salary": salary_min_str,
+        "compensation": salary_min_str,
+        "desired compensation": salary_min_str,
+        "pay expectation": salary_min_str,
 
         # Location / Address — using profile values
-        "city": city,
-        "state": state_full,
-        "state/province": state_full,
-        "zip": zip_code,
-        "zip code": zip_code,
-        "postal code": zip_code,
-        "postcode": zip_code,
+        # NOTE: "country" must come before "state" to avoid "Country United States"
+        # matching "state" as a substring first
         "country": "United States",
-        "location": location_full,
-        "address": location_full,
-        "current location": location_full,
+        "address line": street_address,
+        "street address": street_address,
+        "county": county,
+        "city": city,
+        "state/province": state_full,
         "which state": state_full,
         "what state": state_full,
         "state do you": state_full,
         "state of residence": state_full,
+        "state": state_full,
+        "zip code": zip_code,
+        "postal code": zip_code,
+        "postcode": zip_code,
+        "zip": zip_code,
+        "location": location_full,
+        "address": street_address,
+        "current location": location_full,
         "where are you located": location_full,
         "where do you currently reside": location_full,
         "where are you based": location_full,

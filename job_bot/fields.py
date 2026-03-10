@@ -395,6 +395,17 @@ def claude_map_fields(fields, profile, job):
     state_raw = location.split(",")[-1].strip().lower()
     state_full = STATE_MAP.get(state_raw, state_raw).title()
     zip_code = profile["personal"].get("zip_code", "")
+    street_address = profile["personal"].get("street_address", "")
+    county = profile["personal"].get("county", city)
+    salary_min = profile.get("salary_range", {}).get("min", 0)
+    salary_max = profile.get("salary_range", {}).get("max", 0)
+    if salary_min and not salary_max:
+        salary_max = int(salary_min * 1.5)
+
+    # Normalize LinkedIn URL for forms that require full URL
+    linkedin_url = profile["personal"].get("linkedin_url", "")
+    if linkedin_url and not linkedin_url.startswith("http"):
+        linkedin_url = "https://www." + linkedin_url if not linkedin_url.startswith("www.") else "https://" + linkedin_url
 
     eeoc = profile.get("eeoc", {})
     gender = eeoc.get("gender", "Male")
@@ -405,7 +416,7 @@ def claude_map_fields(fields, profile, job):
 Name: {name}
 Email: {email}
 Phone: {phone}
-Location: {location} (City: {city}, State: {state_full}, Country: United States)
+Location: {location} (Street: {street_address}, City: {city}, County: {county}, State: {state_full}, Zip: {zip_code}, Country: United States)
 LinkedIn: {linkedin}
 Portfolio: {portfolio}
 GitHub: {github}
@@ -441,11 +452,17 @@ CRITICAL RULES:
 - For "how did you hear" type questions: "LinkedIn"
 - For EEOC gender: "{gender}"
 - For EEOC/demographic fields (race, veteran, disability): use the closest declining option
+- For address line / street address fields: "{street_address}"
+- For county fields: "{county}"
 - For city fields: just "{city}"
 - For state fields: "{state_full}"
 - For country fields: "United States"
 - For zip code fields: "{zip_code}"
-- For salary/compensation: "{salary}"
+- For minimum salary / salary fields: "{salary_min}"
+- For maximum salary fields: "{salary_max}"
+- For salary type fields: "Yearly" or "Annual" (pick the matching option)
+- For "have you applied before" type fields: "No"
+- For SMS/text permission fields: "Yes"
 - For years of experience: "{years}"
 - Do NOT fabricate information or make up answers
 
@@ -454,9 +471,11 @@ Return ONLY the JSON object, no explanation.""".format(
         email=profile["personal"].get("email", ""),
         phone=profile["personal"].get("phone", ""),
         location=location,
+        street_address=street_address,
         city=city,
+        county=county,
         state_full=state_full,
-        linkedin=profile["personal"].get("linkedin_url", ""),
+        linkedin=linkedin_url,
         portfolio=profile["personal"].get("portfolio_url", ""),
         github=profile["personal"].get("github_url", ""),
         years=profile.get("years_of_experience", 0),
@@ -469,7 +488,8 @@ Return ONLY the JSON object, no explanation.""".format(
         summary=profile.get("summary", "")[:300],
         title=job.get("title", ""),
         company=job.get("company", ""),
-        salary=str(profile.get("salary_range", {}).get("min", "")),
+        salary_min=str(salary_min) if salary_min else "",
+        salary_max=str(salary_max) if salary_max else "",
         gender=gender,
         zip_code=zip_code,
         fields="\n".join(field_descriptions),

@@ -4,6 +4,8 @@
     "email": "alex.carter@gmail.com",
     "phone": "(843) 555-0192",
     "location": "Florence, SC",
+    "street_address": "123 Elm Street",
+    "county": "Florence",
     "zip_code": "29501",
     "linkedin_url": "linkedin.com/in/alexjcarter",
     "portfolio_url": "",

@@ -419,19 +419,28 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
         if not answer:
             loc_clues = f"{flabel} {fplaceholder} {fid} {fname}"
             helper_clues = fhelper
+            street_address = profile["personal"].get("street_address", "")
+            county = profile["personal"].get("county", city)
 
-            if any(kw in loc_clues for kw in ["city", "town"]):
+            if "address line" in loc_clues or "street" in loc_clues:
+                if "2" in loc_clues or "apt" in loc_clues or "suite" in loc_clues:
+                    answer = ""  # Address Line 2 — leave blank unless user has apt/suite
+                else:
+                    answer = street_address
+            elif "county" in loc_clues and "country" not in loc_clues:
+                answer = county
+            elif any(kw in loc_clues for kw in ["country", "nation"]):
+                answer = "United States"
+            elif any(kw in loc_clues for kw in ["city", "town"]):
                 if "state" not in loc_clues and "country" not in loc_clues:
                     answer = city
             elif any(kw in loc_clues for kw in ["state", "province", "region"]):
                 if "country" not in loc_clues:
                     answer = state_full
-            elif any(kw in loc_clues for kw in ["country", "nation"]):
-                answer = "United States"
             elif "zip" in loc_clues or "postal" in loc_clues or "postcode" in loc_clues:
                 answer = zip_code
             elif any(kw in loc_clues for kw in ["address", "location"]):
-                answer = location_full
+                answer = street_address or location_full
 
         # 8. Toggle button auto-mapping
         if not answer and ftype == "toggle":
