@@ -147,7 +147,16 @@
     "Education",
     "Managed Security Services"
   ],
-  "education": [],
+  "education": [
+    {
+      "degree": "Bachelor's",
+      "field_of_study": "Computer Information Systems",
+      "school": "Francis Marion University",
+      "location": "Florence, SC",
+      "graduation_date": "May 2020",
+      "gpa": "3.6"
+    }
+  ],
   "certifications": [
     "CompTIA Security+ - CompTIA - 2021",
     "Certified Ethical Hacker (CEH) - EC-Council - 2022",
