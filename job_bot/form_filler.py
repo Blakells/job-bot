@@ -14,26 +14,63 @@ def prescan_page_with_scrapling(page):
     """
     Pre-scan the full page DOM with scrapling.
 
+    Uses a TOP-DOWN approach: only inputs with role="combobox" or
+    aria-autocomplete are react-select.  This avoids falsely tagging
+    regular text inputs that happen to share a wrapper div.
+
     Returns a dict keyed by CSS selector with:
       - is_react_select: bool
       - displayed_value: str  (for react-select components)
       - input_value: str      (from the value attribute)
-
-    Also prints a summary of what was found.
     """
     html = page.content()
     doc = Selector(html)
 
-    field_info = {}
+    # ── Step 1: Identify react-select inputs by their attributes ────────
+    # Only inputs with role="combobox" or aria-autocomplete are part of
+    # react-select / autocomplete components.  Walk up a few levels from
+    # each to find the displayed value (in a sibling singleValue div).
+    react_map = {}  # elem_id -> { displayed_value }
 
-    for el in doc.css('input, textarea'):
-        elem_id = el.attrib.get('id', '')
-        elem_name = el.attrib.get('name', '')
-
+    for rs_input in doc.css('input[role="combobox"], input[aria-autocomplete]'):
+        elem_id = rs_input.attrib.get('id', '')
+        elem_name = rs_input.attrib.get('name', '')
         if not elem_id and not elem_name:
             continue
 
-        # Build all possible selectors we might look up later
+        displayed_value = ''
+        ancestor = rs_input.parent
+        for depth in range(5):  # react-select inputs are 2-4 levels deep
+            if not ancestor or ancestor.tag in ('body', 'html', 'form'):
+                break
+            for pattern in [
+                '[class*="singleValue"]', '[class*="single-value"]',
+                '[class*="rw-input"]',
+            ]:
+                matches = ancestor.css(pattern)
+                if matches:
+                    text = matches[0].get_all_text(strip=True)
+                    if text and text != '--' and len(text) > 1:
+                        displayed_value = text
+                        break
+            if displayed_value:
+                break
+            ancestor = ancestor.parent
+
+        info = {'displayed_value': displayed_value}
+        if elem_id:
+            react_map[elem_id] = info
+        if elem_name:
+            react_map[elem_name] = info
+
+    # ── Step 2: Map ALL form inputs ─────────────────────────────────────
+    field_info = {}
+    for el in doc.css('input, textarea'):
+        elem_id = el.attrib.get('id', '')
+        elem_name = el.attrib.get('name', '')
+        if not elem_id and not elem_name:
+            continue
+
         selectors = set()
         if elem_id:
             selectors.add(f'#{elem_id}')
@@ -42,79 +79,27 @@ def prescan_page_with_scrapling(page):
             selectors.add(f'[name="{elem_name}"]')
             selectors.add(f'{el.tag}[name="{elem_name}"]')
 
-        # Walk up ancestors to find the OUTERMOST react-select / autocomplete
-        # component root.  We must not stop at inner wrappers (e.g.
-        # "input-container") because the displayed value lives in a sibling.
-        is_react_select = False
-        displayed_value = ''
-        component_root = None
-
-        ancestor = el.parent
-        for depth in range(8):
-            if not ancestor or ancestor.tag in ('body', 'html', 'form'):
-                break
-
-            cls = ancestor.attrib.get('class', '')
-            cls_lower = cls.lower()
-
-            # Detect react-select, custom combobox, Paylocity rw-widget, etc.
-            if any(kw in cls_lower for kw in [
-                'react-select', 'select__', 'combobox',
-                'autocomplete', 'rw-widget', 'rw-dropdown',
-                '-container', 'css-',
-            ]):
-                component_root = ancestor  # keep walking — outermost wins
-
-            ancestor = ancestor.parent
-
-        if component_root:
-            cr_cls = (component_root.attrib.get('class', '') or '').lower()
-            _matches = component_root.css(
-                'input[role="combobox"], input[aria-autocomplete], '
-                '[class*="Input"], [class*="input-container"]'
-            )
-            has_input = _matches[0] if _matches else None
-            if has_input or 'react-select' in cr_cls or 'rw-widget' in cr_cls:
-                is_react_select = True
-
-                # Find displayed value WITHIN this component only
-                for pattern in [
-                    '[class*="singleValue"]',
-                    '[class*="single-value"]',
-                    '[class*="rw-input"]',
-                ]:
-                    _val_matches = component_root.css(pattern)
-                    value_el = _val_matches[0] if _val_matches else None
-                    if value_el:
-                        text = value_el.get_all_text(strip=True)
-                        if text and text != '--' and len(text) > 1:
-                            displayed_value = text
-                            break
-
-        input_value = el.attrib.get('value', '')
+        # Check if this input was identified as react-select in Step 1
+        rs_info = react_map.get(elem_id) or react_map.get(elem_name)
 
         info = {
-            'is_react_select': is_react_select,
-            'displayed_value': displayed_value,
-            'input_value': input_value,
+            'is_react_select': bool(rs_info),
+            'displayed_value': rs_info['displayed_value'] if rs_info else '',
+            'input_value': el.attrib.get('value', ''),
             'tag': el.tag,
             'type': el.attrib.get('type', 'text'),
         }
-
         for sel in selectors:
             field_info[sel] = info
 
-    # Print summary
-    react_count = sum(1 for v in field_info.values() if v['is_react_select'])
-    prefilled_react = [(s, v) for s, v in field_info.items()
-                       if v['is_react_select'] and v['displayed_value']
-                       and s.startswith('#')]  # dedupe — only #id selectors
-
-    print(f"\n  >> Scrapling pre-scan: {len(field_info)} field selector(s) mapped")
-    if prefilled_react:
-        print(f"     React-select components with values:")
-        for sel, info in prefilled_react:
-            print(f"       {sel} → '{info['displayed_value']}'")
+    # ── Print summary ───────────────────────────────────────────────────
+    react_selects = [(s, v) for s, v in field_info.items()
+                     if v['is_react_select'] and s.startswith('#')]
+    print(f"\n  >> Scrapling pre-scan: {len(field_info)} selector(s), "
+          f"{len(react_selects)} react-select(s)")
+    for sel, info in react_selects:
+        val = info['displayed_value'] or '(empty/placeholder)'
+        print(f"       {sel} → '{val}'")
 
     return field_info
 
@@ -624,10 +609,19 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                                 bubbles: true, inputType: 'insertText', data: args.value
                             }));
                             el.dispatchEvent(new Event('change', {bubbles: true}));
+                            // Blur + focus cycle to trigger validation clearing
+                            el.dispatchEvent(new FocusEvent('blur', {bubbles: true}));
+                            el.dispatchEvent(new FocusEvent('focusout', {bubbles: true}));
                         }""", {"selector": selector, "value": answer_str})
                     except Exception:
                         pass
-                    time.sleep(0.5)
+                    time.sleep(0.3)
+                    # Tab away and back to mimic real user unfocusing
+                    try:
+                        el.press("Tab")
+                        time.sleep(0.2)
+                    except Exception:
+                        pass
                 elif len(answer_str) < 200:
                     # Short text: clear with fill("") then type() for real
                     # keyboard events (triggers React validation).
@@ -829,8 +823,12 @@ def _determine_dropdown_answer(label, available_options, profile):
     opts_lower = [o.lower().strip() for o in available_options]
 
     # ── 1. Yes/No dropdown detection ──────────────────────────────────────
-    yes_opts = [o for o in available_options if o.strip().lower() in ('yes', 'y')]
-    no_opts = [o for o in available_options if o.strip().lower() in ('no', 'n')]
+    # Strip trailing asterisks/symbols that some ATS add (e.g. "Yes*")
+    import re as _re
+    def _clean(s):
+        return _re.sub(r'[^a-z]', '', s.strip().lower())
+    yes_opts = [o for o in available_options if _clean(o) in ('yes', 'y')]
+    no_opts = [o for o in available_options if _clean(o) in ('no', 'n')]
 
     if yes_opts and no_opts:
         for kw in YES_RULES:
@@ -891,6 +889,38 @@ def _determine_dropdown_answer(label, available_options, profile):
                 opt_lower = opt.lower().strip()
                 if answer_lower in opt_lower or opt_lower in answer_lower:
                     return opt
+
+    # ── 3. State dropdown (address or education) ────────────────────────
+    if label_lower in ('state', 'state/province', 'province'):
+        personal = profile.get("personal", {})
+        loc = personal.get("location", "")
+        parts = [p.strip() for p in loc.split(",")]
+        state_abbr = parts[1].strip().lower() if len(parts) > 1 else ""
+        from job_bot.config import STATE_MAP
+        state_full = STATE_MAP.get(state_abbr, state_abbr).title()
+        if state_full:
+            for opt in available_options:
+                if opt.lower().strip() == state_full.lower():
+                    return opt
+            for opt in available_options:
+                if state_full.lower() in opt.lower() or opt.lower() in state_full.lower():
+                    return opt
+
+    # ── 4. School Type / Education Level ────────────────────────────────
+    if any(kw in label_lower for kw in ['school type', 'education level',
+                                         'degree type', 'education type']):
+        edu = profile.get("education", [])
+        if edu and isinstance(edu, list) and len(edu) > 0:
+            # If profile has education data, try to match
+            pass  # Would need mapping from degree to school type
+        # Default: prefer "College / University" (4-year) over others
+        for opt in available_options:
+            if 'university' in opt.lower():
+                return opt
+        for opt in available_options:
+            ol = opt.lower()
+            if 'college' in ol and 'community' not in ol and 'vocational' not in ol:
+                return opt
 
     return None
 
@@ -1179,8 +1209,56 @@ CLICK_DROPDOWN_OPTION_JS = """(args) => {
 # Returns a deduplicated list of option texts sorted by proximity to the trigger.
 READ_DROPDOWN_OPTIONS_JS = """(triggerIdx) => {
     const trigger = document.querySelector('[data-jobbot-dd="' + triggerIdx + '"]');
-    const triggerRect = trigger ? trigger.getBoundingClientRect() : {x: 0, y: 0};
+    if (!trigger) return [];
 
+    // ── Strategy 1: ARIA role="option" elements (most reliable) ────────
+    // Paylocity rw-widget dropdowns use <li role="option"> inside a
+    // <ul role="listbox">.  If we find a visible listbox near the trigger,
+    // use ONLY its options — no guessing.
+    const listboxes = document.querySelectorAll('[role="listbox"]');
+    for (const lb of listboxes) {
+        const rect = lb.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        const style = window.getComputedStyle(lb);
+        if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+        const opts = lb.querySelectorAll('[role="option"]');
+        if (opts.length === 0) continue;
+
+        const texts = [];
+        const seen = new Set();
+        for (const opt of opts) {
+            const t = (opt.textContent || '').trim();
+            if (t && !seen.has(t.toLowerCase())) {
+                seen.add(t.toLowerCase());
+                texts.push(t);
+            }
+        }
+        if (texts.length >= 2) return texts.slice(0, 50);
+    }
+
+    // ── Strategy 2: rw-list items (Paylocity-specific fallback) ────────
+    const rwLists = document.querySelectorAll('.rw-list, [class*="rw-list"]');
+    for (const rwList of rwLists) {
+        const rect = rwList.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        const items = rwList.querySelectorAll('li, [class*="rw-list-option"]');
+        if (items.length === 0) continue;
+
+        const texts = [];
+        const seen = new Set();
+        for (const item of items) {
+            const t = (item.textContent || '').trim();
+            if (t && t !== '--' && !seen.has(t.toLowerCase())) {
+                seen.add(t.toLowerCase());
+                texts.push(t);
+            }
+        }
+        if (texts.length >= 2) return texts.slice(0, 50);
+    }
+
+    // ── Strategy 3: generic proximity search (last resort) ─────────────
+    const triggerRect = trigger.getBoundingClientRect();
     const options = [];
     const allEls = document.getElementsByTagName('*');
     for (let i = 0; i < allEls.length; i++) {
@@ -1197,32 +1275,26 @@ READ_DROPDOWN_OPTIONS_JS = """(triggerIdx) => {
         const style = window.getComputedStyle(el);
         if (style.display === 'none' || style.visibility === 'hidden') continue;
 
-        // Only consider elements near/below the trigger
         const dy = rect.y - triggerRect.y;
         if (dy < -30) continue;
         const dx = Math.abs(rect.x - triggerRect.x);
-        if (dx > 500) continue;
+        if (dx > 400) continue;
 
-        const dist = dx + Math.abs(dy);
-
-        // Check if in a popup/overlay container (strongly prefer these)
         const isInPopup = !!el.closest(
-            '[class*="popup"], [class*="dropdown"], [class*="list"], ' +
+            '[class*="popup"], [class*="dropdown-menu"], ' +
             '[class*="menu"], [class*="overlay"], [class*="panel"], ' +
             '[role="listbox"], [role="menu"]'
         );
 
-        options.push({text: directText, dist: dist, isInPopup: isInPopup});
+        options.push({text: directText, dist: dx + Math.abs(dy), isInPopup});
     }
 
-    // Sort by distance, strongly prefer popup items
     options.sort((a, b) => {
-        const aScore = (a.isInPopup ? 0 : 5000) + a.dist;
-        const bScore = (b.isInPopup ? 0 : 5000) + b.dist;
-        return aScore - bScore;
+        const aS = (a.isInPopup ? 0 : 5000) + a.dist;
+        const bS = (b.isInPopup ? 0 : 5000) + b.dist;
+        return aS - bS;
     });
 
-    // Deduplicate and return
     const seen = new Set();
     const unique = [];
     for (const opt of options) {
@@ -1233,7 +1305,6 @@ READ_DROPDOWN_OPTIONS_JS = """(triggerIdx) => {
             if (unique.length >= 25) break;
         }
     }
-
     return unique;
 }"""
 
