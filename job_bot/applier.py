@@ -21,6 +21,7 @@ from job_bot.react_select import fill_react_select
 from job_bot.form_filler import (
     fill_text_field, upload_file, fill_generic_field,
     fill_toggle_buttons_sweep, fill_dropdowns_sweep,
+    prescan_page_with_scrapling,
 )
 
 
@@ -562,6 +563,10 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
     filled = 0
     failed = []
 
+    # Pre-scan the page with scrapling to detect pre-filled react-selects
+    # and other component structures before any interaction.
+    prescan = prescan_page_with_scrapling(page)
+
     for i, f in enumerate(fields):
         answer = all_answers.get(str(i))
         if not answer or answer == "SKIP_FIELD":
@@ -576,7 +581,7 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
             else:
                 continue
 
-        success = fill_generic_field(page, f, answer, resume_path, cover_letter_path)
+        success = fill_generic_field(page, f, answer, resume_path, cover_letter_path, prescan=prescan)
         if success:
             filled += 1
             label = f.get("label", f.get("name", ""))[:40]

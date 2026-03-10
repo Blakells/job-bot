@@ -2,6 +2,115 @@
 
 import time
 from pathlib import Path
+from scrapling import Adaptor
+
+
+# ── Scrapling page pre-scan ──────────────────────────────────────────────────
+# Captures the full DOM once and analyzes all form elements BEFORE any
+# interaction.  This replaces fragile per-field JS queries that walk up the
+# DOM and accidentally match unrelated elements.
+
+def prescan_page_with_scrapling(page):
+    """
+    Pre-scan the full page DOM with scrapling.
+
+    Returns a dict keyed by CSS selector with:
+      - is_react_select: bool
+      - displayed_value: str  (for react-select components)
+      - input_value: str      (from the value attribute)
+
+    Also prints a summary of what was found.
+    """
+    html = page.content()
+    doc = Adaptor(html)
+
+    field_info = {}
+
+    for el in doc.css('input, textarea'):
+        elem_id = el.attrib.get('id', '')
+        elem_name = el.attrib.get('name', '')
+
+        if not elem_id and not elem_name:
+            continue
+
+        # Build all possible selectors we might look up later
+        selectors = set()
+        if elem_id:
+            selectors.add(f'#{elem_id}')
+            selectors.add(f'{el.tag}#{elem_id}')
+        if elem_name:
+            selectors.add(f'[name="{elem_name}"]')
+            selectors.add(f'{el.tag}[name="{elem_name}"]')
+
+        # Walk up ancestors to detect react-select / autocomplete components
+        is_react_select = False
+        displayed_value = ''
+
+        ancestor = el.parent
+        for depth in range(8):
+            if not ancestor or ancestor.tag in ('body', 'html', 'form'):
+                break
+
+            cls = ancestor.attrib.get('class', '')
+            cls_lower = cls.lower()
+
+            # Detect react-select, custom combobox, Paylocity rw-widget, etc.
+            if any(kw in cls_lower for kw in [
+                'react-select', 'select__', 'combobox',
+                'autocomplete', 'rw-widget', 'rw-dropdown',
+                '-container', 'css-',
+            ]):
+                # Only treat as react-select if this looks like a component root
+                # (has role="combobox" or specific select classes somewhere inside)
+                has_input = ancestor.css_first(
+                    'input[role="combobox"], input[aria-autocomplete], '
+                    '[class*="Input"], [class*="input-container"]'
+                )
+                if has_input or 'react-select' in cls_lower or 'rw-widget' in cls_lower:
+                    is_react_select = True
+
+                    # Find displayed value WITHIN this component only
+                    for pattern in [
+                        '[class*="singleValue"]',
+                        '[class*="single-value"]',
+                        '[class*="rw-input"]',
+                    ]:
+                        value_el = ancestor.css_first(pattern)
+                        if value_el:
+                            text = value_el.get_all_text(strip=True)
+                            if text and text != '--' and len(text) > 1:
+                                displayed_value = text
+                                break
+                    break  # Stop at the first matching component container
+
+            ancestor = ancestor.parent
+
+        input_value = el.attrib.get('value', '')
+
+        info = {
+            'is_react_select': is_react_select,
+            'displayed_value': displayed_value,
+            'input_value': input_value,
+            'tag': el.tag,
+            'type': el.attrib.get('type', 'text'),
+        }
+
+        for sel in selectors:
+            field_info[sel] = info
+
+    # Print summary
+    react_count = sum(1 for v in field_info.values() if v['is_react_select'])
+    prefilled_react = [(s, v) for s, v in field_info.items()
+                       if v['is_react_select'] and v['displayed_value']
+                       and s.startswith('#')]  # dedupe — only #id selectors
+
+    print(f"\n  >> Scrapling pre-scan: {len(field_info)} field selector(s) mapped")
+    if prefilled_react:
+        print(f"     React-select components with values:")
+        for sel, info in prefilled_react:
+            print(f"       {sel} → '{info['displayed_value']}'")
+
+    return field_info
 
 
 # ── React-compatible JS fill ─────────────────────────────────────────────────
@@ -312,10 +421,13 @@ def fill_toggle_button(page, field, answer):
         return False
 
 
-def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=None):
+def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=None, prescan=None):
     """
     Fill a single form field using generic Playwright actions.
     Works on any website — text inputs, selects, textareas, file uploads.
+
+    prescan: optional dict from prescan_page_with_scrapling() —
+             used to detect pre-filled react-select fields.
     """
     if not answer or answer == "SKIP_FIELD":
         return False
@@ -417,76 +529,47 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
         else:
             # text, email, tel, number, textarea, url
             answer_str = str(answer)
-
-            # Skip if field already has the correct value (avoids breaking
-            # pre-filled react-select/autocomplete fields like Country)
             field_label = field.get("label", "")
+
+            # ── Skip check: prescan (scrapling) + Playwright input_value ──
+            # 1) Scrapling prescan: reliable react-select detection
+            #    (the prescan analyzed the DOM once upfront, scoped to each
+            #     component — no fragile parent-chain walking per field)
+            if prescan and selector:
+                scan = prescan.get(selector)
+                if scan and scan.get('is_react_select') and scan.get('displayed_value'):
+                    displayed = scan['displayed_value']
+                    if displayed.strip().lower() == answer_str.strip().lower():
+                        print(f"      >> Skipping react-select (prescan: '{displayed}')")
+                        return True
+
+            # 2) Playwright input_value: catches regular pre-filled fields
             try:
                 current_value = el.input_value() or ""
                 if current_value.strip().lower() == answer_str.strip().lower():
                     print(f"      >> Skipping (input already has: {current_value[:30]})")
                     return True
-
-                # React-select / autocomplete: the <input> is for searching
-                # and may be empty, but the *displayed* value lives in a
-                # sibling span.  Walk up the DOM without requiring specific
-                # class names — look for value indicators and text matches.
-                if not current_value.strip() and selector:
-                    print(f"      [debug] input empty for '{field_label[:30]}', checking for displayed value...")
-                    displayed = page.evaluate("""(args) => {
-                        const el = document.querySelector(args.selector);
-                        if (!el) return '';
-                        const answer = args.answer.toLowerCase().trim();
-
-                        let c = el.parentElement;
-                        for (let i = 0; i < 8 && c; i++) {
-                            // Strategy 1: class-based value indicators
-                            const v = c.querySelector(
-                                '[class*="singleValue"], [class*="single-value"], ' +
-                                '[class*="selected"]:not([class*="container"]):not(select)');
-                            if (v) {
-                                const t = v.textContent.trim();
-                                if (t && t !== '--' && t.length > 1) return t;
-                            }
-
-                            // Strategy 2: find any sibling/cousin whose direct
-                            // text content matches the expected answer
-                            for (const child of c.querySelectorAll('span, div, p, a, li')) {
-                                if (child.contains(el) || el.contains(child)) continue;
-                                if (child.tagName === 'INPUT' || child.tagName === 'SELECT') continue;
-                                let directText = '';
-                                for (const node of child.childNodes) {
-                                    if (node.nodeType === 3) directText += node.textContent;
-                                }
-                                directText = directText.trim();
-                                if (directText && directText.toLowerCase() === answer) return directText;
-                            }
-
-                            // Don't search past large containers (avoids form-level matches)
-                            if ((c.innerText || '').length > 800) break;
-                            c = c.parentElement;
-                        }
-                        return '';
-                    }""", {"selector": selector, "answer": answer_str})
-                    if displayed:
-                        print(f"      >> Skipping (already shows: {displayed})")
-                        return True
             except Exception:
                 pass
 
             # Detect react-select / autocomplete inputs
             is_autocomplete = False
-            try:
-                role = el.get_attribute("role") or ""
-                aria_auto = el.get_attribute("aria-autocomplete") or ""
-                parent_class = field.get("parentClass", "").lower()
-                if (role == "combobox" or aria_auto
-                        or "react-select" in parent_class
-                        or "autocomplete" in parent_class
-                        or "combobox" in parent_class):
+            if prescan and selector:
+                scan = prescan.get(selector)
+                if scan and scan.get('is_react_select'):
                     is_autocomplete = True
-            except Exception:
-                pass
+            if not is_autocomplete:
+                try:
+                    role = el.get_attribute("role") or ""
+                    aria_auto = el.get_attribute("aria-autocomplete") or ""
+                    parent_class = field.get("parentClass", "").lower()
+                    if (role == "combobox" or aria_auto
+                            or "react-select" in parent_class
+                            or "autocomplete" in parent_class
+                            or "combobox" in parent_class):
+                        is_autocomplete = True
+                except Exception:
+                    pass
 
             # Detect email fields for special React-compatible fill
             is_email = (field_type == 'email' or
