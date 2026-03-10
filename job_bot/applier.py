@@ -651,25 +651,11 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
                 }
             }
             // Check for required empty fields
-            // Skip react-select / autocomplete hidden inputs — their
-            // underlying <input> is always empty; the real value lives
-            // in a sibling div.  Also skip hidden inputs entirely.
             const required = document.querySelectorAll(
                 'input[required], select[required], textarea[required], '
                 + '[aria-required="true"]');
             for (const inp of required) {
                 if (!inp.value || inp.value.trim() === '') {
-                    // Skip hidden inputs and react-select search inputs
-                    if (inp.type === 'hidden') continue;
-                    const role = inp.getAttribute('role') || '';
-                    const ariaAuto = inp.getAttribute('aria-autocomplete') || '';
-                    if (role === 'combobox' || ariaAuto) continue;
-                    // Skip inputs inside react-select containers
-                    if (inp.closest('[class*="react-select"], [class*="css-"][class*="-container"], [class*="rw-widget"]')) continue;
-                    // Skip invisible inputs
-                    const rect = inp.getBoundingClientRect();
-                    if (rect.width <= 0 || rect.height <= 0) continue;
-
                     let lbl = '';
                     if (inp.id) {
                         const l = document.querySelector('label[for="' + inp.id + '"]');
