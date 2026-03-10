@@ -11,9 +11,9 @@ from pathlib import Path
 try:
     from flask import Flask, jsonify, request, render_template_string
 except ImportError:
-    print("Installing flask...")
-    os.system("{} -m pip install flask --break-system-packages -q".format(sys.executable))
-    from flask import Flask, jsonify, request, render_template_string
+    print("Flask is not installed. Install it with:")
+    print(f"  {sys.executable} -m pip install flask")
+    sys.exit(1)
 
 app = Flask(__name__)
 PROFILES_DIR = Path("profiles")

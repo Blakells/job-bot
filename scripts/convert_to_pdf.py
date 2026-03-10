@@ -103,8 +103,23 @@ def text_to_pdf(txt_path, pdf_path):
     doc.build(story)
 
 def main():
-    tailored_dir = Path("outputs/tailored")
-    
+    import argparse
+    parser = argparse.ArgumentParser(description="Convert .txt resumes/cover letters to PDF")
+    parser.add_argument("--input-dir", default=None,
+                        help="Directory with .txt files (default: auto-detect from --profile)")
+    parser.add_argument("--profile", default=None,
+                        help="Profile path (e.g., profiles/alex/profile.json) — auto-detects tailored dir")
+    args = parser.parse_args()
+
+    if args.input_dir:
+        tailored_dir = Path(args.input_dir)
+    elif args.profile:
+        profile_dir = Path(args.profile).parent
+        per_profile = profile_dir / "tailored"
+        tailored_dir = per_profile if per_profile.exists() else Path("outputs/tailored")
+    else:
+        tailored_dir = Path("outputs/tailored")
+
     # Get all .txt files
     txt_files = list(tailored_dir.glob("*.txt"))
     

@@ -30,11 +30,10 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
-# ── Config ───────────────────────────────────────────────────────────────────
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "anthropic/claude-sonnet-4-5"
+from job_bot.ai import ask_claude, parse_json_response
+from job_bot.config import OPENROUTER_API_KEY
 
 PROFILES_DIR = Path("profiles")
 
@@ -261,66 +260,6 @@ def display_discovered_files(classified, other_files):
             print("       {}".format(f.name))
 
     return bool(classified) or bool(other_files)
-
-
-# ── Claude API ───────────────────────────────────────────────────────────────
-
-def ask_claude(prompt, max_tokens=4000, temperature=0.2):
-    """Send a prompt to Claude via OpenRouter and return the response text."""
-    if not OPENROUTER_API_KEY:
-        print("❌ OPENROUTER_API_KEY not set. Run:")
-        print("   export OPENROUTER_API_KEY=your_key")
-        sys.exit(1)
-
-    resp = requests.post(
-        OPENROUTER_BASE,
-        headers={
-            "Authorization": "Bearer {}".format(OPENROUTER_API_KEY),
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        },
-        timeout=60,
-    )
-
-    try:
-        data = resp.json()
-        return data["choices"][0]["message"]["content"].strip()
-    except (KeyError, IndexError):
-        print("  ❌ Claude API error: {}".format(resp.text[:500]))
-        return ""
-
-
-def parse_json_response(raw):
-    """Extract JSON from Claude's response, handling markdown fences."""
-    raw = raw.strip()
-    if "```" in raw:
-        parts = raw.split("```")
-        for part in parts:
-            cleaned = part.strip()
-            if cleaned.startswith("json"):
-                cleaned = cleaned[4:].strip()
-            if cleaned.startswith("{"):
-                raw = cleaned
-                break
-
-    start = raw.find("{")
-    end = raw.rfind("}") + 1
-    if start >= 0 and end > start:
-        try:
-            return json.loads(raw[start:end])
-        except json.JSONDecodeError:
-            pass
-
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError as e:
-        print("  ⚠️  Could not parse Claude's JSON: {}".format(str(e)[:100]))
-        return None
 
 
 # ── Profile Extraction ───────────────────────────────────────────────────────

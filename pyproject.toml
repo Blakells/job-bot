@@ -1,0 +1,23 @@
+[project]
+name = "job-bot"
+version = "5.0.0"
+description = "Automated job application pipeline: profile → discover → tailor → apply"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.28",
+    "playwright>=1.40",
+]
+
+[project.optional-dependencies]
+dashboard = ["flask>=3.0"]
+pdf = ["reportlab>=4.0"]
+scraping = ["scrapling[fetchers]"]
+readers = ["pdfminer.six", "python-docx"]
+all = ["job-bot[dashboard,pdf,scraping,readers]"]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[tool.setuptools.packages.find]
+include = ["job_bot*"]

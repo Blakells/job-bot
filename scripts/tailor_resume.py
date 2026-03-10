@@ -5,24 +5,13 @@ Takes scored jobs + your base resume and generates
 a tailored resume + cover letter for each job
 """
 
-import json, os, sys, argparse
+import json, sys, argparse
 from pathlib import Path
-import requests
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE    = "https://openrouter.ai/api/v1/chat/completions"
-MODEL              = "anthropic/claude-sonnet-4-5"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-def ask_claude(prompt):
-    resp = requests.post(OPENROUTER_BASE,
-        headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
-        json={"model": MODEL, "messages": [{"role": "user", "content": prompt}], "max_tokens": 4000, "temperature": 0.3})
-    data = resp.json()
-    try:
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print(f"  ❌ Claude error: {e}\n{data}")
-        sys.exit(1)
+from job_bot.ai import ask_claude
+from job_bot.config import OPENROUTER_API_KEY
 
 def tailor_resume(base_resume, job, profile):
     prompt = f"""
@@ -104,8 +93,8 @@ def main():
     print("=" * 55)
 
     if not OPENROUTER_API_KEY:
-        print("❌ OPENROUTER_API_KEY not set.")
-        sys.exit(1)
+        print("!! OPENROUTER_API_KEY not set.")
+        return
 
     # Load files
     jobs    = json.loads(Path(args.jobs).read_text())

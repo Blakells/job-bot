@@ -8,6 +8,9 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
+*.egg-info/
+dist/
+build/
 
 # Debug/test files
 *.log
