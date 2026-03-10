@@ -2,7 +2,7 @@
 
 import time
 from pathlib import Path
-from scrapling import Adaptor
+from scrapling import Selector
 
 
 # ── Scrapling page pre-scan ──────────────────────────────────────────────────
@@ -22,7 +22,7 @@ def prescan_page_with_scrapling(page):
     Also prints a summary of what was found.
     """
     html = page.content()
-    doc = Adaptor(html)
+    doc = Selector(html)
 
     field_info = {}
 
@@ -42,9 +42,12 @@ def prescan_page_with_scrapling(page):
             selectors.add(f'[name="{elem_name}"]')
             selectors.add(f'{el.tag}[name="{elem_name}"]')
 
-        # Walk up ancestors to detect react-select / autocomplete components
+        # Walk up ancestors to find the OUTERMOST react-select / autocomplete
+        # component root.  We must not stop at inner wrappers (e.g.
+        # "input-container") because the displayed value lives in a sibling.
         is_react_select = False
         displayed_value = ''
+        component_root = None
 
         ancestor = el.parent
         for depth in range(8):
@@ -60,30 +63,33 @@ def prescan_page_with_scrapling(page):
                 'autocomplete', 'rw-widget', 'rw-dropdown',
                 '-container', 'css-',
             ]):
-                # Only treat as react-select if this looks like a component root
-                # (has role="combobox" or specific select classes somewhere inside)
-                has_input = ancestor.css_first(
-                    'input[role="combobox"], input[aria-autocomplete], '
-                    '[class*="Input"], [class*="input-container"]'
-                )
-                if has_input or 'react-select' in cls_lower or 'rw-widget' in cls_lower:
-                    is_react_select = True
-
-                    # Find displayed value WITHIN this component only
-                    for pattern in [
-                        '[class*="singleValue"]',
-                        '[class*="single-value"]',
-                        '[class*="rw-input"]',
-                    ]:
-                        value_el = ancestor.css_first(pattern)
-                        if value_el:
-                            text = value_el.get_all_text(strip=True)
-                            if text and text != '--' and len(text) > 1:
-                                displayed_value = text
-                                break
-                    break  # Stop at the first matching component container
+                component_root = ancestor  # keep walking — outermost wins
 
             ancestor = ancestor.parent
+
+        if component_root:
+            cr_cls = (component_root.attrib.get('class', '') or '').lower()
+            _matches = component_root.css(
+                'input[role="combobox"], input[aria-autocomplete], '
+                '[class*="Input"], [class*="input-container"]'
+            )
+            has_input = _matches[0] if _matches else None
+            if has_input or 'react-select' in cr_cls or 'rw-widget' in cr_cls:
+                is_react_select = True
+
+                # Find displayed value WITHIN this component only
+                for pattern in [
+                    '[class*="singleValue"]',
+                    '[class*="single-value"]',
+                    '[class*="rw-input"]',
+                ]:
+                    _val_matches = component_root.css(pattern)
+                    value_el = _val_matches[0] if _val_matches else None
+                    if value_el:
+                        text = value_el.get_all_text(strip=True)
+                        if text and text != '--' and len(text) > 1:
+                            displayed_value = text
+                            break
 
         input_value = el.attrib.get('value', '')
 
