@@ -615,6 +615,82 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
     if failed:
         print(f"  !! {len(failed)} fields could not be filled")
 
+    # ── Post-fill verification: re-read fields and check for errors ──
+    print(f"\n  >> Post-fill verification...")
+    try:
+        page.evaluate("window.scrollTo(0, 0)")
+        time.sleep(0.5)
+        verify_issues = page.evaluate("""() => {
+            const issues = [];
+            // Check for validation error messages
+            const errorSels = [
+                '[class*="error"]', '[class*="invalid"]',
+                '[class*="validation"]', '[role="alert"]',
+                '.field-error', '.input-error', '.form-error',
+            ];
+            for (const sel of errorSels) {
+                for (const el of document.querySelectorAll(sel)) {
+                    const text = (el.textContent || '').trim();
+                    const rect = el.getBoundingClientRect();
+                    if (text && text.length > 3 && text.length < 200
+                        && rect.width > 0 && rect.height > 0) {
+                        // Find which field this error belongs to
+                        let fieldLabel = '';
+                        let parent = el.parentElement;
+                        for (let i = 0; i < 5 && parent; i++) {
+                            const lbl = parent.querySelector('label');
+                            if (lbl) { fieldLabel = lbl.textContent.trim(); break; }
+                            parent = parent.parentElement;
+                        }
+                        issues.push({
+                            type: 'validation_error',
+                            field: fieldLabel.slice(0, 50),
+                            message: text.slice(0, 100),
+                        });
+                    }
+                }
+            }
+            // Check for required empty fields
+            const required = document.querySelectorAll(
+                'input[required], select[required], textarea[required], '
+                + '[aria-required="true"]');
+            for (const inp of required) {
+                if (!inp.value || inp.value.trim() === '') {
+                    let lbl = '';
+                    if (inp.id) {
+                        const l = document.querySelector('label[for="' + inp.id + '"]');
+                        if (l) lbl = l.textContent.trim();
+                    }
+                    if (!lbl) lbl = inp.placeholder || inp.name || inp.id || '';
+                    issues.push({
+                        type: 'empty_required',
+                        field: lbl.slice(0, 50),
+                        message: 'Required field is empty',
+                    });
+                }
+            }
+            return issues;
+        }""")
+
+        if verify_issues:
+            seen = set()
+            unique_issues = []
+            for issue in verify_issues:
+                key = f"{issue['field']}|{issue['message']}"
+                if key not in seen:
+                    seen.add(key)
+                    unique_issues.append(issue)
+            print(f"  !! Found {len(unique_issues)} issue(s):")
+            for issue in unique_issues:
+                icon = "⚠" if issue['type'] == 'validation_error' else "○"
+                field = issue['field'] or '(unknown field)'
+                print(f"     {icon} {field}: {issue['message']}")
+        else:
+            print(f"  >> No validation errors detected")
+
+    except Exception as e:
+        print(f"  >> Verification check failed: {e}")
+
     return ApplicationResult(
         status="filled",
         filled=filled,

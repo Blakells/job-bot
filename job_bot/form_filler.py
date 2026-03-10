@@ -580,34 +580,21 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     el.press("Enter")
                     time.sleep(0.3)
                 elif is_email and selector:
-                    # Email: avoid clearing a form-auto-filled value.
-                    # If already correct → just fire validation events.
-                    # Otherwise → type it once (no fill("") clear first).
-                    cur = ""
-                    try:
-                        cur = el.input_value() or ""
-                    except Exception:
-                        pass
-
-                    if cur.strip().lower() == answer_str.strip().lower():
-                        # Already correct — just retrigger validation
-                        print(f"      >> Email already correct, triggering validation")
-                    else:
-                        # Type the email fresh (only type, no clear)
-                        el.type(answer_str, delay=20)
-                        time.sleep(0.3)
-
-                    # Press Space then Backspace — this is exactly what
-                    # clears Paylocity's email validation error.  Synthetic
-                    # JS events (blur, change, input) do NOT clear it; only
-                    # a real keyboard event inside the field does.
-                    el.press("End")          # cursor to end
-                    el.press("Space")        # triggers React re-validation
-                    time.sleep(2)            # let React settle
-                    el.press("Backspace")    # remove the space
-                    time.sleep(0.3)
+                    # Email: the resume upload may auto-fill a different
+                    # email (e.g. alex.carter@email.com).  We MUST clear
+                    # first, then type the correct one fresh.
+                    # 1) Select all + Delete to clear any pre-filled value
+                    page.keyboard.press("Control+a")
+                    time.sleep(0.05)
+                    page.keyboard.press("Meta+a")   # macOS
+                    time.sleep(0.05)
+                    page.keyboard.press("Backspace")
+                    time.sleep(0.1)
+                    # 2) Type the email character by character
+                    el.type(answer_str, delay=20)
+                    time.sleep(2)            # let React validate
                     el.press("Tab")          # move focus away
-                    time.sleep(0.2)
+                    time.sleep(0.3)
                 elif len(answer_str) < 200:
                     # Short text: clear with fill("") then type() for real
                     # keyboard events (triggers React validation).
@@ -919,49 +906,43 @@ def _determine_dropdown_answer(label, available_options, profile):
             if 'college' in ol and 'community' not in ol and 'vocational' not in ol:
                 return opt
 
-    # ── 5. Degree Type (e.g. "Associate's", "Bachelor's", "Master's") ──
+    # ── 5. Degree Type / Degree Obtained ──────────────────────────────
     if any(kw in label_lower for kw in ['degree type', 'degree level',
-                                         'type of degree', 'highest degree']):
+                                         'degree obtained', 'type of degree',
+                                         'highest degree']):
         edu = profile.get("education", [])
         degree_label = ""
         if edu and isinstance(edu, list) and len(edu) > 0:
             degree_label = edu[0].get("degree", "")
-        # Map profile degree to common option labels
-        degree_map = {
-            "bachelor": "Bachelor's Degree",
-            "b.s": "Bachelor's Degree",
-            "b.a": "Bachelor's Degree",
-            "master": "Master's Degree",
-            "m.s": "Master's Degree",
-            "m.a": "Master's Degree",
-            "mba": "Master's Degree",
-            "associate": "Associate's Degree",
-            "a.s": "Associate's Degree",
-            "a.a": "Associate's Degree",
-            "doctor": "Doctorate",
-            "ph.d": "Doctorate",
-            "phd": "Doctorate",
-            "high school": "High School Diploma",
-            "ged": "High School Diploma",
+        # The core keyword from the profile degree (e.g. "bachelor" from "Bachelor's")
+        degree_keywords = {
+            "bachelor": ["bachelor"],
+            "b.s": ["bachelor"],
+            "b.a": ["bachelor"],
+            "master": ["master"],
+            "m.s": ["master"],
+            "m.a": ["master"],
+            "mba": ["master"],
+            "associate": ["associate"],
+            "a.s": ["associate"],
+            "a.a": ["associate"],
+            "doctor": ["doctor", "doctoral", "phd"],
+            "ph.d": ["doctor", "doctoral", "phd"],
+            "phd": ["doctor", "doctoral", "phd"],
+            "high school": ["high school"],
+            "ged": ["high school", "ged"],
         }
-        target = ""
-        for key, val in degree_map.items():
+        search_keys = []
+        for key, keywords in degree_keywords.items():
             if key in degree_label.lower():
-                target = val
+                search_keys = keywords
                 break
-        if target:
-            # Exact match first
+        if search_keys:
+            # Match any option containing our keyword
             for opt in available_options:
-                if opt.lower().strip() == target.lower():
-                    return opt
-            # Contains match
-            for opt in available_options:
-                if target.lower() in opt.lower() or opt.lower() in target.lower():
-                    return opt
-            # Fuzzy — match the key word (e.g. "bachelor")
-            for opt in available_options:
-                for key in degree_map:
-                    if key in degree_label.lower() and key in opt.lower():
+                opt_lower = opt.lower().strip()
+                for sk in search_keys:
+                    if sk in opt_lower:
                         return opt
 
     return None
