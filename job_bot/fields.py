@@ -1,11 +1,16 @@
 """Form field extraction: JavaScript-based DOM parsing for any ATS platform."""
 
+from __future__ import annotations
+
+import logging
 import re
 from datetime import date
 from pathlib import Path
 
 from job_bot.ai import ask_claude, parse_json_response
-from job_bot.config import STATE_MAP
+from job_bot.utils import calculate_salary_range, normalize_linkedin_url, parse_location
+
+logger = logging.getLogger(__name__)
 
 
 # ── JavaScript to extract ALL form fields from any page ──────────────────────
@@ -295,7 +300,7 @@ EXTRACT_FIELDS_JS = """
 """
 
 
-def extract_page_fields(page):
+def extract_page_fields(page) -> list[dict]:
     """Extract all form fields from any page using JavaScript injection."""
     try:
         fields = page.evaluate(EXTRACT_FIELDS_JS)
@@ -305,7 +310,7 @@ def extract_page_fields(page):
         return []
 
 
-def is_greenhouse_form(page):
+def is_greenhouse_form(page) -> bool:
     """Detect if the current page is a Greenhouse job board application."""
     url = page.url.lower()
     if "greenhouse.io" in url:
@@ -320,7 +325,7 @@ def is_greenhouse_form(page):
         return False
 
 
-def parse_greenhouse_fields(page):
+def parse_greenhouse_fields(page) -> list[dict]:
     """
     Parse ALL form fields from a Greenhouse application page by reading the DOM.
     No LLM needed — the structure is deterministic.
@@ -366,7 +371,7 @@ def parse_greenhouse_fields(page):
     return fields
 
 
-def claude_map_fields(fields, profile, job):
+def claude_map_fields(fields: list[dict], profile: dict, job: dict) -> dict[str, str]:
     """
     Ask Claude to map form fields to profile answers.
     Only called for fields that weren't auto-matched by build_answer_map.
@@ -392,22 +397,15 @@ def claude_map_fields(fields, profile, job):
             wh.get("title", ""), wh.get("company", ""), wh.get("duration", ""))
 
     location = profile["personal"].get("location", "")
-    city = location.split(",")[0].strip()
-    state_raw = location.split(",")[-1].strip().lower()
-    state_full = STATE_MAP.get(state_raw, state_raw).title()
-    zip_code = profile["personal"].get("zip_code", "")
+    loc = parse_location(location)
+    city = loc["city"]
+    state_full = loc["state_full"]
+    zip_code = profile["personal"].get("zip_code", "") or loc["zip_code"]
     street_address = profile["personal"].get("street_address", "")
-    county = profile["personal"].get("county", city)
+    county = profile["personal"].get("county", "") or city
     today_date = date.today().strftime("%m/%d/%Y")
-    salary_min = profile.get("salary_range", {}).get("min", 0)
-    salary_max = profile.get("salary_range", {}).get("max", 0)
-    if salary_min and not salary_max:
-        salary_max = int(salary_min * 1.5)
-
-    # Normalize LinkedIn URL for forms that require full URL
-    linkedin_url = profile["personal"].get("linkedin_url", "")
-    if linkedin_url and not linkedin_url.startswith("http"):
-        linkedin_url = "https://www." + linkedin_url if not linkedin_url.startswith("www.") else "https://" + linkedin_url
+    salary_min, salary_max = calculate_salary_range(profile.get("salary_range", {}))
+    linkedin_url = normalize_linkedin_url(profile["personal"].get("linkedin_url", ""))
 
     eeoc = profile.get("eeoc", {})
     gender = eeoc.get("gender", "Male")

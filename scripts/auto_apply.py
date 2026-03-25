@@ -10,6 +10,7 @@ Usage:
 """
 
 import json
+import logging
 import sys
 import argparse
 from pathlib import Path
@@ -17,7 +18,6 @@ from pathlib import Path
 # Ensure job_bot package is importable when running from any directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from job_bot.browser import create_session, end_session
 from job_bot.profile import find_tailored_files
 from job_bot.applier import run_application
 
@@ -25,7 +25,7 @@ from job_bot.applier import run_application
 def main():
     parser = argparse.ArgumentParser(description="Job Bot Auto-Apply v5.0")
     parser.add_argument("--jobs", default="profiles/scored_jobs.json")
-    parser.add_argument("--profile", default="profiles/job_profile.json")
+    parser.add_argument("--profile", default="profiles/alex/profile.json")
     parser.add_argument("--min-score", type=int, default=50)
     parser.add_argument("--dry-run", action="store_true",
                         help="Analyze and fill-plan only, don't submit")
@@ -37,17 +37,25 @@ def main():
                         help="Path to resume file (PDF/DOCX)")
     parser.add_argument("--cover-letter", type=str, default=None,
                         help="Path to cover letter file (PDF/DOCX)")
-    parser.add_argument("--local", action="store_true", default=True,
-                        help="Use local browser (default)")
-    parser.add_argument("--cloud", action="store_true",
-                        help="Use Browserbase cloud browser instead of local")
+    parser.add_argument("--verbose", action="store_true",
+                        help="Enable DEBUG-level logging")
     args = parser.parse_args()
 
-    browser_mode = "cloud" if args.cloud else "local"
+    # Configure logging
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    log_format = "%(asctime)s [%(name)s] %(levelname)s: %(message)s"
+    log_handlers = [logging.StreamHandler()]
+
+    # Also log to file for comparing dry runs vs live runs
+    Path("outputs").mkdir(exist_ok=True)
+    log_handlers.append(logging.FileHandler("outputs/run.log", mode="a"))
+
+    logging.basicConfig(level=log_level, format=log_format, handlers=log_handlers)
+    logger = logging.getLogger(__name__)
 
     print("\n>> Job Bot -- Auto-Apply Engine v5.0")
     print("=" * 60)
-    print("  Browser: {}".format("Cloud (Browserbase)" if browser_mode == "cloud" else "Local"))
+    print("  Browser: Local (Playwright)")
     if args.dry_run:
         print("  DRY RUN MODE -- will NOT submit\n")
 
@@ -77,10 +85,9 @@ def main():
             "apply_url": args.url,
             "score": 100
         }
-        session_id, connect_url = create_session(browser_mode)
 
         resume_path = args.resume
-        cover_letter_path = getattr(args, 'cover_letter', None)
+        cover_letter_path = args.cover_letter
 
         if not resume_path:
             resume_path, cover_letter_path = find_tailored_files(
@@ -94,13 +101,11 @@ def main():
         if not resume_path:
             print(f"  !! No resume found -- use --resume flag or place files in outputs/tailored/")
 
-        try:
-            result = run_application(
-                connect_url, job, profile, args.profile, resume_path, cover_letter_path, args.dry_run
-            )
-            print(f"\n  >> Result: {result.status}")
-        finally:
-            end_session(session_id)
+        result = run_application(
+            job, profile, args.profile, resume_path, cover_letter_path, args.dry_run
+        )
+        print(f"\n  >> Result: {result.status}")
+        logger.info("Application result: %s", result.status)
         return
 
     # Batch mode
@@ -139,18 +144,15 @@ def main():
             results.append({"job": title, "company": company, "status": "no_resume"})
             continue
 
-        session_id, connect_url = create_session(browser_mode)
-
-        try:
-            result = run_application(
-                connect_url, job, profile, args.profile, resume_path, cover_letter_path, args.dry_run
-            )
-            results.append({
-                "job": title, "company": company, "status": result.status, "score": score
-            })
-            print(f"\n  >> Result: {result.status}")
-        finally:
-            end_session(session_id)
+        result = run_application(
+            job, profile, args.profile, resume_path, cover_letter_path, args.dry_run
+        )
+        results.append({
+            "job": title, "company": company, "status": result.status, "score": score
+        })
+        print(f"\n  >> Result: {result.status}")
+        logger.info("Job %d/%d result: %s (%s @ %s)", i, len(qualified),
+                     result.status, title, company)
 
     # Save results
     Path("outputs").mkdir(exist_ok=True)

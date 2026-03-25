@@ -1,14 +1,23 @@
 """Profile data management, answer mapping, and tailored file resolution."""
 
+from __future__ import annotations
+
 import json
+import logging
 import re
 from datetime import date
 from pathlib import Path
 
-from job_bot.config import STATE_MAP, STATE_MAP_REVERSE
+from job_bot.utils import (
+    build_location_strings,
+    calculate_salary_range,
+    normalize_linkedin_url,
+)
+
+logger = logging.getLogger(__name__)
 
 
-def find_tailored_files(company, title, apply_url=None, profile_path=None):
+def find_tailored_files(company: str, title: str, apply_url: str | None = None, profile_path: str | None = None) -> tuple[str | None, str | None]:
     """
     Find tailored resume and cover letter for a job.
 
@@ -143,7 +152,7 @@ def find_tailored_files(company, title, apply_url=None, profile_path=None):
     return None, None
 
 
-def build_answer_map(profile, company):
+def build_answer_map(profile: dict, company: str) -> tuple[dict[str, str], dict[str, str]]:
     """
     Build a mapping of field labels/IDs -> answers from the user profile.
     Returns (answers_by_id, answers_by_label).
@@ -151,16 +160,13 @@ def build_answer_map(profile, company):
     name_parts = profile["personal"]["name"].split(" ", 1)
     first_name = name_parts[0]
     last_name = name_parts[1] if len(name_parts) > 1 else ""
-    location = profile["personal"].get("location", "")
-    location_parts = [p.strip() for p in location.split(",")]
-    city = location_parts[0] if location_parts else ""
-    state_abbrev = location_parts[1].strip() if len(location_parts) > 1 else ""
-    state_full = STATE_MAP.get(state_abbrev.lower(), state_abbrev)
-    state_full = state_full.title() if state_full.islower() else state_full
-    location_full = f"{city}, {state_full}, United States" if city else location
-    zip_code = profile["personal"].get("zip_code", "")
-    street_address = profile["personal"].get("street_address", "")
-    county = profile["personal"].get("county", city)  # Default county to city name
+    loc = build_location_strings(profile)
+    city = loc["city"]
+    state_full = loc["state_full"]
+    location_full = loc["location_full"]
+    zip_code = loc["zip_code"]
+    street_address = loc["street_address"]
+    county = loc["county"]
     today_date = date.today().strftime("%m/%d/%Y")
 
     # Read EEOC values from profile (with sensible defaults)
@@ -197,15 +203,10 @@ def build_answer_map(profile, company):
         "cover_letter": "COVER_LETTER_FILE",
     }
 
-    salary_min = profile.get("salary_range", {}).get("min", 0)
-    salary_max = profile.get("salary_range", {}).get("max", 0)
-    if salary_min and not salary_max:
-        salary_max = int(salary_min * 1.5)
+    salary_min, salary_max = calculate_salary_range(profile.get("salary_range", {}))
     salary_min_str = str(salary_min) if salary_min else ""
     salary_max_str = str(salary_max) if salary_max else ""
-    linkedin_url = profile["personal"].get("linkedin_url", "")
-    if linkedin_url and not linkedin_url.startswith("http"):
-        linkedin_url = "https://www." + linkedin_url if not linkedin_url.startswith("www.") else "https://" + linkedin_url
+    linkedin_url = normalize_linkedin_url(profile["personal"].get("linkedin_url", ""))
     portfolio_url = profile["personal"].get("portfolio_url", "")
     github_url = profile["personal"].get("github_url", "")
     summary_text = profile.get("summary", "")
@@ -379,6 +380,20 @@ def build_answer_map(profile, company):
         "employee referral": "No",
     }
 
+    # ── Skills / tag-input fields ──
+    # Build a comma-separated skills string from profile for tag-input fields.
+    # The fill logic splits on commas and types each skill + Enter.
+    all_skills = profile.get("hard_skills", []) + profile.get("soft_skills", [])
+    if all_skills:
+        # Take a reasonable subset (top skills, not 90+)
+        skills_str = "SKILLS:" + ",".join(all_skills[:15])
+        answers_by_label["type a skill"] = skills_str
+        answers_by_label["add a skill"] = skills_str
+        answers_by_label["skills"] = skills_str
+        answers_by_label["key skills"] = skills_str
+        answers_by_label["enter your skills"] = skills_str
+        answers_by_label["relevant skills"] = skills_str
+
     # Merge saved extra answers from the profile
     for key, val in profile.get("extra_answers", {}).items():
         answers_by_label[key.lower()] = val
@@ -386,7 +401,7 @@ def build_answer_map(profile, company):
     return answers_by_id, answers_by_label
 
 
-def resolve_answer(field, answers_by_id, answers_by_label):
+def resolve_answer(field: dict, answers_by_id: dict[str, str], answers_by_label: dict[str, str]) -> str | None:
     """Look up the answer for a given field, trying ID match first, then label."""
     field_id = field["id"]
     label = field["label"].lower()
@@ -401,7 +416,7 @@ def resolve_answer(field, answers_by_id, answers_by_label):
     return None
 
 
-def prompt_for_answer(field):
+def prompt_for_answer(field: dict) -> str | None:
     """Ask the user for an answer when the bot doesn't know what to fill."""
     label = field["label"]
     field_type = field["type"]
@@ -422,7 +437,7 @@ def prompt_for_answer(field):
     return answer
 
 
-def save_answer_to_profile(profile, profile_path, field_label, answer):
+def save_answer_to_profile(profile: dict, profile_path: str, field_label: str, answer: str) -> None:
     """Save a new answer to the profile's extra_answers for future use."""
     if "extra_answers" not in profile:
         profile["extra_answers"] = {}

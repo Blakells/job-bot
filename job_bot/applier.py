@@ -1,15 +1,22 @@
 """Application orchestration: Greenhouse + universal form filling."""
 
+from __future__ import annotations
+
+import logging
 import re
+import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from job_bot.config import STATE_MAP, OPENROUTER_API_KEY
+from job_bot.config import OPENROUTER_API_KEY
 from job_bot.browser import (
     detect_ats_platform, get_session_path, has_saved_session,
     save_browser_session, screenshot, dismiss_cookie_banner, dismiss_overlays,
 )
+from job_bot.utils import build_location_strings, _normalize_field_id
+
+logger = logging.getLogger(__name__)
 from job_bot.profile import (
     build_answer_map, resolve_answer, prompt_for_answer, save_answer_to_profile,
 )
@@ -21,7 +28,8 @@ from job_bot.react_select import fill_react_select
 from job_bot.form_filler import (
     fill_text_field, upload_file, fill_generic_field,
     fill_toggle_buttons_sweep, fill_dropdowns_sweep,
-    prescan_page_with_scrapling,
+    fix_country_react_select, fix_paylocity_react_selects,
+    fix_email_validation, prescan_page_with_scrapling,
 )
 
 
@@ -34,7 +42,7 @@ class ApplicationResult:
     failed_fields: list = field(default_factory=list)
 
 
-def click_apply_button(page):
+def click_apply_button(page) -> bool:
     """Click the Apply button if we're on a job description page."""
     apply_patterns = [
         "Apply for this job online",
@@ -126,7 +134,7 @@ def click_apply_button(page):
     return False
 
 
-def _extract_fields_with_iframes(page, fields_js):
+def _extract_fields_with_iframes(page, fields_js: str) -> list[dict]:
     """Extract fields from main page and iframes."""
     fields = extract_page_fields(page)
 
@@ -144,7 +152,7 @@ def _extract_fields_with_iframes(page, fields_js):
     return fields
 
 
-def run_greenhouse_application(page, profile, profile_path, resume_path, cover_letter_path, slug, dry_run):
+def run_greenhouse_application(page, profile: dict, profile_path: str, resume_path: str | None, cover_letter_path: str | None, slug: str, dry_run: bool) -> ApplicationResult:
     """
     Fill a Greenhouse application form using deterministic DOM parsing.
     No LLM calls needed.
@@ -244,9 +252,9 @@ def run_greenhouse_application(page, profile, profile_path, resume_path, cover_l
     )
 
 
-def run_universal_application(page, job, profile, profile_path, resume_path,
-                               cover_letter_path, slug, dry_run,
-                               browser_ctx=None, platform="unknown"):
+def run_universal_application(page, job: dict, profile: dict, profile_path: str, resume_path: str | None,
+                               cover_letter_path: str | None, slug: str, dry_run: bool,
+                               browser_ctx=None, platform: str = "unknown") -> ApplicationResult:
     """
     Fill a job application form on ANY website using AI-assisted field mapping.
     """
@@ -324,14 +332,11 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
     auto_mapped = {}
     unmapped_fields = []
 
-    location = profile["personal"].get("location", "")
-    loc_parts = [p.strip() for p in location.split(",")]
-    city = loc_parts[0] if loc_parts else ""
-    state_abbrev = loc_parts[1].strip() if len(loc_parts) > 1 else ""
-    state_full = STATE_MAP.get(state_abbrev.lower(), state_abbrev)
-    state_full = state_full.title() if state_full.islower() else state_full
-    location_full = f"{city}, {state_full}, United States" if city else location
-    zip_code = profile["personal"].get("zip_code", "")
+    loc = build_location_strings(profile)
+    city = loc["city"]
+    state_full = loc["state_full"]
+    location_full = loc["location_full"]
+    zip_code = loc["zip_code"]
 
     cover_letter_text = ""
     if cover_letter_path and Path(cover_letter_path).exists():
@@ -362,12 +367,12 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
                 answer = val
                 break
 
-        # 2. ID/name fuzzy match
+        # 2. ID/name fuzzy match (word-boundary-aware normalization)
         if not answer:
-            fid_norm = re.sub(r'[\-_\.\d]+', '', fid)
-            fname_norm = re.sub(r'[\-_\.\d]+', '', fname)
+            fid_norm = _normalize_field_id(fid)
+            fname_norm = _normalize_field_id(fname)
             for key, val in answers_by_id.items():
-                key_norm = re.sub(r'[\-_\.\d]+', '', key)
+                key_norm = _normalize_field_id(key)
                 if key_norm and (key_norm == fid_norm or key_norm == fname_norm):
                     answer = val
                     break
@@ -556,18 +561,60 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
         return ApplicationResult(status="dry_run_ok", total=len(fields))
 
     # Step 5: Fill fields
-    dismiss_overlays(page)
-    time.sleep(0.5)
+    # DO NOT dismiss_overlays here — the page may have a resume upload modal
+    # that contains file inputs.  File uploads must happen FIRST so the modal
+    # dismisses itself naturally.  We dismiss non-form overlays AFTER uploads.
 
     print(f"\n  Filling fields...")
     filled = 0
     failed = []
 
+    # Phase A: Upload files first (resume / cover letter).
+    # These may be inside a modal dialog that dismiss_overlays would destroy.
+    file_indices = []
+    for i, f in enumerate(fields):
+        answer = all_answers.get(str(i))
+        if answer in ("RESUME_FILE", "COVER_LETTER_FILE"):
+            file_indices.append(i)
+            success = fill_generic_field(page, f, answer, resume_path, cover_letter_path)
+            if success:
+                filled += 1
+                label = f.get("label", f.get("name", ""))[:40]
+                print(f"     >> {label}")
+            else:
+                failed.append(f)
+                label = f.get("label", f.get("name", ""))[:40]
+                print(f"     !! {label}")
+            time.sleep(1)  # Let the page process the upload
+
+    # After file uploads, wait for any modal to close and the form to populate
+    if file_indices:
+        time.sleep(2)
+        print(f"  >> File uploads done, waiting for form to populate...")
+        time.sleep(3)
+
+    # Dismiss cookie banners and non-form overlays that may have (re)appeared
+    dismiss_cookie_banner(page)
+    time.sleep(0.3)
+    dismiss_overlays(page)
+    time.sleep(0.5)
+
     # Pre-scan the page with scrapling to detect pre-filled react-selects
     # and other component structures before any interaction.
+    # This must happen AFTER file uploads since resume upload may auto-fill fields.
     prescan = prescan_page_with_scrapling(page)
 
+    # Fix Country react-select if resume parser flipped it (e.g. to Seychelles).
+    # Must run before Phase B so the form shows US address fields.
+    if fix_country_react_select(page):
+        # Re-scan since the form layout may have changed (US vs international)
+        prescan = prescan_page_with_scrapling(page)
+
+    # Phase B: Fill remaining (non-file) fields
     for i, f in enumerate(fields):
+        if i in file_indices:
+            continue  # already handled in Phase A
+
         answer = all_answers.get(str(i))
         if not answer or answer == "SKIP_FIELD":
             if f.get("required") and answer != "SKIP_FIELD":
@@ -580,6 +627,11 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
                     continue
             else:
                 continue
+
+        # Dismiss any modals that may have appeared during filling
+        if i > 0 and i % 5 == 0:
+            dismiss_overlays(page)
+            time.sleep(0.2)
 
         success = fill_generic_field(page, f, answer, resume_path, cover_letter_path, prescan=prescan)
         if success:
@@ -607,6 +659,16 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
 
     extra_dropdowns = fill_dropdowns_sweep(page, profile)
     filled += extra_dropdowns
+
+    # Fix Paylocity react-selects (Country, State) that the fill loop
+    # couldn't set via normal click/type/Enter — uses React fiber onChange.
+    fix_paylocity_react_selects(page, profile)
+
+    # Fix sticky email validation error (must run LAST — after all other
+    # fills and react-select fixes so no re-renders can undo it).
+    email_val = profile.get("personal", {}).get("email", profile.get("email", ""))
+    if email_val:
+        fix_email_validation(page, email_val)
 
     screenshot(page, f"{slug}_filled")
     total_fields = len(fields) + extra_filled
@@ -682,7 +744,12 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
                     unique_issues.append(issue)
             print(f"  !! Found {len(unique_issues)} issue(s):")
             for issue in unique_issues:
-                icon = "⚠" if issue['type'] == 'validation_error' else "○"
+                # Use ASCII fallback if terminal can't handle unicode
+                try:
+                    icon = "\u26a0" if issue['type'] == 'validation_error' else "\u25cb"
+                    icon.encode(sys.stdout.encoding or 'utf-8')
+                except (UnicodeEncodeError, LookupError):
+                    icon = "!" if issue['type'] == 'validation_error' else "o"
                 field = issue['field'] or '(unknown field)'
                 print(f"     {icon} {field}: {issue['message']}")
         else:
@@ -699,8 +766,8 @@ def run_universal_application(page, job, profile, profile_path, resume_path,
     )
 
 
-def run_application(connect_url, job, profile, profile_path, resume_path,
-                    cover_letter_path, dry_run):
+def run_application(job: dict, profile: dict, profile_path: str, resume_path: str | None,
+                    cover_letter_path: str | None, dry_run: bool) -> ApplicationResult:
     """Run the full application flow for a single job."""
     title = job.get("title", "")
     company = job.get("company", "")
@@ -717,25 +784,19 @@ def run_application(connect_url, job, profile, profile_path, resume_path,
     try:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            if connect_url == "local":
-                print(f"  >> Launching local browser...")
-                browser = p.chromium.launch(headless=False)
+            print(f"  >> Launching local browser...")
+            browser = p.chromium.launch(headless=False)
 
-                if has_session:
-                    try:
-                        ctx = browser.new_context(storage_state=str(session_path))
-                        print(f"  >> Loaded saved {platform} session")
-                    except Exception:
-                        ctx = browser.new_context()
-                else:
+            if has_session:
+                try:
+                    ctx = browser.new_context(storage_state=str(session_path))
+                    print(f"  >> Loaded saved {platform} session")
+                except Exception:
                     ctx = browser.new_context()
-
-                page = ctx.new_page()
             else:
-                print(f"  >> Connecting to cloud browser...")
-                browser = p.chromium.connect_over_cdp(connect_url)
-                ctx = browser.contexts[0] if browser.contexts else browser.new_context()
-                page = ctx.pages[0] if ctx.pages else ctx.new_page()
+                ctx = browser.new_context()
+
+            page = ctx.new_page()
 
             print(f"  >> Loading: {url[:70]}...")
             page.goto(url, wait_until="domcontentloaded", timeout=30000)

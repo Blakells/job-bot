@@ -1,12 +1,18 @@
 """Unified Claude API client and JSON response parsing."""
 
+from __future__ import annotations
+
 import json
+import logging
+
 import requests
 
 from job_bot.config import OPENROUTER_API_KEY, OPENROUTER_BASE, MODEL, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE
 
+logger = logging.getLogger(__name__)
 
-def ask_claude(prompt, *, max_tokens=DEFAULT_MAX_TOKENS, temperature=DEFAULT_TEMPERATURE, timeout=60):
+
+def ask_claude(prompt: str, *, max_tokens: int = DEFAULT_MAX_TOKENS, temperature: float = DEFAULT_TEMPERATURE, timeout: int = 60) -> str:
     """
     Call Claude via OpenRouter.
 
@@ -50,7 +56,7 @@ def ask_claude(prompt, *, max_tokens=DEFAULT_MAX_TOKENS, temperature=DEFAULT_TEM
         return ""
 
 
-def parse_json_response(raw):
+def parse_json_response(raw: str | None) -> dict | list | None:
     """
     Parse a JSON object from a Claude response that may contain
     markdown code fences, leading text, etc.
