@@ -5,15 +5,11 @@ from pathlib import Path
 
 # ── API Keys (from environment) ──────────────────────────────────────────────
 
-BROWSERBASE_API_KEY = os.environ.get("BROWSERBASE_API_KEY", "")
-BROWSERBASE_PROJECT = os.environ.get("BROWSERBASE_PROJECT_ID", "")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "")
 
 # ── API Endpoints ────────────────────────────────────────────────────────────
 
 OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions"
-FIRECRAWL_BASE = "https://api.firecrawl.dev/v1"
 MODEL = "anthropic/claude-sonnet-4-5"
 
 # ── Defaults ─────────────────────────────────────────────────────────────────

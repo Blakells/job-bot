@@ -1,8 +1,61 @@
 """Generic form filling: text fields, selects, toggles, file uploads."""
 
+from __future__ import annotations
+
+import logging
 import time
 from pathlib import Path
 from scrapling import Selector
+
+logger = logging.getLogger(__name__)
+
+
+def _dismiss_blocking_modal(page) -> bool:
+    """Remove any modal overlay blocking form interaction mid-fill.
+
+    Paylocity shows a 'citrus-modal-wrapper' dialog that blocks clicks.
+    This is called as a retry mechanism when a click times out.
+    """
+    try:
+        removed = page.evaluate("""() => {
+            let removed = 0;
+            // Remove citrus-modal overlays ONLY if they don't contain form inputs
+            document.querySelectorAll('[id*="citrus-modal"]').forEach(el => {
+                if (el.querySelector('input, textarea, select, [role="combobox"]')) return;
+                el.remove();
+                removed++;
+            });
+            // Remove orphan backdrops only if no form-containing modal is open
+            const hasFormModal = Array.from(document.querySelectorAll(
+                '[role="dialog"], .modal, [data-role="modal-wrapper"]'
+            )).some(m => m.getBoundingClientRect().height > 0
+                && m.querySelector('input, textarea, select, [role="combobox"]'));
+            if (!hasFormModal) {
+                document.querySelectorAll('.modal-backdrop').forEach(el => {
+                    el.remove();
+                    removed++;
+                });
+            }
+            if (removed > 0) {
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+            }
+            return removed;
+        }""")
+        if removed > 0:
+            logger.info("Dismissed %d blocking modal(s) mid-fill", removed)
+            time.sleep(0.3)
+            return True
+    except Exception:
+        pass
+    # Also try Escape key
+    try:
+        page.keyboard.press("Escape")
+        time.sleep(0.3)
+    except Exception:
+        pass
+    return False
 
 
 # ── Scrapling page pre-scan ──────────────────────────────────────────────────
@@ -10,7 +63,7 @@ from scrapling import Selector
 # interaction.  This replaces fragile per-field JS queries that walk up the
 # DOM and accidentally match unrelated elements.
 
-def prescan_page_with_scrapling(page):
+def prescan_page_with_scrapling(page) -> dict[str, dict]:
     """
     Pre-scan the full page DOM with scrapling.
 
@@ -168,7 +221,7 @@ SELECT_JS_FILL = """(args) => {
 }"""
 
 
-def fill_text_field(page, field_id, answer):
+def fill_text_field(page, field_id: str, answer: str) -> bool:
     """Fill a standard text input by ID."""
     try:
         el = page.locator(f"input#{field_id}")
@@ -180,8 +233,8 @@ def fill_text_field(page, field_id, answer):
         el.press("Tab")
         time.sleep(0.2)
         return True
-    except Exception as e:
-        print(f"      !! Text fill error ({field_id}): {e}")
+    except (TimeoutError, ValueError) as e:
+        logger.warning("Text fill error (%s): %s", field_id, e)
         return False
 
 
@@ -241,8 +294,8 @@ def upload_file(page, input_id, file_path):
                 print(f"      >> Uploaded via Attach: {Path(file_path).name}")
                 return True
 
-        except Exception as e:
-            print(f"      >> Attach button method failed: {e}, trying direct input...")
+        except (TimeoutError, ValueError) as e:
+            logger.debug("Attach button method failed for %s: %s, trying direct input...", input_id, e)
 
         # Strategy 2: Direct set_input_files on the hidden file input
         page.evaluate(f"""() => {{
@@ -278,7 +331,7 @@ def upload_file(page, input_id, file_path):
         return False
 
     except Exception as e:
-        print(f"      !! Upload error ({input_id}): {e}")
+        logger.error("Upload error (%s): %s", input_id, e)
         return False
 
 
@@ -331,7 +384,7 @@ def handle_file_upload(page, field, file_path):
                 return True
 
     except Exception as e:
-        print(f"      !! File upload error: {e}")
+        logger.error("File upload error for %s: %s", field.get('label', ''), e)
     return False
 
 
@@ -363,8 +416,8 @@ def fill_toggle_button(page, field, answer):
                     btn.first.click(force=True, timeout=5000)
                     time.sleep(0.3)
                     return True
-            except Exception:
-                pass
+            except (TimeoutError, ValueError) as e:
+                logger.debug("Toggle stored selector click failed (%s): %s", stored_sel, e)
 
         # Strategy 2: Find the button by question text + button text via JavaScript
         clicked = page.evaluate("""(args) => {
@@ -402,17 +455,17 @@ def fill_toggle_button(page, field, answer):
                 btn.first.click(force=True, timeout=3000)
                 time.sleep(0.3)
                 return True
-        except Exception:
-            pass
+        except (TimeoutError, ValueError) as e:
+            logger.debug("Toggle get_by_role click failed for %s: %s", answer_upper, e)
 
         return False
 
     except Exception as e:
-        print(f"      !! Toggle button error: {e}")
+        logger.error("Toggle button error for '%s': %s", question_text[:50], e)
         return False
 
 
-def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=None, prescan=None):
+def fill_generic_field(page, field: dict, answer: str, resume_path: str | None = None, cover_letter_path: str | None = None, prescan: dict[str, dict] | None = None) -> bool:
     """
     Fill a single form field using generic Playwright actions.
     Works on any website — text inputs, selects, textareas, file uploads.
@@ -442,14 +495,16 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
         if ext == ".txt":
             try:
                 answer = Path(cover_letter_path).read_text()
-            except Exception:
+            except (OSError, UnicodeDecodeError) as e:
+                logger.warning("Failed to read cover letter %s: %s", cover_letter_path, e)
                 return False
         elif ext == ".pdf":
             txt_companion = cover_letter_path.replace(".pdf", ".txt")
             if Path(txt_companion).exists():
                 try:
                     answer = Path(txt_companion).read_text()
-                except Exception:
+                except (OSError, UnicodeDecodeError) as e:
+                    logger.warning("Failed to read cover letter companion %s: %s", txt_companion, e)
                     return False
             else:
                 print(f"      >> Cover letter is PDF only, no .txt companion found for textarea paste")
@@ -478,8 +533,8 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 try:
                     attempt_fn()
                     return True
-                except Exception:
-                    pass
+                except (TimeoutError, ValueError) as e:
+                    logger.debug("select_option attempt failed for %s: %s", selector, e)
 
             # Strategy 2: Fuzzy option match via Playwright
             try:
@@ -489,8 +544,8 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                     if answer_lower in opt.lower() or opt.lower() in answer_lower:
                         el.select_option(label=opt)
                         return True
-            except Exception:
-                pass
+            except (TimeoutError, ValueError) as e:
+                logger.debug("Fuzzy select_option failed for %s: %s", selector, e)
 
             # Strategy 3: JavaScript direct set (works on hidden/custom selects)
             try:
@@ -498,8 +553,8 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 if result:
                     print(f"      >> Used JS select fill -> {result}")
                     return True
-            except Exception:
-                pass
+            except (TimeoutError, ValueError) as e:
+                logger.debug("JS select fill failed for %s: %s", selector, e)
 
             return False
 
@@ -522,6 +577,30 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
             answer_str = str(answer)
             field_label = field.get("label", "")
 
+            # ── Tag-input / skills fields ──
+            # Answer starts with "SKILLS:" — type each skill + Enter
+            if answer_str.startswith("SKILLS:"):
+                skills = [s.strip() for s in answer_str[7:].split(",") if s.strip()]
+                if not skills:
+                    return True
+                try:
+                    el = page.locator(selector) if selector else None
+                    if el:
+                        el.click(timeout=5000)
+                        time.sleep(0.2)
+                    for skill in skills:
+                        page.keyboard.type(skill, delay=20)
+                        time.sleep(0.2)
+                        page.keyboard.press("Enter")
+                        time.sleep(0.3)
+                    # Tab out of the skills field
+                    page.keyboard.press("Tab")
+                    time.sleep(0.2)
+                except Exception as e:
+                    logger.warning("Skills tag-input fill failed: %s", e)
+                    return False
+                return True
+
             # ── Skip check: prescan (scrapling) + Playwright input_value ──
             # 1) Scrapling prescan: reliable react-select detection
             #    (the prescan analyzed the DOM once upfront, scoped to each
@@ -540,8 +619,8 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 if current_value.strip().lower() == answer_str.strip().lower():
                     print(f"      >> Skipping (input already has: {current_value[:30]})")
                     return True
-            except Exception:
-                pass
+            except (TimeoutError, ValueError) as e:
+                logger.debug("input_value check failed for %s: %s", selector, e)
 
             # Detect react-select / autocomplete inputs
             is_autocomplete = False
@@ -559,8 +638,8 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                             or "autocomplete" in parent_class
                             or "combobox" in parent_class):
                         is_autocomplete = True
-                except Exception:
-                    pass
+                except (TimeoutError, ValueError) as e:
+                    logger.debug("Autocomplete attribute check failed for %s: %s", selector, e)
 
             # Detect email fields for special React-compatible fill
             is_email = (field_type == 'email' or
@@ -569,32 +648,101 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                         'email' in field.get('label', '').lower())
 
             try:
-                el.click(timeout=5000)
+                try:
+                    el.click(timeout=5000)
+                except TimeoutError:
+                    if is_autocomplete:
+                        # React-select inputs are often hidden/zero-size; the
+                        # visible element is the wrapper div.  Click the
+                        # parent container instead.
+                        logger.debug("Click blocked on %s, trying react-select container click", selector)
+                        try:
+                            page.evaluate("""(sel) => {
+                                const input = document.querySelector(sel);
+                                if (!input) return;
+                                // Walk up to the react-select container
+                                let parent = input;
+                                for (let i = 0; i < 6; i++) {
+                                    parent = parent.parentElement;
+                                    if (!parent) break;
+                                    if (parent.className && parent.className.includes('control')) {
+                                        parent.click();
+                                        return;
+                                    }
+                                }
+                                // Fallback: click the direct parent
+                                if (input.parentElement) input.parentElement.click();
+                            }""", selector)
+                            time.sleep(0.3)
+                        except Exception:
+                            pass
+                    else:
+                        # A modal/overlay may be blocking the click — try to dismiss it
+                        logger.debug("Click blocked on %s, attempting overlay dismissal", selector)
+                        _dismiss_blocking_modal(page)
+                        el.click(timeout=5000)
                 time.sleep(0.1)
 
                 if is_autocomplete:
-                    # Autocomplete/react-select: type search + Enter to select
+                    # Detect address autocomplete (Google Places) fields.
+                    # These are street-address inputs where pressing Enter
+                    # selects a Google Places suggestion, overwriting the
+                    # entire address widget (Country, City, State, Zip).
+                    # We must NOT press Enter on these — use Escape+Tab.
+                    #
+                    # IMPORTANT: Country, State, City, Zip, County fields
+                    # are react-selects, NOT address autocompletes. Only
+                    # "address-line" or "address-1" style fields (the
+                    # street address) trigger Google Places.
+                    field_id = field.get("id", "").lower()
+                    is_street_address = (
+                        ("address" in field_id and ("line" in field_id or "-1" in field_id))
+                        and "country" not in field_id
+                        and "city" not in field_id
+                        and "state" not in field_id
+                        and "zip" not in field_id
+                        and "county" not in field_id
+                        and "postal" not in field_id
+                    )
+                    # Also check for explicit Google Places aria-controls
+                    aria_ctrl = el.get_attribute("aria-controls") or ""
+                    if "autocomplete-list" in aria_ctrl and is_street_address:
+                        is_street_address = True
+
+                    # Focus the input via JS first — react-select inputs
+                    # are often hidden/zero-size and el.click() may have
+                    # failed above.  JS focus ensures we can type into it.
+                    try:
+                        page.evaluate("""(sel) => {
+                            const input = document.querySelector(sel);
+                            if (input) input.focus();
+                        }""", selector)
+                        time.sleep(0.1)
+                    except Exception:
+                        pass
+
                     el.fill("")
                     el.type(answer_str, delay=50)
                     time.sleep(0.5)
-                    el.press("Enter")
-                    time.sleep(0.3)
+
+                    if is_street_address:
+                        # Dismiss Google Places suggestions without selecting
+                        el.press("Escape")
+                        time.sleep(0.2)
+                        el.press("Tab")
+                        time.sleep(0.3)
+                        logger.debug("Street address autocomplete: typed + Escape+Tab (no Enter)")
+                    else:
+                        # Standard react-select: Enter to confirm selection
+                        el.press("Enter")
+                        time.sleep(0.3)
                 elif is_email and selector:
-                    # Email: the resume upload may auto-fill a different
-                    # email (e.g. alex.carter@email.com).  We MUST clear
-                    # first, then type the correct one fresh.
-                    # 1) Select all + Delete to clear any pre-filled value
-                    page.keyboard.press("Control+a")
-                    time.sleep(0.05)
-                    page.keyboard.press("Meta+a")   # macOS
-                    time.sleep(0.05)
-                    page.keyboard.press("Backspace")
-                    time.sleep(0.1)
-                    # 2) Type the email character by character
-                    el.type(answer_str, delay=20)
-                    time.sleep(2)            # let React validate
-                    el.press("Tab")          # move focus away
-                    time.sleep(0.3)
+                    # Email: use fill("") + type() for now; the post-fill
+                    # email cleanup (fix_email_validation) will fix any
+                    # sticky React DebounceInput validation error.
+                    el.fill("")
+                    el.type(answer_str, delay=12)
+                    time.sleep(0.5)
                 elif len(answer_str) < 200:
                     # Short text: clear with fill("") then type() for real
                     # keyboard events (triggers React validation).
@@ -604,23 +752,23 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 else:
                     # Long text: use fill() for speed
                     el.fill(answer_str)
-            except Exception:
+            except (TimeoutError, ValueError) as e:
                 if is_autocomplete:
                     # Don't force-fill autocomplete/react-select — the click
                     # failed but the value is likely already pre-filled.
-                    print(f"      >> Skipping autocomplete field (click blocked, likely pre-filled)")
+                    logger.debug("Skipping autocomplete field (click blocked, likely pre-filled): %s", e)
                     return True
                 try:
                     page.evaluate(REACT_NATIVE_FILL_JS, {"selector": selector, "value": answer_str})
                     print(f"      >> Used JS fill (overlay was blocking)")
-                except Exception as js_err:
-                    print(f"      !! JS fill also failed: {js_err}")
+                except (TimeoutError, ValueError) as js_err:
+                    logger.warning("JS fill also failed for %s: %s", selector, js_err)
                     return False
             try:
                 el.press("Tab")
                 time.sleep(0.2)
-            except Exception:
-                pass
+            except (TimeoutError, ValueError) as e:
+                logger.debug("Tab press failed for %s: %s", selector, e)
             return True
 
     except Exception as e:
@@ -629,9 +777,9 @@ def fill_generic_field(page, field, answer, resume_path=None, cover_letter_path=
                 page.evaluate(REACT_NATIVE_FILL_JS, {"selector": selector, "value": str(answer)})
                 print(f"      >> Used JS fill fallback for {field.get('label', '')}")
                 return True
-            except Exception:
-                pass
-        print(f"      !! Could not fill {field.get('label', '')}: {e}")
+            except (TimeoutError, ValueError) as e2:
+                logger.debug("JS fill fallback also failed for %s: %s", selector, e2)
+        logger.error("Could not fill %s: %s", field.get('label', ''), e)
         return False
 
 
@@ -655,7 +803,7 @@ NO_RULES = [
 ]
 
 
-def fill_toggle_buttons_sweep(page, profile):
+def fill_toggle_buttons_sweep(page, profile: dict) -> int:
     """
     Post-fill sweep: find and click YES/NO toggle button groups on the page.
 
@@ -775,7 +923,7 @@ def fill_toggle_buttons_sweep(page, profile):
             return 0
 
     except Exception as e:
-        print(f"     !! Toggle sweep error: {e}")
+        logger.error("Toggle sweep error: %s", e, exc_info=True)
         return 0
 
 
@@ -783,7 +931,7 @@ def fill_toggle_buttons_sweep(page, profile):
 # Scans the full DOM for ALL dropdown-like elements (<select>, custom components),
 # analyzes their structure, determines the right answer, and fills them.
 
-def _determine_dropdown_answer(label, available_options, profile):
+def _determine_dropdown_answer(label: str, available_options: list[str], profile: dict) -> str | None:
     """
     Dynamically determine the best answer for a dropdown based on:
     1. Yes/No detection using toggle button keyword rules
@@ -865,12 +1013,11 @@ def _determine_dropdown_answer(label, available_options, profile):
 
     # ── 3. State dropdown (address or education) ────────────────────────
     if label_lower in ('state', 'state/province', 'province'):
+        from job_bot.utils import parse_location
         personal = profile.get("personal", {})
         loc = personal.get("location", "")
-        parts = [p.strip() for p in loc.split(",")]
-        state_abbr = parts[1].strip().lower() if len(parts) > 1 else ""
-        from job_bot.config import STATE_MAP
-        state_full = STATE_MAP.get(state_abbr, state_abbr).title()
+        parsed = parse_location(loc)
+        state_full = parsed["state_full"]
         if state_full:
             for opt in available_options:
                 if opt.lower().strip() == state_full.lower():
@@ -1332,7 +1479,275 @@ READ_DROPDOWN_OPTIONS_JS = """(triggerIdx) => {
 }"""
 
 
-def fill_dropdowns_sweep(page, profile):
+def _set_paylocity_react_select(page, wrapper_id: str, label: str, value: str) -> bool:
+    """Set a Paylocity pcty-input-select component via React fiber onChange.
+
+    Paylocity's custom react-select ignores normal click/type/Enter
+    interactions.  The only reliable way to set its value is to walk the
+    React fiber tree and call the component's onChange with {label, value}.
+
+    Returns True if the onChange was called successfully.
+    """
+    return page.evaluate("""(data) => {
+        const wrapper = document.querySelector(data.wrapperId);
+        if (!wrapper) return false;
+        const fiberKey = Object.keys(wrapper).find(k => k.startsWith('__reactFiber'));
+        if (!fiberKey) return false;
+
+        // Collect ALL onChange handlers from the fiber tree
+        let handlers = [];
+        let current = wrapper[fiberKey];
+        for (let d = 0; d < 25; d++) {
+            if (!current) break;
+            if (current.memoizedProps && current.memoizedProps.onChange) {
+                handlers.push({fn: current.memoizedProps.onChange, hasOptions: !!current.memoizedProps.options});
+            }
+            current = current.return;
+        }
+
+        if (handlers.length === 0) return false;
+
+        // Call from outermost to innermost so the store updates first.
+        // Handlers WITH options (the form store) get {label, value}.
+        // Handlers WITHOUT options (the InputBase display) get {value: label}
+        // because InputBase extracts e.value for display text.
+        const storeVal = {label: data.label, value: data.value};
+        const displayVal = {label: data.label, value: data.label};
+        for (let i = handlers.length - 1; i >= 0; i--) {
+            try {
+                handlers[i].fn(handlers[i].hasOptions ? storeVal : displayVal);
+            } catch(e) {}
+        }
+        return true;
+    }""", {"wrapperId": '#' + wrapper_id, "label": label, "value": value})
+
+
+def fix_country_react_select(page, expected_country: str = "United States") -> bool:
+    """Pre-fill fix: ensure the main address Country react-select is correct.
+
+    Paylocity's resume parser sometimes flips the Country to a wrong value
+    (e.g. "Seychelles") due to a race condition.  When the country is wrong
+    the form switches to international address fields and City/State/Zip
+    all fail.
+    """
+    COUNTRY_SEL = '#public-site-address-country'
+
+    current = page.evaluate("""(sel) => {
+        const input = document.querySelector(sel);
+        if (!input) return null;
+        let el = input;
+        for (let i = 0; i < 8; i++) {
+            el = el.parentElement;
+            if (!el) break;
+            const sv = el.querySelector('[class*="single-value"], [class*="singleValue"]');
+            if (sv) return sv.textContent.trim();
+        }
+        return null;
+    }""", COUNTRY_SEL)
+
+    if current and current.lower() == expected_country.lower():
+        return False  # already correct
+
+    if current is None:
+        return False  # field not found
+
+    logger.info("Country is '%s', expected '%s' — fixing react-select", current, expected_country)
+    try:
+        _set_paylocity_react_select(page, 'public-site-address-country-select-wrapper',
+                                    expected_country, 'USA')
+        time.sleep(2)
+
+        has_us_fields = page.evaluate("""() => {
+            return !!document.querySelector('#public-site-address-us-state');
+        }""")
+        if has_us_fields:
+            logger.info("Country fix applied — US address fields are present")
+            return True
+        else:
+            logger.warning("Country fix failed — US address fields not found")
+            return False
+    except Exception as e:
+        logger.warning("Country react-select fix failed: %s", e)
+        return False
+
+
+def fix_paylocity_react_selects(page, profile: dict) -> int:
+    """Post-fill fix for ALL Paylocity pcty-input-select react-selects.
+
+    After the fill loop, some react-selects may still show placeholder
+    values because Paylocity's custom component ignores Enter/click for
+    option selection.  This function detects unfilled react-selects and
+    sets them via React fiber onChange.
+
+    Must run AFTER all fills so no subsequent interactions undo the fix.
+    """
+    from job_bot.utils import parse_location
+
+    personal = profile.get("personal", {})
+    location = personal.get("location", "")
+    loc = parse_location(location) if location else {}
+
+    # Map of wrapper-id → (expected-label, expected-value)
+    react_select_fixes = {}
+
+    # Country
+    react_select_fixes['public-site-address-country-select-wrapper'] = ('United States', 'USA')
+
+    # State — map state full name to abbreviation
+    state_full = loc.get('state_full', '')
+    state_abbrev = loc.get('state_abbrev', '').upper()
+    if state_full and state_abbrev:
+        react_select_fixes['public-site-address-us-state-select-wrapper'] = (state_full, state_abbrev)
+
+    fixed_count = 0
+    for wrapper_id, (label, value) in react_select_fixes.items():
+        # Check if the wrapper exists
+        exists = page.evaluate("""(id) => !!document.querySelector('#' + id)""", wrapper_id)
+        if not exists:
+            continue
+
+        # Check current displayed value
+        current = page.evaluate("""(id) => {
+            const wrapper = document.querySelector('#' + id);
+            if (!wrapper) return null;
+            const sv = wrapper.querySelector('[class*="single-value"]');
+            return sv ? sv.textContent.trim() : null;
+        }""", wrapper_id)
+
+        if current and (current.lower() == label.lower()
+                        or current.lower() == value.lower()):
+            continue  # already correct (matches label OR abbreviation/value)
+
+        logger.info("React-select %s: '%s' → '%s'", wrapper_id, current, label)
+        ok = _set_paylocity_react_select(page, wrapper_id, label, value)
+        if ok:
+            fixed_count += 1
+            time.sleep(0.5)
+
+    if fixed_count:
+        time.sleep(1)
+        logger.info("Fixed %d Paylocity react-select(s)", fixed_count)
+    return fixed_count
+
+
+def fix_email_validation(page, email_value: str, max_attempts: int = 2) -> bool:
+    """Post-fill fix for sticky email validation errors on React forms.
+
+    Resume auto-fill can set a wrong email and trigger a validation error
+    that persists even after retyping (because programmatic fill() corrupts
+    React's internal DebounceInput state).  This function detects the error
+    dynamically (any site, any email field) and retypes using pure keyboard
+    events at human speed — the only approach that reliably clears it.
+
+    Must run AFTER all other fields are filled so no subsequent fill()
+    calls trigger React re-renders that undo the fix.
+    """
+
+    # ── Step 1: Dynamically find the email field ──
+    # Look for any input that is type=email, or whose id/name/label
+    # contains "email".  Works on any site, not just Paylocity.
+    email_sel = page.evaluate("""() => {
+        const candidates = document.querySelectorAll(
+            'input[type="email"], input[id*="email" i], input[name*="email" i]'
+        );
+        for (const el of candidates) {
+            if (el.offsetParent !== null) {  // visible
+                return el.id ? '[id="' + el.id + '"]'
+                     : el.name ? 'input[name="' + el.name + '"]'
+                     : null;
+            }
+        }
+        // Fallback: check data-for or aria-label attributes
+        const all = document.querySelectorAll('input[type="text"]');
+        for (const el of all) {
+            const attr = (el.getAttribute('data-for') || el.getAttribute('aria-label') || '').toLowerCase();
+            if (attr.includes('email') && el.offsetParent !== null) {
+                return el.id ? '[id="' + el.id + '"]'
+                     : el.name ? 'input[name="' + el.name + '"]'
+                     : null;
+            }
+        }
+        return null;
+    }""")
+
+    if not email_sel:
+        return False  # no email field found
+
+    # ── Step 2: Check for validation error near the email field ──
+    def _has_validation_error() -> bool:
+        return page.evaluate("""(sel) => {
+            const el = document.querySelector(sel);
+            if (!el) return false;
+            // Walk up a few parents and look for error-like text
+            let p = el.parentElement;
+            for (let i = 0; i < 6; i++) {
+                if (!p) break;
+                const text = p.textContent.toLowerCase();
+                if (text.includes('invalid email') || text.includes('invalid e-mail')
+                    || text.includes('valid email') || text.includes('verify before')) {
+                    return true;
+                }
+                p = p.parentElement;
+            }
+            // Also check for red/error-styled siblings
+            const container = el.closest('.form-group') || el.parentElement;
+            if (container) {
+                const errEls = container.querySelectorAll('[class*="error"], [class*="invalid"], .text-danger');
+                for (const e of errEls) {
+                    if (e.textContent.toLowerCase().includes('email') && e.offsetHeight > 0) return true;
+                }
+            }
+            return false;
+        }""", email_sel)
+
+    if not _has_validation_error():
+        return False  # no fix needed
+
+    # ── Step 3: Re-fill with pure keyboard events (retry up to max_attempts) ──
+    for attempt in range(1, max_attempts + 1):
+        logger.info("Email validation error detected — re-filling with keyboard events (attempt %d/%d)",
+                     attempt, max_attempts)
+        try:
+            # Scroll into view
+            page.evaluate("""(sel) => {
+                const el = document.querySelector(sel);
+                if (el) el.scrollIntoView({block: 'center'});
+            }""", email_sel)
+            time.sleep(0.3)
+
+            el = page.locator(email_sel)
+            el.click(timeout=5000)
+            time.sleep(0.3)
+
+            # Pure keyboard clear (no fill("") — that corrupts React state)
+            page.keyboard.press("Control+a")
+            time.sleep(0.05)
+            page.keyboard.press("Meta+a")    # macOS
+            time.sleep(0.05)
+            page.keyboard.press("Backspace")
+            time.sleep(0.5)
+
+            # Type each character at human speed so DebounceInput
+            # processes each keystroke and re-runs validation
+            for char in email_value:
+                page.keyboard.type(char)
+                time.sleep(0.15)
+            time.sleep(3)                    # let debounce settle
+            page.keyboard.press("Tab")       # blur = final validation
+            time.sleep(3)
+        except Exception as e:
+            logger.warning("Email validation fix attempt %d failed: %s", attempt, e)
+            continue
+
+        if not _has_validation_error():
+            logger.info("Email validation error cleared (attempt %d)", attempt)
+            return True
+
+    logger.warning("Email validation error persists after %d attempts", max_attempts)
+    return False
+
+
+def fill_dropdowns_sweep(page, profile: dict) -> int:
     """
     Post-fill sweep using DOM inspection approach:
     1. Scan the entire DOM (including iframes) for ALL dropdown elements
@@ -1391,39 +1806,47 @@ def fill_dropdowns_sweep(page, profile):
 
             if dd["type"] == "iframe-select":
                 try:
-                    frame = page.frames[dd["iframeIndex"] + 1]  # +1 for main frame
+                    adjusted_idx = dd.get("iframeIndex", 0) + 1  # +1 to skip main frame
+                    if adjusted_idx >= len(page.frames):
+                        logger.warning(
+                            "Frame index %d out of range (total frames: %d) for %s",
+                            adjusted_idx, len(page.frames), dd.get("label", "")[:40],
+                        )
+                        continue
+                    frame = page.frames[adjusted_idx]
                     frame_el = frame.locator(selector)
                     frame_el.select_option(label=best_option["text"])
                     success = True
-                except Exception:
+                except (TimeoutError, ValueError, IndexError) as e:
+                    logger.debug("iframe-select label fill failed: %s", e)
                     try:
                         frame.evaluate(SELECT_JS_FILL, {"selector": selector, "answer": answer})
                         success = True
-                    except Exception:
-                        pass
+                    except (TimeoutError, ValueError) as e2:
+                        logger.debug("iframe-select JS fill also failed: %s", e2)
             else:
                 try:
                     el = page.locator(selector)
                     el.select_option(label=best_option["text"])
                     success = True
-                except Exception:
-                    pass
+                except (TimeoutError, ValueError) as e:
+                    logger.debug("Dropdown select_option by label failed for %s: %s", selector, e)
 
                 if not success:
                     try:
                         el = page.locator(selector)
                         el.select_option(value=best_option["value"])
                         success = True
-                    except Exception:
-                        pass
+                    except (TimeoutError, ValueError) as e:
+                        logger.debug("Dropdown select_option by value failed for %s: %s", selector, e)
 
                 if not success:
                     try:
                         result = page.evaluate(SELECT_JS_FILL, {"selector": selector, "answer": answer})
                         if result:
                             success = True
-                    except Exception:
-                        pass
+                    except (TimeoutError, ValueError) as e:
+                        logger.debug("Dropdown JS fill failed for %s: %s", selector, e)
 
             if success:
                 print(f"     >> Dropdown: {dd['label'][:55]} -> {best_option['text']}")
@@ -1435,7 +1858,7 @@ def fill_dropdowns_sweep(page, profile):
             print(f"     >> All dropdowns already filled")
 
     except Exception as e:
-        print(f"     !! Dropdown sweep error: {e}")
+        logger.error("Dropdown sweep error: %s", e, exc_info=True)
 
     # Phase 2: Custom dropdown components (div-based, showing "--")
     # These are NOT <select> elements — they use divs/spans with click handlers.
@@ -1470,6 +1893,7 @@ def fill_dropdowns_sweep(page, profile):
                 time.sleep(0.8)  # Wait for dropdown panel to render
 
                 # Read all visible option texts near the trigger
+                # str() is intentional: JS uses it in attribute selector [data-jobbot-dd="X"]
                 available_options = page.evaluate(
                     READ_DROPDOWN_OPTIONS_JS, str(dd["index"]))
 
@@ -1513,8 +1937,8 @@ def fill_dropdowns_sweep(page, profile):
                                 print(f"     >> Custom dropdown (PW): {label[:40]} -> {answer}")
                                 filled += 1
                                 break
-                    except Exception:
-                        pass
+                    except (TimeoutError, ValueError) as e:
+                        logger.debug("Custom dropdown Playwright text click failed for %s: %s", label[:40], e)
 
                     if not pw_clicked:
                         page.keyboard.press("Escape")
@@ -1523,16 +1947,14 @@ def fill_dropdowns_sweep(page, profile):
                         print(f"     !! Custom dropdown: no match for {label[:40]}")
                         print(f"        tried: {answer}")
                         print(f"        debug: {debug_info}")
-            except Exception as e:
-                print(f"     !! Custom dropdown error for {label[:40]}: {e}")
+            except (TimeoutError, ValueError) as e:
+                logger.warning("Custom dropdown error for %s: %s", label[:40], e)
                 try:
                     page.keyboard.press("Escape")
-                except Exception:
-                    pass
+                except (TimeoutError, ValueError) as esc_err:
+                    logger.debug("Escape key press failed after dropdown error: %s", esc_err)
 
     except Exception as e:
-        import traceback
-        print(f"     !! Custom dropdown sweep error: {e}")
-        traceback.print_exc()
+        logger.error("Custom dropdown sweep error: %s", e, exc_info=True)
 
     return filled
